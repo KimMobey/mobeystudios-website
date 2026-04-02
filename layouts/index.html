@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Site.Title }}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Ubuntu:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    {{ $css := resources.Get "css/main.css" }}
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="site-name">{{ .Site.Title }}</div>
+            <nav>
+                {{ range .Site.Menus.main }}
+                <a href="{{ .URL }}">{{ .Name }}</a>
+                {{ end }}
+            </nav>
+        </div>
+    </header>
+    
+    <main class="homepage">
+        <div class="carousel">
+            <div class="carousel-slide active">
+                <div class="placeholder-image">Artwork 1</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="placeholder-image">Artwork 2</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="placeholder-image">Artwork 3</div>
+            </div>
+        </div>
+        
+        <div class="homepage-text">
+            <h1>{{ .Site.Title }}</h1>
+            <p>{{ .Site.Params.description }}</p>
+        </div>
+    </main>
+
+    <script>
+        // Simple carousel
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 4000);
+    </script>
+</body>
+</html>

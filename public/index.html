@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta name="generator" content="Hugo 0.159.2"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kim Mobey</title>
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Ubuntu:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="site-name">Kim Mobey</div>
+            <nav>
+                
+                <a href="/">Home</a>
+                
+                <a href="/portfolio/">Portfolio</a>
+                
+                <a href="/studio/">Studio</a>
+                
+                <a href="/about/">About</a>
+                
+                <a href="/contact/">Contact</a>
+                
+            </nav>
+        </div>
+    </header>
+    
+    <main class="homepage">
+        <div class="carousel">
+            <div class="carousel-slide active">
+                <div class="placeholder-image">Artwork 1</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="placeholder-image">Artwork 2</div>
+            </div>
+            <div class="carousel-slide">
+                <div class="placeholder-image">Artwork 3</div>
+            </div>
+        </div>
+        
+        <div class="homepage-text">
+            <h1>Kim Mobey</h1>
+            <p>Contemporary Art</p>
+        </div>
+    </main>
+
+    <script>
+        
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+        
+        setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 4000);
+    </script>
+</body>
+</html>
