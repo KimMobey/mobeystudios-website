@@ -1,0 +1,19 @@
+{{ define "title" }}Essays - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="studio-subsection">
+    <h1>Essays</h1>
+    
+    <div class="essay-list">
+        {{ range .Pages }}
+        <article class="essay-preview">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <time>{{ .Date.Format "January 2006" }}</time>
+            {{ with .Summary }}
+            <p>{{ . }}</p>
+            {{ end }}
+        </article>
+        {{ end }}
+    </div>
+</main>
+{{ end }}

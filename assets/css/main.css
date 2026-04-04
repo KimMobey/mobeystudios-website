@@ -59,35 +59,18 @@ nav a:hover {
 
 /* Homepage */
 .homepage {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 80px 40px;
+    margin: 0;
+    padding: 0;
 }
 
-/* Carousel */
-.carousel {
+.hero-image {
     position: relative;
     width: 100%;
-    height: 600px;
-    margin-bottom: 60px;
+    height: 70vh;
     overflow: hidden;
 }
 
-.carousel-slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 1s ease-in-out;
-}
-
-.carousel-slide.active {
-    opacity: 1;
-}
-
-.placeholder-image {
+.placeholder-hero {
     width: 100%;
     height: 100%;
     background: #7a6e65;
@@ -99,14 +82,14 @@ nav a:hover {
     font-size: 24px;
 }
 
-/* Homepage Text */
-.homepage-text {
-    text-align: center;
-    max-width: 600px;
+.audience-pathways {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 80px 40px;
+    text-align: center;
 }
 
-.homepage-text h1 {
+.audience-pathways h2 {
     font-family: 'Montserrat', sans-serif;
     font-size: 32px;
     font-weight: 300;
@@ -114,10 +97,671 @@ nav a:hover {
     margin-bottom: 15px;
 }
 
-.homepage-text p {
+.audience-pathways > p {
     font-family: 'Cormorant Garamond', serif;
     font-size: 20px;
     color: #7a6e65;
+    margin-bottom: 60px;
+}
+
+.pathways {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.pathway {
+    padding: 40px 30px;
+    background: #f5f5f5;
+    text-decoration: none;
+    color: #333;
+    transition: opacity 0.3s ease;
+}
+
+.pathway:hover {
+    opacity: 0.7;
+}
+
+.pathway h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-bottom: 15px;
+}
+
+.pathway p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #7a6e65;
+}
+
+/* Portfolio Page */
+.portfolio-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.portfolio-page h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+/* Filters */
+.filters {
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.filter-group {
+    margin-bottom: 30px;
+}
+
+.filter-group h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    color: #7a6e65;
+}
+
+.filter-button {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    padding: 8px 20px;
+    margin: 5px 10px 5px 0;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-button:hover,
+.filter-button.active {
+    background: #7a6e65;
+    color: #fff;
+    border-color: #7a6e65;
+}
+
+/* Portfolio Grid */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px;
+}
+
+.work-card {
+    position: relative;
+}
+
+.work-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.card-caption {
+    margin-top: 15px;
+}
+
+.card-caption h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 5px;
+}
+
+.card-caption p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 13px;
+    color: #7a6e65;
+    margin-bottom: 3px;
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.status-available {
+    background: #4CAF50;
+}
+
+.status-reserved {
+    background: #FFC107;
+}
+
+.status-sold {
+    background: #999;
+}
+
+/* Work Page */
+.work-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.work-image {
+    margin-bottom: 60px;
+}
+
+.work-image img {
+    width: 100%;
+    height: auto;
+}
+
+.work-details {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.caption-block h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 15px;
+}
+
+.caption-block p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #7a6e65;
+    margin-bottom: 8px;
+}
+
+.caption-taxonomies {
+    margin-top: 20px;
+}
+
+.tax-link {
+    display: inline-block;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 12px;
+    padding: 5px 15px;
+    margin: 5px 5px 0 0;
+    background: #f5f5f5;
+    color: #7a6e65;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.tax-link:hover {
+    opacity: 0.7;
+}
+
+.work-nav {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.work-nav a {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #7a6e65;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.work-nav a:hover {
+    opacity: 0.7;
+}
+
+/* Studio Pages */
+.studio-index {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.studio-index h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.studio-intro {
+    max-width: 800px;
+    margin: 0 auto 80px;
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #7a6e65;
+}
+
+.studio-sections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.studio-section-card {
+    padding: 40px;
+    background: #f5f5f5;
+}
+
+.studio-section-card h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+}
+
+.studio-section-card h2 a {
+    color: #333;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.studio-section-card h2 a:hover {
+    opacity: 0.6;
+}
+
+.studio-section-card p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #7a6e65;
+}
+
+/* Studio Subsections */
+.studio-subsection {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.studio-subsection h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.essay-list,
+.article-list,
+.video-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.essay-preview,
+.article-preview,
+.video-preview {
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.essay-preview:last-child,
+.article-preview:last-child,
+.video-preview:last-child {
+    border-bottom: none;
+}
+
+.essay-preview h2,
+.article-preview h2,
+.video-preview h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 10px;
+}
+
+.essay-preview h2 a,
+.article-preview h2 a,
+.video-preview h2 a {
+    color: #333;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.essay-preview h2 a:hover,
+.article-preview h2 a:hover,
+.video-preview h2 a:hover {
+    opacity: 0.6;
+}
+
+.essay-preview time,
+.article-preview time,
+.video-preview time {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 13px;
+    color: #7a6e65;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.essay-preview p,
+.article-preview p,
+.video-preview p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #555;
+}
+
+/* Essay/Article/Video Single Pages */
+.essay-page,
+.article-page,
+.video-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.essay-page header,
+.article-page header,
+.video-page header {
+    margin-bottom: 60px;
+}
+
+.essay-page h1,
+.article-page h1,
+.video-page h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 15px;
+}
+
+.essay-page time,
+.article-page time,
+.video-page time {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #7a6e65;
+}
+
+.essay-content,
+.article-content,
+.video-description {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 60px;
+}
+
+.essay-content h2,
+.article-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin: 40px 0 20px;
+}
+
+.essay-content p,
+.article-content p,
+.video-description p {
+    margin-bottom: 20px;
+}
+
+.essay-content blockquote,
+.article-content blockquote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-style: italic;
+    margin: 40px 0;
+    padding-left: 30px;
+    border-left: 3px solid #7a6e65;
+    color: #555;
+}
+
+.essay-nav,
+.article-nav,
+.video-nav {
+    padding-top: 40px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.essay-nav a,
+.article-nav a,
+.video-nav a {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    color: #7a6e65;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.essay-nav a:hover,
+.article-nav a:hover,
+.video-nav a:hover {
+    opacity: 0.7;
+}
+
+/* YouTube Embed */
+.video-embed {
+    margin-bottom: 40px;
+}
+
+.youtube-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+
+.youtube-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* About Page */
+.about-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.about-page h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.about-content {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.about-content h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin: 40px 0 20px;
+}
+
+.about-content p {
+    margin-bottom: 20px;
+}
+
+/* Contact Page */
+.contact-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.contact-page h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.contact-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-form-container label {
+    display: block;
+    margin-bottom: 25px;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.contact-form-container input,
+.contact-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 0;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.contact-form-container input:focus,
+.contact-form-container textarea:focus {
+    outline: none;
+    border-color: #7a6e65;
+}
+
+.contact-form-container textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.contact-form-container small {
+    display: block;
+    margin-top: 5px;
+    color: #7a6e65;
+    font-size: 12px;
+}
+
+.contact-form-container .required {
+    color: #7a6e65;
+}
+
+.contact-form-container .button-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.contact-form-container button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: #000;
+    color: #fff;
+    padding: 15px 50px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.contact-form-container button:hover {
+    opacity: 0.7;
+}
+
+/* Footer */
+footer {
+    background: #f5f5f5;
+    padding: 40px 0;
+    margin-top: 120px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    text-align: center;
+}
+
+.footer-container p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 13px;
+    color: #7a6e65;
+}
+
+/* Taxonomy Pages */
+.taxonomy-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.taxonomy-page h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.taxonomy-terms {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 40px;
+}
+
+.taxonomy-terms h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.term-list {
+    list-style: none;
+}
+
+.term-list li {
+    margin-bottom: 15px;
+}
+
+.term-list a {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.term-list a:hover {
+    opacity: 0.6;
 }
 
 /* Mobile */
@@ -131,15 +775,24 @@ nav a:hover {
         gap: 20px;
     }
     
-    .carousel {
-        height: 400px;
+    .hero-image {
+        height: 50vh;
     }
     
-    .homepage-text h1 {
-        font-size: 24px;
+    .pathways {
+        grid-template-columns: 1fr;
     }
     
-    .homepage-text p {
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .studio-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .essay-content blockquote,
+    .article-content blockquote {
         font-size: 22px;
     }
 }

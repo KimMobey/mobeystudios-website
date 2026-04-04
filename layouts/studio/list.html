@@ -1,0 +1,28 @@
+{{ define "title" }}Studio - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="studio-index">
+    <h1>Studio</h1>
+    
+    <div class="studio-intro">
+        <p>Writing, research, and process from the studio</p>
+    </div>
+    
+    <div class="studio-sections">
+        <div class="studio-section-card">
+            <h2><a href="/studio/essays/">Essays</a></h2>
+            <p>Academic writing, critical essays, institutional research</p>
+        </div>
+        
+        <div class="studio-section-card">
+            <h2><a href="/studio/practice/">Studio Practice</a></h2>
+            <p>Process, making-of, techniques, materials</p>
+        </div>
+        
+        <div class="studio-section-card">
+            <h2><a href="/studio/videos/">Videos</a></h2>
+            <p>Auto-did-act: YouTube content and video essays</p>
+        </div>
+    </div>
+</main>
+{{ end }}

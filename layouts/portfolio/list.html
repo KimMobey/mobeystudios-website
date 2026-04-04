@@ -1,0 +1,52 @@
+{{ define "title" }}Portfolio - {{ .Site.Title }}{{ end }}
+
+{{ define "head" }}
+<!-- Isotope library -->
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+{{ end }}
+
+{{ define "main" }}
+<main class="portfolio-page">
+    <h1>Portfolio</h1>
+    
+    {{ partial "filters.html" . }}
+    
+    <div class="portfolio-grid">
+        {{ range .Site.Taxonomies.forms }}
+        {{ range .Pages }}
+        {{ partial "card.html" . }}
+        {{ end }}
+        {{ end }}
+    </div>
+</main>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+// Isotope filtering
+var grid = document.querySelector('.portfolio-grid');
+var iso = new Isotope(grid, {
+    itemSelector: '.work-card',
+    layoutMode: 'fitRows',
+    getSortData: {
+        order: '[data-order]'
+    },
+    sortBy: 'order'
+});
+
+// Filter buttons
+var filterButtons = document.querySelectorAll('.filter-button');
+filterButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+        var filterValue = this.getAttribute('data-filter');
+        iso.arrange({ filter: filterValue });
+        
+        // Update active state
+        filterButtons.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        this.classList.add('active');
+    });
+});
+</script>
+{{ end }}

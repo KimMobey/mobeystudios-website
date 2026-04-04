@@ -1,0 +1,17 @@
+<div class="filters">
+    <div class="filter-group">
+        <h3>Form</h3>
+        <button class="filter-button active" data-filter="*">All</button>
+        {{ range .Site.Taxonomies.forms }}
+        <button class="filter-button" data-filter=".form-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
+        {{ end }}
+    </div>
+    
+    <div class="filter-group">
+        <h3>Status</h3>
+        <button class="filter-button active" data-filter="*">All</button>
+        {{ range .Site.Taxonomies.statuses }}
+        <button class="filter-button" data-filter=".status-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
+        {{ end }}
+    </div>
+</div>

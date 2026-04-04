@@ -1,0 +1,24 @@
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="work-page">
+    <div class="work-image">
+        {{ with .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+        <img src="{{ .RelPermalink }}" alt="{{ $.Title }}">
+        {{ end }}
+    </div>
+    
+    <div class="work-details">
+        {{ partial "caption.html" . }}
+        
+        <div class="work-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}">← Previous</a>
+            {{ end }}
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}">Next →</a>
+            {{ end }}
+        </div>
+    </div>
+</main>
+{{ end }}

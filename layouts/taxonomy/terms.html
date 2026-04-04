@@ -1,0 +1,13 @@
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="taxonomy-terms">
+    <h1>{{ .Title }}</h1>
+    
+    <ul class="term-list">
+        {{ range .Pages }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> ({{ .Pages | len }})</li>
+        {{ end }}
+    </ul>
+</main>
+{{ end }}

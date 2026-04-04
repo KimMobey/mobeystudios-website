@@ -1,0 +1,19 @@
+{{ define "title" }}Studio Practice - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="studio-subsection">
+    <h1>Studio Practice</h1>
+    
+    <div class="article-list">
+        {{ range .Pages }}
+        <article class="article-preview">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <time>{{ .Date.Format "January 2006" }}</time>
+            {{ with .Summary }}
+            <p>{{ . }}</p>
+            {{ end }}
+        </article>
+        {{ end }}
+    </div>
+</main>
+{{ end }}

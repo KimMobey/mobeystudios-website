@@ -27,3 +27,10 @@ title = 'Kim Mobey'
     name = 'Contact'
     url = '/contact/'
     weight = 5
+
+[taxonomies]
+  form = 'forms'
+  theme = 'themes'
+  medium = 'media'
+  status = 'statuses'
+  series = 'series'

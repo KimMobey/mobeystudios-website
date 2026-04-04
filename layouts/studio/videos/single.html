@@ -1,0 +1,26 @@
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="video-page">
+    <article>
+        <header>
+            <h1>{{ .Title }}</h1>
+            <time>{{ .Date.Format "January 2, 2006" }}</time>
+        </header>
+        
+        {{ with .Params.youtube_id }}
+        <div class="video-embed">
+            {{ partial "youtube.html" . }}
+        </div>
+        {{ end }}
+        
+        <div class="video-description">
+            {{ .Content }}
+        </div>
+        
+        <nav class="video-nav">
+            <a href="/studio/videos/">← Back to Videos</a>
+        </nav>
+    </article>
+</main>
+{{ end }}

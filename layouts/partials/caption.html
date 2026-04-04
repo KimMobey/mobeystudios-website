@@ -1,0 +1,17 @@
+<div class="caption-block">
+    <h2>{{ .Title }}</h2>
+    <p class="caption-medium">{{ .Params.medium }}</p>
+    <p class="caption-dimensions">{{ .Params.dimensions }}</p>
+    {{ with .Params.year }}
+    <p class="caption-year">{{ . }}</p>
+    {{ end }}
+    <p class="caption-status">{{ .Params.status | title }}</p>
+    
+    {{ if .Params.forms }}
+    <div class="caption-taxonomies">
+        {{ range .Params.forms }}
+        <a href="/forms/{{ . | urlize }}/" class="tax-link">{{ . }}</a>
+        {{ end }}
+    </div>
+    {{ end }}
+</div>

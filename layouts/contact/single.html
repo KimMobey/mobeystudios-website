@@ -1,0 +1,56 @@
+{{ define "title" }}Contact - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="contact-page">
+    <h1>Contact</h1>
+    
+    <div class="contact-form-container">
+        <form action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
+            
+            <label>
+                First Name <span class="required">*</span>
+                <input type="text" name="firstName" required>
+            </label>
+
+            <label>
+                Last Name <span class="required">*</span>
+                <input type="text" name="lastName" required>
+            </label>
+
+            <label>
+                Email <span class="required">*</span>
+                <input type="email" name="email" required>
+            </label>
+
+            <label>
+                Phone Number
+                <input type="tel" name="phone">
+            </label>
+
+            <label>
+                Which artworks are you interested in?
+                <input type="text" name="artworks" placeholder="e.g., Portrait series, Sculptures">
+            </label>
+
+            <label>
+                Message <span class="required">*</span>
+                <textarea name="message" required rows="6"></textarea>
+            </label>
+
+            <label>
+                Attach artwork image (optional)
+                <input type="file" name="upload" accept="image/*">
+                <small>You can attach an image of the artwork you're interested in</small>
+            </label>
+
+            <input type="hidden" name="_subject" value="New inquiry from Kim Mobey Art website">
+            <input type="text" name="_gotcha" style="display:none">
+
+            <div class="button-container">
+                <button type="submit">Send Message</button>
+            </div>
+
+        </form>
+    </div>
+</main>
+{{ end }}

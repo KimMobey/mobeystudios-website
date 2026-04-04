@@ -1,0 +1,21 @@
+<div class="work-card form-{{ range .Params.forms }}{{ . | urlize }} {{ end }}status-{{ .Params.status | urlize }}" 
+     data-form="{{ range .Params.forms }}{{ . }} {{ end }}"
+     data-theme="{{ range .Params.themes }}{{ . }} {{ end }}"
+     data-medium="{{ .Params.medium }}"
+     data-status="{{ .Params.status }}"
+     data-order="{{ .Params.order }}"
+     data-title="{{ .Title }}">
+    
+    <a href="{{ .RelPermalink }}">
+        {{ with .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
+        <img src="{{ .RelPermalink }}" alt="{{ $.Title }}">
+        {{ end }}
+        
+        <div class="card-caption">
+            <h3>{{ .Title }}</h3>
+            <p class="card-medium">{{ .Params.medium }}</p>
+            <p class="card-dimensions">{{ .Params.dimensions }}</p>
+            <span class="status-indicator status-{{ .Params.status | urlize }}"></span>
+        </div>
+    </a>
+</div>
