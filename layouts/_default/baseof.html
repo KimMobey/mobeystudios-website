@@ -16,9 +16,10 @@
     {{ block "head" . }}{{ end }}
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     {{ partial "nav.html" . }}
     
-    {{ block "main" . }}{{ end }}
+    <div id="main-content">{{ block "main" . }}{{ end }}</div>
     
     {{ partial "footer.html" . }}
     

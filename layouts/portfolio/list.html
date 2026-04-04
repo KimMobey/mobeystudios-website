@@ -40,12 +40,15 @@ filterButtons.forEach(function(button) {
     button.addEventListener('click', function() {
         var filterValue = this.getAttribute('data-filter');
         iso.arrange({ filter: filterValue });
-        
-        // Update active state
-        filterButtons.forEach(function(btn) {
+
+        // Update active state and aria-pressed within the same filter group
+        var group = this.closest('.filter-group');
+        group.querySelectorAll('.filter-button').forEach(function(btn) {
             btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
         });
         this.classList.add('active');
+        this.setAttribute('aria-pressed', 'true');
     });
 });
 </script>

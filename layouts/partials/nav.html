@@ -1,9 +1,9 @@
 <header>
     <div class="header-container">
-        <div class="site-name">{{ .Site.Title }}</div>
-        <nav>
+        <a href="/" class="site-name">{{ .Site.Title }}</a>
+        <nav aria-label="Main navigation">
             {{ range .Site.Menus.main }}
-            <a href="{{ .URL }}">{{ .Name }}</a>
+            <a href="{{ .URL }}"{{ if or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) }} aria-current="page"{{ end }}>{{ .Name }}</a>
             {{ end }}
         </nav>
     </div>

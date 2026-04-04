@@ -5,6 +5,7 @@
     <h1>Contact</h1>
     
     <div class="contact-form-container">
+        <p class="required-note">Fields marked <span class="required" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
         <form action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
             
             <label>
@@ -39,8 +40,8 @@
 
             <label>
                 Attach artwork image (optional)
-                <input type="file" name="upload" accept="image/*">
-                <small>You can attach an image of the artwork you're interested in</small>
+                <input type="file" name="upload" accept="image/*" aria-describedby="upload-hint">
+                <small id="upload-hint">You can attach an image of the artwork you're interested in</small>
             </label>
 
             <input type="hidden" name="_subject" value="New inquiry from Kim Mobey Art website">
