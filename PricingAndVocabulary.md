@@ -42,6 +42,25 @@ Here it is:
 
 ---
 
+**GALLERY IMAGES — MULTI-ANGLE WORKS**
+
+Applies to sculptures and any other work requiring multiple photographs.
+
+Naming convention: where a work has multiple images, all image files for that work use a zero-padded two-digit numeric suffix before the file extension. The primary image is always -01.
+
+The primary image filename goes in the `image` field and is used as the portfolio grid thumbnail. Additional angles go in the `gallery` field as an array. Single-image works do not use a numeric suffix and omit the gallery field entirely — do not include it as an empty array.
+
+The admin interface gallery input must be a dynamic list — add and remove rows — to accommodate works with any number of additional angles.
+
+```yaml
+image: "wabele-01.jpg"
+gallery:
+  - "wabele-02.jpg"
+  - "wabele-03.jpg"
+```
+
+---
+
 **PRICING FRAMEWORK**
 
 **Equation:** (H \+ W) × index

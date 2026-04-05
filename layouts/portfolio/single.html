@@ -8,6 +8,14 @@
         {{ end }}
     </div>
 
+    {{ with .Params.gallery }}
+    <div class="work-gallery">
+        {{ range . }}
+        <img src="/images/portfolio/{{ . }}" alt="{{ $.Title }}">
+        {{ end }}
+    </div>
+    {{ end }}
+
     <div class="work-details">
         {{ partial "caption.html" . }}
 

@@ -5,13 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ block "title" . }}{{ .Site.Title }}{{ end }}</title>
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Ubuntu:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
-    {{ $css := resources.Get "css/main.css" }}
-    <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+    <link rel="stylesheet" href="/css/main.css">
     
     {{ block "head" . }}{{ end }}
 </head>
@@ -23,6 +17,18 @@
     
     {{ partial "footer.html" . }}
     
+    <script>
+        (function() {
+            var toggle = document.querySelector('.nav-toggle');
+            var nav = document.querySelector('nav');
+            if (toggle && nav) {
+                toggle.addEventListener('click', function() {
+                    var open = nav.classList.toggle('is-open');
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+            }
+        })();
+    </script>
     {{ block "scripts" . }}{{ end }}
 </body>
 </html>
