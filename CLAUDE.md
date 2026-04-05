@@ -74,34 +74,39 @@ Two version-specific rules that must be followed:
 
 ## Colour palette and accessibility
 
-The site uses a deliberately muted, refined palette. All colour decisions must satisfy WCAG AA contrast requirements — this is a non-negotiable constraint that must be maintained alongside the aesthetic.
+The site uses a deliberately muted, refined palette. All colours are defined as CSS custom properties in `static/css/main.css` — never hardcode colour values. All colour decisions must satisfy WCAG AA contrast requirements.
 
-### Palette
+### CSS custom properties
 
-| Role | Value | Usage |
+| Custom property | Value | Role |
 |---|---|---|
-| Primary text | `#333333` | Body copy, headings, nav |
-| Taupe accent | `#7a6e65` | Secondary text, captions, borders, hover states, button background |
-| Light background | `#f5f5f5` | Header, footer, cards, filter buttons |
-| White | `#ffffff` | Page background, button text on taupe |
+| `--color-bg-primary` | `#ffffff` | Page background |
+| `--color-bg-secondary` | `#f0efed` | Header, footer, cards, pathway blocks |
+| `--color-text-primary` | `#1a1a1a` | Body copy, headings, primary labels |
+| `--color-text-secondary` | `#6a5f56` | Captions, metadata, secondary labels, filter options |
+| `--color-accent` | `#7a6e65` | Interactive states, focus rings, active filters, taxonomy links, button background |
+| `--color-border` | `#e0e0e0` | Dividers, input borders |
+| `--color-white` | `#ffffff` | Button text on accent background |
 
-### Contrast rules
+**Important distinction — secondary vs accent:** `--color-text-secondary` (`#6a5f56`) is darker than `--color-accent` (`#7a6e65`). Secondary is used for text that must meet 4.5:1 contrast. Accent is used for interactive and decorative elements where the contrast threshold is met by size, weight, or context. Do not swap them.
 
-**WCAG AA thresholds:** 4.5:1 for text below 18px (or 14px bold) — 3:1 for large text (18px+ regular, 14px+ bold).
+### Contrast ratios
 
-| Pair | Ratio | Threshold |
+**WCAG AA thresholds:** 4.5:1 for normal text (below 18px regular or 14px bold) — 3:1 for large text.
+
+| Pair | Ratio | Notes |
 |---|---|---|
-| `#333` on `#ffffff` | 12.63:1 | Well clear |
-| `#333` on `#f5f5f5` | 11.59:1 | Well clear |
-| `#7a6e65` on `#ffffff` | 4.95:1 | Passes — small margin |
-| `#7a6e65` on `#f5f5f5` | 4.54:1 | Passes — tight (do not lighten either value) |
-| `#ffffff` on `#7a6e65` | 4.95:1 | Passes (button text) |
+| `#1a1a1a` on `#ffffff` | ~17:1 | Well clear |
+| `#1a1a1a` on `#f0efed` | ~15:1 | Well clear |
+| `#6a5f56` on `#ffffff` | 5.74:1 | Passes AA normal text — `--color-text-secondary` |
+| `#6a5f56` on `#f0efed` | ~5.3:1 | Passes AA normal text |
+| `#7a6e65` on `#ffffff` | 4.32:1 | Fails AA normal text — do not use for body text |
+| `#ffffff` on `#7a6e65` | 4.32:1 | Passes AA large text — button/accent use only |
 
 ### Rules to follow
 
-- **`#7a6e65` is the floor for small text.** Do not use a lighter colour for any text below 18px on white or `#f5f5f5` backgrounds.
-- **Large text (18px+) has more latitude.** The 3:1 threshold gives room for lighter/more decorative tones on large Cormorant Garamond headings if needed.
-- **Decorative elements are exempt.** Borders, dividers, background fills, and purely visual accents do not need to meet contrast requirements — only text and interactive controls do.
-- **Hover and focus states must maintain contrast.** Use explicit colour shifts rather than `opacity` reductions on text — opacity lowers contrast and can cause failures.
-- **Do not reduce the footer text size below 13px.** At 13px, `#7a6e65` on `#f5f5f5` passes at 4.54:1 but has no margin. Any size reduction would require a darker colour.
-- **Interactive controls** (buttons, filter buttons, form inputs) must maintain contrast in all states: default, hover, focus, active.
+- **`--color-text-secondary` (`#6a5f56`) is the floor for small text.** Do not use a lighter colour for text below 18px. Do not lighten this value.
+- **`--color-accent` (`#7a6e65`) must not be used for normal body text** — it fails AA at small sizes. Restrict it to interactive states, decorative elements, and large text contexts.
+- **All colours via custom properties.** Never hardcode hex values in CSS or templates.
+- **Decorative elements are exempt.** Borders, dividers, and background fills do not need to meet contrast ratios.
+- **Hover states using opacity:** opacity reductions on text lower effective contrast. Keep opacity reductions modest (floor ~0.6) and only on elements that already pass with margin to spare.

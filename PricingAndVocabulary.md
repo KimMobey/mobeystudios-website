@@ -98,6 +98,26 @@ Substrate — front matter text field only Price — hidden field only Collectio
 
 ---
 
+**COLOUR PALETTE**
+
+All colours are defined as CSS custom properties in `static/css/main.css`. Never hardcode hex values in CSS or templates.
+
+| Custom property | Value | Role |
+|---|---|---|
+| `--color-bg-primary` | `#ffffff` | Page background |
+| `--color-bg-secondary` | `#f0efed` | Header, footer, cards, pathway blocks |
+| `--color-text-primary` | `#1a1a1a` | Body copy, headings, primary labels |
+| `--color-text-secondary` | `#6a5f56` | Captions, metadata, secondary labels, filter options |
+| `--color-accent` | `#7a6e65` | Interactive states, focus rings, active filters, taxonomy links, button background |
+| `--color-border` | `#e0e0e0` | Dividers, input borders |
+| `--color-white` | `#ffffff` | Button text on accent background |
+
+**Secondary vs accent — an important distinction:** `--color-text-secondary` (`#6a5f56`) is darker than `--color-accent` (`#7a6e65`). They are not interchangeable. Accent is the warmer taupe used for interactive and decorative states. Secondary text is the slightly darker value used for body text to meet WCAG AA contrast requirements (5.74:1 on white). Do not lighten either value.
+
+`--color-accent` (`#7a6e65`) achieves only 4.32:1 on white — it fails AA for normal text below 18px and must not be used for body copy.
+
+---
+
 **HUGO VERSION NOTES**
 
 Hugo version: 0.160.0
