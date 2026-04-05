@@ -1,13 +1,17 @@
 {{ define "title" }}Contact - {{ .Site.Title }}{{ end }}
 
+{{ define "head" }}
+<script src="https://www.google.com/recaptcha/api.js?render=6LcKA6gsAAAAAAF5Hqt227B2xfiSCvVQDVQsgzxx"></script>
+{{ end }}
+
 {{ define "main" }}
 <main class="contact-page">
     <h1>Contact</h1>
-    
+
     <div class="contact-form-container">
         <p class="required-note">Fields marked <span class="required" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
-        <form action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
-            
+        <form id="contact-form" action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
+
             <label>
                 First Name <span class="required">*</span>
                 <input type="text" name="firstName" required>
@@ -45,6 +49,7 @@
             </label>
 
             <input type="hidden" name="_subject" value="New inquiry from Kim Mobey Art website">
+            <input type="hidden" name="g-recaptcha-response" id="recaptcha-token">
             <input type="text" name="_gotcha" style="display:none">
 
             <div class="button-container">
@@ -54,4 +59,19 @@
         </form>
     </div>
 </main>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = this;
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LcKA6gsAAAAAAF5Hqt227B2xfiSCvVQDVQsgzxx', { action: 'contact' }).then(function(token) {
+                document.getElementById('recaptcha-token').value = token;
+                form.submit();
+            });
+        });
+    });
+</script>
 {{ end }}
