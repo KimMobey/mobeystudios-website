@@ -1182,4 +1182,28 @@ footer {
     .work-gallery {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    /* Portfolio page heading — reduce vertical space */
+    .portfolio-page {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .portfolio-page h1 {
+        margin-bottom: 32px;
+        text-align: left;
+    }
+
+    /* Filter controls — stack vertically, remove separator rule */
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px 0;
+    }
+
+    .filter-group + .filter-group {
+        padding-left: 0;
+        margin-left: 0;
+        border-left: none;
+    }
 }
