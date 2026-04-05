@@ -65,6 +65,13 @@ Dimension format: `H × W cm` (e.g. `90 × 120cm`). Taxonomy values always lower
 
 `PricingAndVocabulary.md` is the authoritative reference for all taxonomy values, field definitions, pricing formula, and YAML file management rules. Consult it before adding new taxonomy terms or front matter fields.
 
+### Hugo v0.160.0 taxonomy behaviour
+
+Two version-specific rules that must be followed:
+
+1. **Front matter taxonomy keys must use the plural form** (as defined in `hugo.toml`). The singular form silently produces no term pages. Use `forms:`, `statuses:`, `media:`, `themes:`, `series:` — never `form:`, `status:`, `medium:`, `theme:`.
+2. **Taxonomy term pages require `layouts/_default/list.html`** for HTML output. `layouts/taxonomy/list.html` alone is not sufficient in v0.160.0+.
+
 ## Colour palette and accessibility
 
 The site uses a deliberately muted, refined palette. All colour decisions must satisfy WCAG AA contrast requirements — this is a non-negotiable constraint that must be maintained alongside the aesthetic.
