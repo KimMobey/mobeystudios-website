@@ -1,0 +1,13 @@
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="taxonomy-page">
+    <h1>{{ .Title }}</h1>
+
+    <div class="portfolio-grid">
+        {{ range .Pages }}
+        {{ partial "card.html" . }}
+        {{ end }}
+    </div>
+</main>
+{{ end }}

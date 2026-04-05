@@ -79,6 +79,24 @@ Substrate — front matter text field only Price — hidden field only Collectio
 
 ---
 
+**HUGO VERSION NOTES**
+
+Hugo version: 0.160.0
+
+Two version-specific behaviours discovered during build:
+
+1. Front matter taxonomy keys must use the plural form as defined in `hugo.toml`. The singular form silently fails. Correct examples:
+   ```yaml
+   forms:
+     - "portrait"
+   statuses:
+     - "available"
+   ```
+
+2. Taxonomy term pages require `layouts/_default/list.html` for HTML output. `layouts/taxonomy/list.html` alone is insufficient in Hugo v0.160.0+.
+
+---
+
 That should serve as a stable reference point for both threads. Copy it somewhere permanent — your PARA system would be the right place, probably under Career/DigitalPresence or Enterprise/CatalogueAndRecords.
 
 Here's the addition to append to `PricingAndVocabulary.md`:

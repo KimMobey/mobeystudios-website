@@ -3,20 +3,33 @@
 {{ define "main" }}
 <main class="work-page">
     <div class="work-image">
-        {{ with .Resources.GetMatch "*.{jpg,jpeg,png,webp}" }}
-        <img src="{{ .RelPermalink }}" alt="{{ $.Title }}">
+        {{ with .Params.image }}
+        <img src="/images/portfolio/{{ . }}" alt="{{ $.Title }}">
         {{ end }}
     </div>
-    
+
     <div class="work-details">
         {{ partial "caption.html" . }}
-        
+
         <div class="work-nav">
-            {{ with .PrevInSection }}
-            <a href="{{ .RelPermalink }}">← Previous</a>
-            {{ end }}
-            {{ with .NextInSection }}
-            <a href="{{ .RelPermalink }}">Next →</a>
+            {{ $pages := sort .Parent.Pages "Params.order" "asc" }}
+            {{ $currentOrder := .Params.order }}
+            {{ range $index, $page := $pages }}
+                {{ if eq $page.Params.order $currentOrder }}
+                    {{ if gt $index 0 }}
+                        {{ with index $pages (sub $index 1) }}
+                        <a href="{{ .RelPermalink }}">← Previous</a>
+                        {{ end }}
+                    {{ else }}
+                        <span></span>
+                    {{ end }}
+                    {{ $last := sub (len $pages) 1 }}
+                    {{ if lt $index $last }}
+                        {{ with index $pages (add $index 1) }}
+                        <a href="{{ .RelPermalink }}">Next →</a>
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
             {{ end }}
         </div>
     </div>

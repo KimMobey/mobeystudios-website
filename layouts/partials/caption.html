@@ -1,16 +1,17 @@
 <div class="caption-block">
     <h2>{{ .Title }}</h2>
-    <p class="caption-medium">{{ .Params.medium }}</p>
+    <p class="caption-medium">{{ .Params.media }}</p>
+    <p class="caption-substrate">{{ .Params.substrate }}</p>
     <p class="caption-dimensions">{{ .Params.dimensions }}</p>
-    {{ with .Params.year }}
-    <p class="caption-year">{{ . }}</p>
-    {{ end }}
-    <p class="caption-status">{{ .Params.status | title }}</p>
-    
-    {{ if .Params.forms }}
+    <p class="caption-status">{{ .Params.statuses | title }}</p>
+
+    {{ if or .Params.forms .Params.themes }}
     <div class="caption-taxonomies">
         {{ range .Params.forms }}
         <a href="/forms/{{ . | urlize }}/" class="tax-link">{{ . }}</a>
+        {{ end }}
+        {{ range .Params.themes }}
+        <a href="/themes/{{ . | urlize }}/" class="tax-link">{{ . }}</a>
         {{ end }}
     </div>
     {{ end }}

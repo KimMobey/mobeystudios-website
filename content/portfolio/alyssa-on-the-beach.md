@@ -1,0 +1,19 @@
+---
+title: "Alyssa on the Beach"
+media: "oil"
+substrate: "canvas"
+dimensions: "60 × 80cm"
+statuses: "available"
+forms:
+  - "portrait"
+themes: []
+series: ""
+order: "A002"
+featured: true
+category: "original"
+price: 3220
+visible: true
+collection: ""
+edition: ""
+image: "alyssa-on-the-beach.jpg"
+---
