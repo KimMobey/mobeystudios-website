@@ -1,17 +1,17 @@
-<div class="filters">
+<nav class="filters" aria-label="Filter portfolio">
     <div class="filter-group">
-        <h3>Form</h3>
-        <button class="filter-button active" data-filter="*" aria-pressed="true">All</button>
+        <span class="filter-label">Form</span>
+        <button class="filter-option active" data-filter="*">All</button>
         {{ range .Site.Taxonomies.forms }}
-        <button class="filter-button" data-filter=".form-{{ .Page.Title | urlize }}" aria-pressed="false">{{ .Page.Title }}</button>
+        <button class="filter-option" data-filter=".form-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
         {{ end }}
     </div>
 
     <div class="filter-group">
-        <h3>Status</h3>
-        <button class="filter-button active" data-filter="*" aria-pressed="true">All</button>
+        <span class="filter-label">Status</span>
+        <button class="filter-option active" data-filter="*">All</button>
         {{ range .Site.Taxonomies.statuses }}
-        <button class="filter-button" data-filter=".status-{{ .Page.Title | urlize }}" aria-pressed="false">{{ .Page.Title }}</button>
+        <button class="filter-option" data-filter=".status-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
         {{ end }}
     </div>
-</div>
+</nav>
