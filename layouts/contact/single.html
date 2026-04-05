@@ -1,7 +1,7 @@
 {{ define "title" }}Contact - {{ .Site.Title }}{{ end }}
 
 {{ define "head" }}
-<script src="https://www.google.com/recaptcha/api.js?render=6LcKA6gsAAAAAAF5Hqt227B2xfiSCvVQDVQsgzxx"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {{ end }}
 
 {{ define "main" }}
@@ -49,8 +49,9 @@
             </label>
 
             <input type="hidden" name="_subject" value="New inquiry from Kim Mobey Art website">
-            <input type="hidden" name="g-recaptcha-response" id="recaptcha-token">
             <input type="text" name="_gotcha" style="display:none">
+
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAAC05xpS8hgLVBpws"></div>
 
             <div class="button-container">
                 <button type="submit">Send Message</button>
@@ -59,19 +60,4 @@
         </form>
     </div>
 </main>
-{{ end }}
-
-{{ define "scripts" }}
-<script>
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var form = this;
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6LcKA6gsAAAAAAF5Hqt227B2xfiSCvVQDVQsgzxx', { action: 'contact' }).then(function(token) {
-                document.getElementById('recaptcha-token').value = token;
-                form.submit();
-            });
-        });
-    });
-</script>
 {{ end }}

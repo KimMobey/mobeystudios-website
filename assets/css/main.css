@@ -721,6 +721,10 @@ nav a[aria-current="page"] {
     color: #7a6e65;
 }
 
+.cf-turnstile {
+    margin-bottom: 30px;
+}
+
 .contact-form-container .button-container {
     text-align: center;
     margin-top: 40px;
