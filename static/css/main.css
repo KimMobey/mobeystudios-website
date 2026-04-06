@@ -148,10 +148,11 @@ header {
 
 /* Artist name in header — serif instance */
 .site-name {
-    font-family: var(--font-serif);
-    font-size: 28px;
+    font-family: var(--font-sans-primary);
+    font-size: 22px;
     font-weight: 400;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
     color: var(--color-text-primary);
     text-decoration: none;
 }
