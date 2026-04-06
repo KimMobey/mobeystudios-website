@@ -149,7 +149,7 @@ header {
 /* Artist name in header — serif instance */
 .site-name {
     font-family: var(--font-sans-primary);
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -376,7 +376,7 @@ footer {
 
 .filter-label {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
+    font-size: 15px;
     font-weight: 500;
     color: var(--color-text-primary);
     margin-right: 16px;
@@ -384,7 +384,7 @@ footer {
 
 .filter-option {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
+    font-size: 15px;
     font-weight: 400;
     color: var(--color-text-secondary);
     background: none;
@@ -987,7 +987,7 @@ footer {
 
 .required-note {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
+    font-size: 15px;
     color: var(--color-text-secondary);
     margin-bottom: 32px;
 }
@@ -996,7 +996,7 @@ footer {
     display: block;
     margin-bottom: 24px;
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
+    font-size: 16px;
     font-weight: 400;
     color: var(--color-text-primary);
 }
@@ -1009,7 +1009,7 @@ footer {
     border: 1px solid var(--color-border);
     border-radius: 0;
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
+    font-size: 16px;
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
     transition: border-color 0.2s ease;
