@@ -465,7 +465,7 @@ footer {
 .card-medium,
 .card-dimensions {
     font-family: var(--font-sans-secondary);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -528,7 +528,7 @@ footer {
 .caption-dimensions,
 .caption-status {
     font-family: var(--font-sans-secondary);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -542,11 +542,11 @@ footer {
 .tax-link {
     display: inline-block;
     font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
-    font-weight: 400;
+    font-size: 14px;
+    font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-text-primary);
     text-decoration: none;
     margin-right: 16px;
     transition: opacity 0.2s ease;
@@ -586,7 +586,7 @@ footer {
 
 .work-nav a {
     font-family: var(--font-sans-primary);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     letter-spacing: 0.05em;
     color: var(--color-text-secondary);
@@ -896,7 +896,7 @@ footer {
 
 .collated-caption__meta {
     font-family: var(--font-sans-secondary);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -950,12 +950,12 @@ footer {
 
 .about-content h2 {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-base);
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     margin: 48px 0 16px;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
 }
 
 .about-content p {
