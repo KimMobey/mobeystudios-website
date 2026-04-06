@@ -555,6 +555,25 @@ footer {
     opacity: 0.65;
 }
 
+/* Artist statement / body text on single artwork page */
+.work-body {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-border);
+}
+
+.work-body p {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: 1.8;
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+}
+
+.work-body p:last-child {
+    margin-bottom: 0;
+}
+
 /* Prev / next navigation */
 .work-nav {
     margin-top: 48px;
@@ -822,6 +841,82 @@ footer {
     height: 100%;
 }
 
+
+/* =============================================================================
+   10b. COLLATED ESSAY LAYOUT
+   ============================================================================= */
+
+.collated-essay__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    margin-bottom: 80px;
+    text-align: center;
+}
+
+.collated-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+    margin-bottom: 80px;
+}
+
+/* Reversed: prose left, image right */
+.collated-block--reversed {
+    direction: rtl;
+}
+
+.collated-block--reversed > * {
+    direction: ltr;
+}
+
+.collated-block__image img {
+    width: 100%;
+    display: block;
+}
+
+.collated-block__caption {
+    margin-top: 14px;
+}
+
+.collated-caption__title {
+    font-family: var(--font-sans-primary);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+}
+
+.collated-caption__meta {
+    font-family: var(--font-sans-secondary);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    line-height: var(--leading-body);
+}
+
+.collated-block__prose {
+    padding-top: 8px;
+}
+
+.collated-block__prose p {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: 1.8;
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+}
+
+.collated-block__prose p:last-child {
+    margin-bottom: 0;
+}
+
+.collated-rule {
+    border: none;
+    border-top: 1px solid var(--color-bg-secondary);
+    margin: 0 0 80px;
+}
 
 /* =============================================================================
    11. ABOUT PAGE
@@ -1181,6 +1276,31 @@ footer {
     /* Gallery: 2 columns stacked */
     .work-gallery {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Collated essay: single column, image → caption → prose */
+    .collated-block,
+    .collated-block--reversed {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 0;
+    }
+
+    .collated-block__prose {
+        margin-top: 32px;
+        padding-top: 0;
+    }
+
+    .collated-essay__title {
+        margin-bottom: 48px;
+    }
+
+    .collated-block {
+        margin-bottom: 56px;
+    }
+
+    .collated-rule {
+        margin-bottom: 56px;
     }
 
     /* Portfolio page heading — reduce vertical space */

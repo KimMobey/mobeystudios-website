@@ -19,6 +19,12 @@
     <div class="work-details">
         {{ partial "caption.html" . }}
 
+        {{ with .Content }}
+        <div class="work-body">
+            {{ . }}
+        </div>
+        {{ end }}
+
         <div class="work-nav">
             {{ $pages := sort .Parent.Pages "Params.order" "asc" }}
             {{ $currentOrder := .Params.order }}

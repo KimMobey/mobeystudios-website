@@ -1,20 +1,66 @@
 {{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
+{{ if .Params.works }}
+
+{{/* ── Collated essay layout ── */}}
+<main class="essay-page collated-essay">
+    <h1 class="collated-essay__title">{{ .Title }}</h1>
+
+    {{ range $i, $slug := .Params.works }}
+        {{ $page := $.Site.GetPage (printf "/portfolio/%s" $slug) }}
+        {{ if $page }}
+            {{ if $page.Content }}
+
+            {{ $even := eq (mod $i 2) 0 }}
+            <div class="collated-block{{ if not $even }} collated-block--reversed{{ end }}">
+                <div class="collated-block__image">
+                    {{ with $page.Params.image }}
+                    <img src="/images/portfolio/{{ . }}" alt="{{ $page.Title }}">
+                    {{ end }}
+                    <div class="collated-block__caption">
+                        <p class="collated-caption__title">{{ $page.Title }}</p>
+                        <p class="collated-caption__meta">{{ $page.Params.media }}{{ with $page.Params.substrate }}, {{ . }}{{ end }}</p>
+                        <p class="collated-caption__meta">{{ $page.Params.dimensions }}</p>
+                    </div>
+                </div>
+                <div class="collated-block__prose">
+                    {{ $page.Content }}
+                </div>
+            </div>
+
+            {{ if lt $i (sub (len $.Params.works) 1) }}
+            <hr class="collated-rule">
+            {{ end }}
+
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
+    <nav class="essay-nav">
+        <a href="/studio/essays/">← Back to Essays</a>
+    </nav>
+</main>
+
+{{ else }}
+
+{{/* ── Standard written essay layout ── */}}
 <main class="essay-page">
     <article>
         <header>
             <h1>{{ .Title }}</h1>
             <time>{{ .Date.Format "January 2, 2006" }}</time>
         </header>
-        
+
         <div class="essay-content">
             {{ .Content }}
         </div>
-        
+
         <nav class="essay-nav">
             <a href="/studio/essays/">← Back to Essays</a>
         </nav>
     </article>
 </main>
+
+{{ end }}
 {{ end }}
