@@ -846,12 +846,17 @@ footer {
    10b. COLLATED ESSAY LAYOUT
    ============================================================================= */
 
+.collated-essay {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 80px var(--page-padding);
+}
+
 .collated-essay__title {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-primary);
     font-size: var(--text-xl);
     font-weight: 400;
     margin-bottom: 80px;
-    text-align: center;
 }
 
 .collated-block {
