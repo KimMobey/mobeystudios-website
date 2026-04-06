@@ -149,9 +149,9 @@ header {
 /* Artist name in header — serif instance */
 .site-name {
     font-family: var(--font-serif);
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 400;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     color: var(--color-text-primary);
     text-decoration: none;
 }
