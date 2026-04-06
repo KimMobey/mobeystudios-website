@@ -170,7 +170,7 @@ nav {
 nav a {
     font-family: var(--font-sans-primary);
     font-size: var(--text-sm);
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--color-text-primary);
@@ -385,7 +385,7 @@ footer {
 .filter-option {
     font-family: var(--font-sans-primary);
     font-size: var(--text-sm);
-    font-weight: 300;
+    font-weight: 400;
     color: var(--color-text-secondary);
     background: none;
     border: none;
@@ -542,7 +542,7 @@ footer {
 .tax-link {
     display: inline-block;
     font-family: var(--font-sans-primary);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -586,7 +586,7 @@ footer {
 
 .work-nav a {
     font-family: var(--font-sans-primary);
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
     letter-spacing: 0.05em;
     color: var(--color-text-secondary);
