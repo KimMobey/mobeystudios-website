@@ -454,7 +454,7 @@ footer {
 
 .card-caption h3 {
     font-family: var(--font-sans-primary);
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 400;
     line-height: var(--leading-tight);
     color: var(--color-text-primary);
@@ -464,7 +464,7 @@ footer {
 .card-medium,
 .card-dimensions {
     font-family: var(--font-sans-secondary);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -515,7 +515,7 @@ footer {
 
 .caption-block h2 {
     font-family: var(--font-serif);
-    font-size: var(--text-lg);
+    font-size: 26px;
     font-weight: 400;
     line-height: var(--leading-tight);
     color: var(--color-text-primary);
@@ -527,7 +527,7 @@ footer {
 .caption-dimensions,
 .caption-status {
     font-family: var(--font-sans-secondary);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -887,7 +887,7 @@ footer {
 
 .collated-caption__title {
     font-family: var(--font-sans-primary);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     color: var(--color-text-primary);
     margin-bottom: 4px;
@@ -895,7 +895,7 @@ footer {
 
 .collated-caption__meta {
     font-family: var(--font-sans-secondary);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
