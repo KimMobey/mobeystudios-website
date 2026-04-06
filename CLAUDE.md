@@ -19,6 +19,8 @@ The site is served at `http://localhost:1313/`. Netlify deploys from the `public
 
 ## Local development workflow
 
+**Default behaviour: never push to remote unless explicitly instructed to do so in the current prompt.** If a task implies pushing — such as "deploy", "go live", "publish", or "send to Netlify" — ask for confirmation before proceeding. A local commit is always the default endpoint for any task unless the prompt contains the exact words "push to remote" or "git push".
+
 Netlify free tier allows 300 credits per month. Each production deploy costs 15 credits, giving a maximum of 20 deploys per month. Credits reset on the 1st of each month.
 
 All development and testing must be done locally using `hugo server` before any push to remote. A pre-push hook at `.git/hooks/pre-push` enforces a confirmation step before every push — type `YES` to proceed, anything else cancels.
