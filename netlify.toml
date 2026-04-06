@@ -5,5 +5,14 @@
 [build.environment]
   HUGO_VERSION = "0.160.0"
 
+# Production deploys restricted to main branch only.
+# This conserves Netlify free tier credits (300/month, 15 per deploy).
+# Do not remove this restriction — pushes to any other branch must not trigger deploys.
+[[context.branch-deploy]]
+  command = ""
+
+[context.production]
+  branch = "main"
+
 [context.production.environment]
   HUGO_ENV = "production"

@@ -17,6 +17,16 @@ hugo server -D
 
 The site is served at `http://localhost:1313/`. Netlify deploys from the `public/` directory using Hugo 0.160.0.
 
+## Local development workflow
+
+Netlify free tier allows 300 credits per month. Each production deploy costs 15 credits, giving a maximum of 20 deploys per month. Credits reset on the 1st of each month.
+
+All development and testing must be done locally using `hugo server` before any push to remote. A pre-push hook at `.git/hooks/pre-push` enforces a confirmation step before every push — type `YES` to proceed, anything else cancels.
+
+Push only when a meaningful and tested set of changes is complete. Batch related changes into single commits. Never push for individual small fixes.
+
+**The site is currently paused until May 1 when credits reset. Do not push to remote until then.**
+
 ## Architecture
 
 This is a Hugo static site with **no theme** — all layouts are hand-built under `layouts/`. CSS lives in `assets/css/main.css` (processed via Hugo Pipes) and is referenced in `layouts/_default/baseof.html`.
