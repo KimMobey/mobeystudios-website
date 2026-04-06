@@ -21,3 +21,25 @@ It was the middle of a drought, the middle of summer and the end of an exhaustin
 It was a time of frustration and I painted mostly out of that angry desperation, on the biggest canvas I had available in the studio. Because the problem was big, and I felt small. As under-resourced as the empty taps that only dripped instead of gushing.
 
 The poem arrived in my head pretty soon after the main structure of the work was blocked in and became the painting's artist statement for the exhibition. The necklace began as ordinary jewellery, then as I painted, morphed into the rain that we were all waiting for. The politicians morphed into new roles, but nothing changed — The art fair arrived. The rain did not.
+
+<p>The drought has been coming for a long time.<br>
+Time enough is never enough time<br>
+For good-time, short-term<br>
+Kings and queens<br>
+Of the Party.<br>
+(Whichever party)</p>
+
+<p>Playing drunken musical chairs is scary<br>
+When the silence comes.<br>
+Silence except for tiny drops<br>
+on tin roofs<br>
+On show-off roads<br>
+In broken gutters<br>
+Then out to sea.<br>
+Undrunk.</p>
+
+<p>Rain still falls but the Party never stops:<br>
+Someone will get caught in the silence,<br>
+In the gentle rain<br>
+That still falls<br>
+Sometimes.</p>
