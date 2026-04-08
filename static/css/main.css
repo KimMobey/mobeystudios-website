@@ -149,7 +149,7 @@ header {
 /* Artist name in header — serif instance */
 .site-name {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -639,7 +639,7 @@ footer {
 
 .studio-section-card h2 {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-base);
+    font-size: var(--text-md);
     font-weight: 400;
     letter-spacing: 0.05em;
     margin-bottom: 16px;
