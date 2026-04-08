@@ -788,6 +788,24 @@ footer {
     margin-bottom: 20px;
 }
 
+/* Article inline images — full column width with spacing */
+.article-content p:has(> img) {
+    margin-top: 48px;
+    margin-bottom: 0;
+}
+
+.article-content img {
+    width: 100%;
+}
+
+/* Italic-only paragraphs treated as image captions */
+.article-content p:has(> em:only-child) {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
 .essay-content blockquote,
 .article-content blockquote {
     font-family: var(--font-serif);
