@@ -19,13 +19,13 @@
     --font-sans-secondary: 'Ubuntu', sans-serif;
 
     /* Typographic scale */
-    --text-xs: 11px;
-    --text-sm: 13px;
-    --text-base: 16px;
-    --text-md: 18px;
-    --text-lg: 24px;
-    --text-xl: 32px;
-    --text-2xl: 48px;
+    --text-xs: 13px;
+    --text-sm: 15px;
+    --text-base: 18px;
+    --text-md: 20px;
+    --text-lg: 26px;
+    --text-xl: 34px;
+    --text-2xl: 52px;
 
     /* Line heights */
     --leading-tight: 1.2;
@@ -657,7 +657,6 @@ footer {
 
 .studio-section-card p {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
     line-height: var(--leading-loose);
     color: var(--color-text-secondary);
 }
