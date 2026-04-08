@@ -327,7 +327,6 @@ footer {
 
 .pathway p {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
     color: var(--color-text-secondary);
 }
 
