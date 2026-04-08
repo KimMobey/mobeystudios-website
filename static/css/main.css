@@ -1184,7 +1184,7 @@ footer {
 
 .not-found-page h1 {
     font-family: var(--font-serif);
-    font-size: 28px;
+    font-size: var(--text-xl);
     font-weight: 400;
     letter-spacing: 0.03em;
     color: var(--color-text-primary);
@@ -1245,7 +1245,7 @@ footer {
     .about-content,
     .studio-intro,
     blockquote {
-        font-size: 20px;
+        font-size: var(--text-md);
     }
 
     /* Header collapses */
