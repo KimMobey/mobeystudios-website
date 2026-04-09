@@ -4,5 +4,8 @@ public/
 # Hugo lock file
 .hugo_build.lock
 
+# Dev scratch — screenshots, references, temporary files (never committed)
+_dev/
+
 # OS
 .DS_Store
