@@ -2,6 +2,11 @@ backend:
   name: git-gateway
   branch: main
 
+# Local development — writes files directly to the filesystem.
+# Requires `npx decap-server` running in a separate terminal.
+# Remove this line before pushing to production.
+local_backend: true
+
 # Where uploaded media is stored and served from
 media_folder: static/images/portfolio
 public_folder: /images/portfolio
