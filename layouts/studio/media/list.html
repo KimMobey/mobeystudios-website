@@ -1,0 +1,20 @@
+{{ define "title" }}Media - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="studio-subsection">
+    <h1>Media</h1>
+    <p class="channel-link">Auto-did-act</p>
+    
+    <div class="video-list">
+        {{ range .Pages }}
+        <article class="video-preview">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            <time>{{ .Date.Format "January 2006" }}</time>
+            {{ with .Summary }}
+            <p>{{ . }}</p>
+            {{ end }}
+        </article>
+        {{ end }}
+    </div>
+</main>
+{{ end }}
