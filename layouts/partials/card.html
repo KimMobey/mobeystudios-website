@@ -13,7 +13,7 @@
 
         <div class="card-caption">
             <h3>{{ .Title }}</h3>
-            <p class="card-medium">{{ .Params.media }}</p>
+            <p class="card-medium">{{ .Params.media | lower }}{{ with .Params.substrate }} on {{ . | lower }}{{ end }}</p>
             <p class="card-dimensions">{{ .Params.dimensions }}</p>
         </div>
     </a>

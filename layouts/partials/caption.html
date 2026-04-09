@@ -1,7 +1,6 @@
 <div class="caption-block">
     <h2>{{ .Title }}</h2>
-    <p class="caption-medium">{{ .Params.media }}</p>
-    <p class="caption-substrate">{{ .Params.substrate }}</p>
+    <p class="caption-medium">{{ .Params.media | lower }}{{ with .Params.substrate }} on {{ . | lower }}{{ end }}</p>
     <p class="caption-dimensions">{{ .Params.dimensions }}</p>
     <p class="caption-status">{{ .Params.statuses | title }}</p>
 
