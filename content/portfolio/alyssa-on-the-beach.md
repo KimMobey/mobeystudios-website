@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "alyssa-on-the-beach.jpg"
+image: "/images/portfolio/alyssa-on-the-beach.jpg"
 ---

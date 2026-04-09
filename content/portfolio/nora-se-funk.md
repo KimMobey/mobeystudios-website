@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "nora-se-funk.jpg"
+image: "/images/portfolio/nora-se-funk.jpg"
 ---

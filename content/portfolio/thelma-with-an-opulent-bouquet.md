@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "thelma-with-an-opulent-bouquet.jpg"
+image: "/images/portfolio/thelma-with-an-opulent-bouquet.jpg"
 ---

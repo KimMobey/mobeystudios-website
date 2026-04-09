@@ -13,7 +13,7 @@ price: 6900
 visible: true
 collection: ""
 edition: ""
-image: "thelma-with-unfallen-rain.jpg"
+image: "/images/portfolio/thelma-with-unfallen-rain.jpg"
 ---
 
 It was the middle of a drought, the middle of summer and the end of an exhausting, dry year. I knew I had to paint something huge for the art fair, but I was so angry about the time and energy I had to waste due to the water shortage that really should have been handled by competent people instead of career-politicians whose skill base was jockeying for position, rather than anything useful to the people they supposedly led.

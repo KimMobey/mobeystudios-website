@@ -4,14 +4,14 @@
 <main class="work-page">
     <div class="work-image">
         {{ with .Params.image }}
-        <img src="/images/portfolio/{{ . }}" alt="{{ $.Title }}">
+        <img src="{{ . }}" alt="{{ $.Title }}">
         {{ end }}
     </div>
 
     {{ with .Params.gallery }}
     <div class="work-gallery">
         {{ range . }}
-        <img src="/images/portfolio/{{ . }}" alt="{{ $.Title }}">
+        <img src="{{ . }}" alt="{{ $.Title }}">
         {{ end }}
     </div>
     {{ end }}

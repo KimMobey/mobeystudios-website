@@ -7,7 +7,7 @@
     <a href="{{ .RelPermalink }}">
         <div class="card-image-wrapper">
             {{ with .Params.image }}
-            <img src="/images/portfolio/{{ . }}" alt="{{ $.Title }}">
+            <img src="{{ . }}" alt="{{ $.Title }}">
             {{ end }}
         </div>
 

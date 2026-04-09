@@ -119,8 +119,8 @@ collections:
       # — Image fields —
       - label: Primary Image
         name: image
-        widget: string
-        hint: "Filename only — e.g. thelma-with-unfallen-rain.jpg. File must already be in static/images/portfolio/"
+        widget: image
+        hint: "Select or upload the primary image. Stored as /images/portfolio/filename.jpg"
 
       - label: Gallery (additional angles)
         name: gallery
@@ -128,9 +128,9 @@ collections:
         required: false
         hint: "For sculptures or multi-angle works only. Use -01/-02 suffix convention."
         field:
-          label: Image filename
+          label: Image
           name: image
-          widget: string
+          widget: image
 
       # — Admin/ordering —
       - label: Order

@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "nora-in-winter.jpg"
+image: "/images/portfolio/nora-in-winter.jpg"
 ---

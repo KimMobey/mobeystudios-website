@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "this-most-ancient-beauty.jpg"
+image: "/images/portfolio/this-most-ancient-beauty.jpg"
 ---

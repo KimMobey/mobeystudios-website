@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "nykhor-paul-with-william-morris-pattern.jpg"
+image: "/images/portfolio/nykhor-paul-with-william-morris-pattern.jpg"
 ---

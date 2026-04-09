@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "little-girl-with-sunflowers.jpg"
+image: "/images/portfolio/little-girl-with-sunflowers.jpg"
 ---

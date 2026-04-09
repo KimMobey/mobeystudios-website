@@ -1,6 +1,6 @@
 ---
 title: "Mary in a Blue Blanket"
-image: "mary-in-a-blue-blanket.jpg"
+image: "/images/portfolio/mary-in-a-blue-blanket.jpg"
 visible: false
 statuses: "available"
 forms: []

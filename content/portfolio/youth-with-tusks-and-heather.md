@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "youth-with-tusks-and-heather.jpg"
+image: "/images/portfolio/youth-with-tusks-and-heather.jpg"
 ---

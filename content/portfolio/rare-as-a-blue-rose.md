@@ -1,6 +1,6 @@
 ---
 title: "Rare as a Blue Rose"
-image: "rare-as-a-blue-rose.jpg"
+image: "/images/portfolio/rare-as-a-blue-rose.jpg"
 visible: false
 statuses: "available"
 forms: []

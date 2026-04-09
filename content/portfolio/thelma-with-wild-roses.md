@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "thelma-with-wild-roses.jpg"
+image: "/images/portfolio/thelma-with-wild-roses.jpg"
 ---

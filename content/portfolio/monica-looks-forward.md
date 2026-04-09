@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "monica-looks-forward.jpg"
+image: "/images/portfolio/monica-looks-forward.jpg"
 ---

@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "angelitos-negros.jpg"
+image: "/images/portfolio/angelitos-negros.jpg"
 ---

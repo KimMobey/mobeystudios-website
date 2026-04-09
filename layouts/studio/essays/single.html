@@ -16,7 +16,7 @@
             <div class="collated-block{{ if not $even }} collated-block--reversed{{ end }}">
                 <div class="collated-block__image">
                     {{ with $page.Params.image }}
-                    <img src="/images/portfolio/{{ . }}" alt="{{ $page.Title }}">
+                    <img src="{{ . }}" alt="{{ $page.Title }}">
                     {{ end }}
                     <div class="collated-block__caption">
                         <p class="collated-caption__title">{{ $page.Title }}</p>

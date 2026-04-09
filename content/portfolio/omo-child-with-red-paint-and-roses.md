@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "omo-child-with-red-paint-and-roses.jpg"
+image: "/images/portfolio/omo-child-with-red-paint-and-roses.jpg"
 ---

@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "little-child-with-red-berries.jpg"
+image: "/images/portfolio/little-child-with-red-berries.jpg"
 ---

@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "ndabele-child.jpg"
+image: "/images/portfolio/ndabele-child.jpg"
 ---

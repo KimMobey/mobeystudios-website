@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "zintle-with-gold-hibiscus.jpg"
+image: "/images/portfolio/zintle-with-gold-hibiscus.jpg"
 ---

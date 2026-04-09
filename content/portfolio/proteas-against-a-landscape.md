@@ -1,6 +1,6 @@
 ---
 title: "Proteas Against a Landscape"
-image: "proteas-against-a-landscape.jpg"
+image: "/images/portfolio/proteas-against-a-landscape.jpg"
 visible: false
 statuses: "available"
 forms: []

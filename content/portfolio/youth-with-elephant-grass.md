@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "youth-with-elephant-grass.jpg"
+image: "/images/portfolio/youth-with-elephant-grass.jpg"
 ---
