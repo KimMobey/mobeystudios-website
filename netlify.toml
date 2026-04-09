@@ -5,10 +5,8 @@
 [build.environment]
   HUGO_VERSION = "0.160.0"
 
-# Decap CMS admin — requires Netlify Identity + Git Gateway enabled in Netlify dashboard.
-# Admin UI lives at /admin/ (static/admin/). Not linked from the public site.
-# To activate: Netlify dashboard → Identity → Enable → Git Gateway → Enable.
-# Then: Identity → Invite users → add your email.
+# Admin UI lives at /admin/ — not linked from the public site.
+# Runs entirely in the browser via the File System Access API (Chrome/Edge/Arc).
 
 # Production deploys restricted to main branch only.
 # This conserves Netlify free tier credits (300/month, 15 per deploy).
