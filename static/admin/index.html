@@ -371,7 +371,7 @@
         <div class="field span2">
           <label for="f-dimensions">Dimensions</label>
           <input type="text" id="f-dimensions" placeholder="e.g. 50 × 60" autocomplete="off">
-          <span class="hint">W × H — any spacing around × is fine, cm is optional.</span>
+          <span id="dim-preview" class="hint"></span>
         </div>
       </div>
     </fieldset>
@@ -592,6 +592,7 @@ function openEdit(work) {
   arr(fm.gallery).forEach(addGalleryRow);
 
   updatePreview();
+  updateDimPreview();
 
   $('save-msg').textContent = '';
   $('save-msg').className   = '';
@@ -659,7 +660,7 @@ async function saveWork() {
     statuses:   val('f-statuses'),
     media:      val('f-media'),
     substrate:  val('f-substrate'),
-    dimensions: val('f-dimensions'),
+    dimensions: normalizeDimensions(val('f-dimensions')),
     series:     val('f-series'),
     image:      val('f-image'),
     category:   val('f-category'),
@@ -707,6 +708,31 @@ async function saveWork() {
   }
 }
 
+// ── Dimensions normalizer ─────────────────────────────────────────────────────
+
+function normalizeDimensions(raw) {
+  if (!raw) return raw;
+  // Accept: 50x60, 50×60, 50 x 60, 50 × 60, 50x60cm, 50 × 60 cm, etc.
+  const m = raw.match(/(\d+(?:[.,]\d+)?)\s*[×xX]\s*(\d+(?:[.,]\d+)?)/);
+  if (!m) return raw; // unrecognisable — return as-is, don't block saving
+  const w = m[1].replace(',', '.');
+  const h = m[2].replace(',', '.');
+  return `${w} × ${h}cm`;
+}
+
+function updateDimPreview() {
+  const raw       = $('f-dimensions').value.trim();
+  const preview   = $('dim-preview');
+  const normed    = normalizeDimensions(raw);
+  if (!raw) {
+    preview.textContent = '';
+  } else if (normed !== raw) {
+    preview.textContent = `Will save as: ${normed}`;
+  } else {
+    preview.textContent = '✓ ' + normed;
+  }
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function val(id)     { return $(id).value.trim(); }
@@ -738,6 +764,7 @@ $('btn-back').addEventListener('click',        () => { renderGrid(); show('view-
 $('btn-cancel').addEventListener('click',      () => { renderGrid(); show('view-grid'); });
 $('btn-add-gallery').addEventListener('click', () => addGalleryRow());
 $('f-image').addEventListener('input',         updatePreview);
+$('f-dimensions').addEventListener('input',    updateDimPreview);
 $('edit-form').addEventListener('submit',      e  => { e.preventDefault(); saveWork(); });
 
 // Auto-load on startup
