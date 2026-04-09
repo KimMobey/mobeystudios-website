@@ -255,6 +255,14 @@
     .dim-sep { color: var(--text-2); font-size: 16px; }
     .dim-unit { color: var(--text-2); font-size: 14px; }
 
+    #f-price.override { border-color: var(--amber); }
+    .hint-override { color: var(--amber); }
+    #price-confirm {
+      display: flex; align-items: center; gap: 8px; margin-top: 4px;
+      padding: 6px 10px; background: var(--bg-2); border: 1px solid var(--border);
+      font-size: 12px;
+    }
+
     /* gallery list */
     #gallery-list { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
     .gallery-row { display: flex; gap: 7px; align-items: center; }
@@ -431,12 +439,19 @@
             <option value="study">Study</option>
             <option value="work-on-paper">Work on paper</option>
             <option value="miniature">Miniature</option>
+            <option value="sculpture">Sculpture</option>
+            <option value="print">Print</option>
           </select>
         </div>
         <div class="field">
           <label for="f-price">Price (EUR)</label>
           <input type="number" id="f-price" min="0" placeholder="e.g. 3220">
-          <span class="hint">Formula: (H + W) × 23. Floor: €1800.</span>
+          <span id="price-status" class="hint"></span>
+          <div id="price-confirm" style="display:none">
+            <span id="price-confirm-msg"></span>
+            <button type="button" class="btn-ghost" id="btn-price-apply" style="font-size:12px;padding:4px 10px">Apply</button>
+            <button type="button" class="btn-ghost" id="btn-price-keep" style="font-size:12px;padding:4px 10px">Keep manual</button>
+          </div>
         </div>
         <div class="field">
           <label for="f-collection">Collection <span class="opt">(optional)</span></label>
@@ -494,8 +509,17 @@
 const FORMS  = ['portrait','figure','landscape','floral','interior','abstract','still-life','hybrid'];
 const THEMES = ['migration','identity','mythology','ecology'];
 
-let works      = [];
-let activeWork = null;
+// ── Pricing config ────────────────────────────────────────────────────────────
+// Update PRICE_INDEX here when career milestones are reached.
+const PRICE_INDEX      = 23;
+const PRICE_FLOOR      = 1800;
+const MINIATURE_AREA   = 160; // cm² — works below this threshold are priced manually
+const PRICE_MODIFIERS  = { original: 1.0, study: 0.6, 'work-on-paper': 0.7 };
+const MANUAL_ONLY_CATS = new Set(['miniature', 'sculpture', 'print']);
+
+let works             = [];
+let activeWork        = null;
+let priceOverride     = false; // true when user has manually edited the price field
 
 // ── Views ─────────────────────────────────────────────────────────────────────
 
@@ -588,7 +612,10 @@ function openEdit(work) {
   set('f-series',     fm.series     ?? '');
   set('f-image',      fm.image      ?? '');
   set('f-category',   fm.category   ?? '');
+  priceOverride = false;
   set('f-price',      fm.price      ?? '');
+  hidePriceConfirm();
+  refreshPricing();
   set('f-collection', fm.collection ?? '');
   set('f-edition',    fm.edition    ?? '');
   chk('f-visible',    fm.visible !== false);
@@ -718,6 +745,82 @@ async function saveWork() {
   }
 }
 
+// ── Pricing ───────────────────────────────────────────────────────────────────
+
+function calcPrice() {
+  const w   = parseFloat($('f-dim-w').value);
+  const h   = parseFloat($('f-dim-h').value);
+  const cat = $('f-category').value;
+
+  if (!cat || MANUAL_ONLY_CATS.has(cat)) return null;
+  if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return null;
+  if (w * h < MINIATURE_AREA) return null; // below miniature threshold
+
+  const modifier = PRICE_MODIFIERS[cat];
+  if (modifier === undefined) return null;
+
+  return Math.max(Math.round((w + h) * PRICE_INDEX * modifier), PRICE_FLOOR);
+}
+
+function isManualOnly() {
+  const w   = parseFloat($('f-dim-w').value);
+  const h   = parseFloat($('f-dim-h').value);
+  const cat = $('f-category').value;
+  if (MANUAL_ONLY_CATS.has(cat)) return true;
+  if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0 && w * h < MINIATURE_AREA) return true;
+  return false;
+}
+
+function refreshPricing() {
+  const calc    = calcPrice();
+  const manual  = isManualOnly();
+  const status  = $('price-status');
+  const input   = $('f-price');
+
+  if (manual) {
+    status.textContent = 'manual — no formula';
+    status.className   = 'hint';
+    input.classList.remove('override');
+    hidePriceConfirm();
+    return;
+  }
+
+  if (calc === null) {
+    // Not enough info yet — clear status
+    status.textContent = '';
+    status.className   = 'hint';
+    input.classList.remove('override');
+    hidePriceConfirm();
+    return;
+  }
+
+  if (priceOverride) {
+    status.textContent = 'manual override';
+    status.className   = 'hint hint-override';
+    input.classList.add('override');
+    // Show confirmation strip if calc differs from current price
+    const current = parseInt(input.value, 10);
+    if (current !== calc) {
+      showPriceConfirm(calc);
+    }
+  } else {
+    input.value        = calc;
+    status.textContent = '';
+    status.className   = 'hint';
+    input.classList.remove('override');
+    hidePriceConfirm();
+  }
+}
+
+function showPriceConfirm(calc) {
+  $('price-confirm-msg').textContent = `Dimensions changed. Calculated: ${calc}. `;
+  $('price-confirm').style.display   = 'flex';
+}
+
+function hidePriceConfirm() {
+  $('price-confirm').style.display = 'none';
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function buildDimensions() {
@@ -754,11 +857,34 @@ function toast(msg) {
 
 // ── Wire up ───────────────────────────────────────────────────────────────────
 
-$('btn-back').addEventListener('click',        () => { renderGrid(); show('view-grid'); });
-$('btn-cancel').addEventListener('click',      () => { renderGrid(); show('view-grid'); });
-$('btn-add-gallery').addEventListener('click', () => addGalleryRow());
-$('f-image').addEventListener('input',         updatePreview);
-$('edit-form').addEventListener('submit',      e  => { e.preventDefault(); saveWork(); });
+$('btn-back').addEventListener('click',         () => { renderGrid(); show('view-grid'); });
+$('btn-cancel').addEventListener('click',       () => { renderGrid(); show('view-grid'); });
+$('btn-add-gallery').addEventListener('click',  () => addGalleryRow());
+$('f-image').addEventListener('input',          updatePreview);
+$('edit-form').addEventListener('submit',       e  => { e.preventDefault(); saveWork(); });
+
+// Pricing
+$('f-dim-w').addEventListener('input',    refreshPricing);
+$('f-dim-h').addEventListener('input',    refreshPricing);
+$('f-category').addEventListener('change', () => {
+  priceOverride = false;
+  hidePriceConfirm();
+  refreshPricing();
+});
+$('f-price').addEventListener('input', () => {
+  priceOverride = true;
+  refreshPricing();
+});
+$('btn-price-apply').addEventListener('click', () => {
+  const calc = calcPrice();
+  if (calc !== null) $('f-price').value = calc;
+  priceOverride = false;
+  hidePriceConfirm();
+  refreshPricing();
+});
+$('btn-price-keep').addEventListener('click', () => {
+  hidePriceConfirm();
+});
 
 // Auto-load on startup
 init();
