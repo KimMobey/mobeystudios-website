@@ -67,7 +67,7 @@ Each portfolio work (`content/portfolio/<work>/index.md`) uses these fields:
 
 **Private (not rendered publicly):** `category`, `price`, `collection`, `edition`, `featured`, `miniature`
 
-Dimension format: `H × W cm` (e.g. `90 × 120cm`). Taxonomy values always lowercase with hyphens.
+Dimension format: W × H, cm always implied and never written. Whitespace around × is flexible — `50×60`, `50 x 60`, and `50 × 60` are all acceptable. Taxonomy values always lowercase with hyphens.
 
 ### Root-level content pages
 

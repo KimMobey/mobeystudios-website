@@ -84,7 +84,7 @@ gallery:
 
 **FORMATTING CONVENTIONS**
 
-Dimensions always written as: H × W cm (e.g. 90 × 120cm) Taxonomy values always lowercase with hyphens, no spaces Title case for all work titles Year as four-digit integer Price as integer in EUR, no symbol, no decimals
+Dimensions: W × H, cm always implied and never written. Whitespace around × is flexible — 50×60, 50 x 60, and 50 × 60 are all acceptable. Taxonomy values always lowercase with hyphens, no spaces. Title case for all work titles. Year as four-digit integer. Price as integer in EUR, no symbol, no decimals.
 
 ---
 
