@@ -7,15 +7,15 @@
   <title>Portfolio Admin — Kim Mobey</title>
   <style>
     :root {
-      --bg:       #ffffff;
-      --bg-2:     #f0efed;
-      --text:     #1a1a1a;
-      --text-2:   #6a5f56;
-      --accent:   #7a6e65;
-      --border:   #e0e0e0;
-      --green:    #3d7a50;
-      --orange:   #b07030;
-      --red:      #8b3a3a;
+      --bg:     #ffffff;
+      --bg-2:   #f0efed;
+      --text:   #1a1a1a;
+      --text-2: #6a5f56;
+      --accent: #7a6e65;
+      --border: #e0e0e0;
+      --green:  #3d7a50;
+      --amber:  #b07030;
+      --red:    #8b3a3a;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,46 +42,17 @@
       justify-content: space-between;
       gap: 16px;
     }
-    .header-title {
+    .header-label {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text-2);
     }
-    #status-bar {
-      font-size: 12px;
-      color: var(--text-2);
-    }
+    #status { font-size: 12px; color: var(--text-2); }
 
-    /* ── Views ── */
-    .view { padding: 48px 32px; max-width: 1200px; margin: 0 auto; }
-
-    /* ── Picker ── */
-    #view-picker {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: calc(100dvh - 53px);
-    }
-    .picker-inner {
-      text-align: center;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    .picker-inner p {
-      color: var(--text-2);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    #picker-error {
-      font-size: 13px;
-      color: var(--red);
-      display: none;
-    }
+    /* ── Wrapper ── */
+    .page { padding: 40px 32px; max-width: 1200px; margin: 0 auto; }
 
     /* ── Buttons ── */
     button {
@@ -93,16 +64,11 @@
       border: none;
       padding: 9px 18px;
       border-radius: 1px;
-      transition: opacity 0.15s;
     }
     button:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:not(:disabled):hover { opacity: 0.82; }
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-2);
-      border: 1px solid var(--border);
-    }
+    .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
     .btn-ghost:hover { background: var(--bg-2); }
     .btn-icon {
       background: none;
@@ -113,24 +79,34 @@
       line-height: 1;
     }
 
+    /* ── Loading / error states ── */
+    #view-loading, #view-error {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100dvh - 53px);
+      text-align: center;
+    }
+    #view-error p { color: var(--red); max-width: 400px; line-height: 1.6; }
+    #view-error code { font-size: 13px; background: var(--bg-2); padding: 2px 6px; }
+
     /* ── Grid ── */
     #grid-toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 28px;
-      gap: 12px;
     }
     #grid-toolbar h2 {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: var(--text-2);
     }
     #portfolio-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
       gap: 14px;
     }
     .work-card {
@@ -143,7 +119,7 @@
       border-color: var(--accent);
       box-shadow: 0 2px 8px rgba(0,0,0,0.07);
     }
-    .card-image {
+    .card-img {
       aspect-ratio: 3 / 4;
       background: var(--bg-2);
       overflow: hidden;
@@ -153,36 +129,17 @@
       color: var(--border);
       font-size: 28px;
     }
-    .card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .card-info { padding: 10px 11px 12px; }
-    .card-title {
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 1.3;
-      margin-bottom: 5px;
-    }
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      color: var(--text-2);
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .card-title { font-size: 12px; font-weight: 500; line-height: 1.3; margin-bottom: 5px; }
+    .card-meta { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
+
+    .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
     .dot-available { background: var(--green); }
-    .dot-reserved  { background: var(--orange); }
-    .dot-sold      { background: var(--red); }
-    .dot-none      { background: var(--border); }
+    .dot-reserved  { background: var(--amber); }
+    .dot-sold      { background: var(--red);   }
+    .dot-none      { background: var(--border);}
+
     .badge {
       font-size: 10px;
       text-transform: uppercase;
@@ -209,15 +166,12 @@
       border: 1px solid var(--border);
       flex-shrink: 0;
     }
-    #edit-title { font-size: 22px; font-weight: 400; }
+    #edit-heading { font-size: 22px; font-weight: 400; }
 
     /* ── Form ── */
     #edit-form { display: flex; flex-direction: column; gap: 28px; }
 
-    fieldset {
-      border: 1px solid var(--border);
-      padding: 20px 22px 22px;
-    }
+    fieldset { border: 1px solid var(--border); padding: 20px 22px 22px; }
     legend {
       font-size: 10px;
       font-weight: 700;
@@ -226,30 +180,20 @@
       color: var(--text-2);
       padding: 0 6px;
     }
-    .fg {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    .fg--1 { grid-template-columns: 1fr; }
-    .fg--3 { grid-template-columns: 1fr 1fr 1fr; }
-    .field { display: flex; flex-direction: column; gap: 5px; }
-    .field--span2 { grid-column: span 2; }
+    .fg   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .fg-1 { grid-template-columns: 1fr; }
+    .fg-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .span2 { grid-column: span 2; }
 
+    .field { display: flex; flex-direction: column; gap: 5px; }
     label {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-2);
     }
-    label .optional {
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 11px;
-    }
+    label .opt { font-weight: 400; text-transform: none; letter-spacing: 0; }
 
     input[type="text"],
     input[type="number"],
@@ -263,92 +207,48 @@
       padding: 7px 10px;
       width: 100%;
       border-radius: 1px;
-      outline: none;
       appearance: none;
+      outline: none;
     }
     input:focus, select:focus, textarea:focus {
       border-color: var(--accent);
       outline: 2px solid color-mix(in srgb, var(--accent) 25%, transparent);
       outline-offset: 1px;
     }
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a5f56'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236a5f56'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
     textarea { min-height: 180px; resize: vertical; font-size: 13px; line-height: 1.65; }
+    .hint { font-size: 11px; color: var(--text-2); line-height: 1.4; }
 
-    .hint {
-      font-size: 11px;
-      color: var(--text-2);
-      line-height: 1.4;
-    }
-
-    /* checkbox groups */
-    .check-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 14px;
-      margin-top: 4px;
-    }
+    /* checkboxes */
+    .check-row { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 4px; }
     .check-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: 0;
-      color: var(--text);
-      cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 13px; font-weight: 400; text-transform: none; letter-spacing: 0;
+      color: var(--text); cursor: pointer;
     }
-    input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--accent);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
+    input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 
-    /* toggle switches for visible / featured */
+    /* toggle switches */
     .toggle-row { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-    .toggle-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--text);
-      cursor: pointer;
-    }
+    .toggle-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text); cursor: pointer; }
     .toggle-item input[type="checkbox"] {
-      width: 36px;
-      height: 20px;
-      appearance: none;
-      border-radius: 10px;
-      background: var(--border);
-      position: relative;
-      transition: background 0.2s;
-      cursor: pointer;
+      width: 36px; height: 20px; appearance: none;
+      border-radius: 10px; background: var(--border); position: relative; transition: background 0.2s;
     }
     .toggle-item input[type="checkbox"]:checked { background: var(--accent); }
     .toggle-item input[type="checkbox"]::after {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform 0.2s;
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform 0.2s;
     }
     .toggle-item input[type="checkbox"]:checked::after { transform: translateX(16px); }
 
     /* image preview */
-    #img-preview {
-      margin-top: 6px;
-      max-width: 120px;
-      max-height: 150px;
-      object-fit: cover;
-      border: 1px solid var(--border);
-      display: none;
-    }
+    #img-preview { margin-top: 6px; max-width: 120px; max-height: 150px; object-fit: cover; border: 1px solid var(--border); display: none; }
 
     /* gallery list */
     #gallery-list { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
@@ -357,34 +257,19 @@
 
     /* form actions */
     .form-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      padding-top: 20px; border-top: 1px solid var(--border);
     }
-    #save-msg {
-      margin-left: auto;
-      font-size: 13px;
-      color: var(--text-2);
-      transition: color 0.2s;
-    }
+    #save-msg { margin-left: auto; font-size: 13px; color: var(--text-2); }
     #save-msg.ok  { color: var(--green); }
     #save-msg.err { color: var(--red); }
 
     /* ── Toast ── */
     #toast {
-      position: fixed;
-      bottom: 22px;
-      right: 22px;
-      background: var(--text);
-      color: #fff;
-      font-size: 13px;
-      padding: 9px 15px;
-      border-radius: 2px;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(4px);
+      position: fixed; bottom: 22px; right: 22px;
+      background: var(--text); color: #fff;
+      font-size: 13px; padding: 9px 15px; border-radius: 2px;
+      pointer-events: none; opacity: 0; transform: translateY(4px);
       transition: opacity 0.18s, transform 0.18s;
     }
     #toast.show { opacity: 1; transform: none; }
@@ -393,42 +278,47 @@
 <body>
 
 <header>
-  <span class="header-title">Kim Mobey — Portfolio Admin</span>
-  <span id="status-bar"></span>
+  <span class="header-label">Kim Mobey — Portfolio Admin</span>
+  <span id="status"></span>
 </header>
 
-<!-- ── View: Picker ── -->
-<div id="view-picker" class="view">
-  <div class="picker-inner">
-    <button class="btn-primary" id="btn-open">Open Portfolio Folder</button>
-    <p>Select the <code>content/portfolio/</code> directory inside your project. Changes save directly to disk — no server required.</p>
-    <p id="picker-error"></p>
+<!-- Loading -->
+<div id="view-loading" class="page">
+  <span style="color:var(--text-2);font-size:14px">Loading works…</span>
+</div>
+
+<!-- Error -->
+<div id="view-error" class="page" style="display:none">
+  <div>
+    <p id="error-msg"></p>
+    <br>
+    <button class="btn-primary" onclick="init()">Retry</button>
   </div>
 </div>
 
-<!-- ── View: Grid ── -->
-<div id="view-grid" class="view" style="display:none">
+<!-- Grid -->
+<div id="view-grid" class="page" style="display:none">
   <div id="grid-toolbar">
-    <h2 id="grid-count">Portfolio</h2>
-    <button class="btn-ghost" id="btn-change">Change Folder</button>
+    <h2 id="grid-count"></h2>
+    <button class="btn-ghost" onclick="init()">Reload</button>
   </div>
   <div id="portfolio-grid"></div>
 </div>
 
-<!-- ── View: Edit ── -->
-<div id="view-edit" class="view" style="display:none">
+<!-- Edit -->
+<div id="view-edit" class="page" style="display:none;max-width:820px">
   <div id="edit-nav">
     <button class="btn-ghost" id="btn-back">← Back</button>
     <img id="edit-thumb" src="" alt="" style="display:none">
-    <h1 id="edit-title"></h1>
+    <h1 id="edit-heading"></h1>
   </div>
 
   <form id="edit-form" novalidate>
 
     <fieldset>
       <legend>Identity</legend>
-      <div class="fg fg--3">
-        <div class="field field--span2">
+      <div class="fg fg-3">
+        <div class="field span2">
           <label for="f-title">Title</label>
           <input type="text" id="f-title" autocomplete="off">
         </div>
@@ -437,7 +327,7 @@
           <input type="text" id="f-order" placeholder="e.g. A028" autocomplete="off">
         </div>
         <div class="field">
-          <label for="f-year">Year <span class="optional">(optional)</span></label>
+          <label for="f-year">Year <span class="opt">(optional)</span></label>
           <input type="number" id="f-year" min="1900" max="2099" placeholder="e.g. 2023">
         </div>
         <div class="field">
@@ -478,7 +368,7 @@
           <label for="f-substrate">Substrate</label>
           <input type="text" id="f-substrate" placeholder="canvas, linen, board…" autocomplete="off">
         </div>
-        <div class="field field--span2">
+        <div class="field span2">
           <label for="f-dimensions">Dimensions</label>
           <input type="text" id="f-dimensions" placeholder="e.g. 90 × 120cm" autocomplete="off">
           <span class="hint">Format: H × W cm</span>
@@ -494,11 +384,11 @@
           <div class="check-row" id="forms-group"></div>
         </div>
         <div class="field">
-          <label>Theme <span class="optional">(optional)</span></label>
+          <label>Theme <span class="opt">(optional)</span></label>
           <div class="check-row" id="themes-group"></div>
         </div>
-        <div class="field field--span2">
-          <label for="f-series">Series <span class="optional">(optional)</span></label>
+        <div class="field span2">
+          <label for="f-series">Series <span class="opt">(optional)</span></label>
           <input type="text" id="f-series" placeholder="Leave blank if none" autocomplete="off">
         </div>
       </div>
@@ -513,7 +403,7 @@
           <img id="img-preview" alt="">
         </div>
         <div class="field">
-          <label>Gallery <span class="optional">(additional angles only)</span></label>
+          <label>Gallery <span class="opt">(additional angles only)</span></label>
           <div id="gallery-list"></div>
           <button type="button" class="btn-ghost" id="btn-add-gallery" style="margin-top:8px;width:fit-content;font-size:12px">+ Add image</button>
           <span class="hint">Multi-angle works — use -01 / -02 suffix convention.</span>
@@ -540,11 +430,11 @@
           <span class="hint">Formula: (H + W) × 23. Floor: €1800.</span>
         </div>
         <div class="field">
-          <label for="f-collection">Collection <span class="optional">(optional)</span></label>
+          <label for="f-collection">Collection <span class="opt">(optional)</span></label>
           <input type="text" id="f-collection" placeholder="Collector or 'private collection'" autocomplete="off">
         </div>
         <div class="field">
-          <label for="f-edition">Edition <span class="optional">(prints only)</span></label>
+          <label for="f-edition">Edition <span class="opt">(prints only)</span></label>
           <input type="text" id="f-edition" placeholder="e.g. 3/15" autocomplete="off">
         </div>
       </div>
@@ -570,9 +460,9 @@
 
     <fieldset>
       <legend>Statement</legend>
-      <div class="fg fg--1">
+      <div class="fg fg-1">
         <div class="field">
-          <label for="f-body">Artist statement / prose <span class="optional">(optional — markdown supported)</span></label>
+          <label for="f-body">Artist statement / prose <span class="opt">(optional — markdown supported)</span></label>
           <textarea id="f-body" spellcheck="true"></textarea>
         </div>
       </div>
@@ -592,126 +482,91 @@
 <script>
 'use strict';
 
-// ─────────────────────────────────────────────────────────
-//  Vocabulary
-// ─────────────────────────────────────────────────────────
-const FORM_OPTIONS  = ['portrait','figure','landscape','floral','interior','abstract','still-life','hybrid'];
-const THEME_OPTIONS = ['migration','identity','mythology','ecology'];
+const FORMS  = ['portrait','figure','landscape','floral','interior','abstract','still-life','hybrid'];
+const THEMES = ['migration','identity','mythology','ecology'];
 
-// ─────────────────────────────────────────────────────────
-//  State
-// ─────────────────────────────────────────────────────────
-let dirHandle  = null;
-let works      = [];   // [{ handle, filename, fm, body }]
+let works      = [];
 let activeWork = null;
 
-// ─────────────────────────────────────────────────────────
-//  View management
-// ─────────────────────────────────────────────────────────
-const views = {
-  picker: document.getElementById('view-picker'),
-  grid:   document.getElementById('view-grid'),
-  edit:   document.getElementById('view-edit'),
-};
+// ── Views ─────────────────────────────────────────────────────────────────────
 
-function showView(name) {
-  for (const [k, el] of Object.entries(views)) {
-    el.style.display = k === name ? '' : 'none';
-  }
+const $ = id => document.getElementById(id);
+
+function show(id) {
+  for (const v of ['view-loading','view-error','view-grid','view-edit'])
+    $(v).style.display = v === id ? '' : 'none';
 }
 
-// ─────────────────────────────────────────────────────────
-//  Folder access
-// ─────────────────────────────────────────────────────────
-async function openFolder() {
+// ── Load ──────────────────────────────────────────────────────────────────────
+
+async function init() {
+  show('view-loading');
   try {
-    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-    await loadWorks();
+    const res = await fetch('/api/works');
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    works = await res.json();
+    renderGrid();
+    show('view-grid');
+    $('status').textContent = `${works.length} works`;
   } catch (err) {
-    if (err.name !== 'AbortError') showError(err.message);
+    $('error-msg').textContent =
+      `Could not load works: ${err.message}. ` +
+      `Make sure admin_server.py is running (python3 admin_server.py).`;
+    show('view-error');
   }
 }
 
-async function loadWorks() {
-  works = [];
-  setStatus('Loading…');
+// ── Grid ──────────────────────────────────────────────────────────────────────
 
-  for await (const [name, handle] of dirHandle.entries()) {
-    if (handle.kind !== 'file' || !name.endsWith('.md') || name === '_index.md') continue;
-    const file = await handle.getFile();
-    const text = await file.text();
-    const { fm, body } = parseFrontMatter(text);
-    works.push({ handle, filename: name, fm, body });
-  }
-
-  works.sort((a, b) => {
-    const oa = String(a.fm.order ?? '');
-    const ob = String(b.fm.order ?? '');
-    return oa.localeCompare(ob, undefined, { numeric: true, sensitivity: 'base' });
-  });
-
-  renderGrid();
-  setStatus(`${works.length} works`);
-  showView('grid');
-}
-
-// ─────────────────────────────────────────────────────────
-//  Grid
-// ─────────────────────────────────────────────────────────
 function renderGrid() {
-  const grid = document.getElementById('portfolio-grid');
+  const grid = $('portfolio-grid');
   grid.innerHTML = '';
 
   for (const work of works) {
-    const { fm } = work;
+    const fm = work.fm;
     const card = document.createElement('article');
     card.className = 'work-card';
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
+    card.tabIndex = 0;
 
-    const dotClass = { available: 'dot-available', reserved: 'dot-reserved', sold: 'dot-sold' }[fm.statuses] ?? 'dot-none';
-    const isHidden = fm.visible === false;
-
-    const imgBlock = fm.image
+    const dotClass = { available:'dot-available', reserved:'dot-reserved', sold:'dot-sold' }[fm.statuses] ?? 'dot-none';
+    const hidden   = fm.visible === false;
+    const imgEl    = fm.image
       ? `<img src="${esc(fm.image)}" alt="${esc(fm.title ?? '')}" loading="lazy">`
       : '○';
 
     card.innerHTML = `
-      <div class="card-image">${imgBlock}</div>
+      <div class="card-img">${imgEl}</div>
       <div class="card-info">
         <div class="card-title">${esc(fm.title ?? work.filename)}</div>
         <div class="card-meta">
           <span class="dot ${dotClass}"></span>
           <span>${esc(String(fm.order ?? ''))}</span>
-          ${isHidden ? '<span class="badge">hidden</span>' : ''}
+          ${hidden ? '<span class="badge">hidden</span>' : ''}
         </div>
       </div>
     `;
 
-    const activate = () => openEdit(work);
-    card.addEventListener('click', activate);
-    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(); });
+    const open = () => openEdit(work);
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') open(); });
     grid.appendChild(card);
   }
 
-  document.getElementById('grid-count').textContent =
-    `${works.length} work${works.length !== 1 ? 's' : ''}`;
+  $('grid-count').textContent = `${works.length} work${works.length !== 1 ? 's' : ''}`;
 }
 
-// ─────────────────────────────────────────────────────────
-//  Edit
-// ─────────────────────────────────────────────────────────
+// ── Edit ──────────────────────────────────────────────────────────────────────
+
 function openEdit(work) {
   activeWork = work;
-  const { fm, body } = work;
+  const fm = work.fm;
 
-  // Header
-  document.getElementById('edit-title').textContent = fm.title ?? work.filename;
-  const thumb = document.getElementById('edit-thumb');
+  $('edit-heading').textContent = fm.title ?? work.filename;
+
+  const thumb = $('edit-thumb');
   if (fm.image) { thumb.src = fm.image; thumb.style.display = ''; }
-  else           { thumb.style.display = 'none'; }
+  else            thumb.style.display = 'none';
 
-  // Simple fields
   set('f-title',      fm.title      ?? '');
   set('f-order',      fm.order      ?? '');
   set('f-year',       fm.year       ?? '');
@@ -725,41 +580,35 @@ function openEdit(work) {
   set('f-price',      fm.price      ?? '');
   set('f-collection', fm.collection ?? '');
   set('f-edition',    fm.edition    ?? '');
-  check('f-visible',  fm.visible !== false);
-  check('f-featured', fm.featured === true);
+  chk('f-visible',    fm.visible !== false);
+  chk('f-featured',   fm.featured === true);
 
-  document.getElementById('f-body').value = body ?? '';
+  $('f-body').value = work.body ?? '';
 
-  // Checkbox groups
-  buildCheckGroup('forms-group',  FORM_OPTIONS,  toArray(fm.forms));
-  buildCheckGroup('themes-group', THEME_OPTIONS, toArray(fm.themes));
+  buildChecks('forms-group',  FORMS,  arr(fm.forms));
+  buildChecks('themes-group', THEMES, arr(fm.themes));
 
-  // Gallery
-  const galleryEl = document.getElementById('gallery-list');
-  galleryEl.innerHTML = '';
-  toArray(fm.gallery).forEach(src => addGalleryRow(src));
+  $('gallery-list').innerHTML = '';
+  arr(fm.gallery).forEach(addGalleryRow);
 
-  // Image preview
   updatePreview();
 
-  // Clear save message
-  const msg = document.getElementById('save-msg');
-  msg.textContent = '';
-  msg.className = '';
+  $('save-msg').textContent = '';
+  $('save-msg').className   = '';
 
-  showView('edit');
+  show('view-edit');
   window.scrollTo(0, 0);
 }
 
-function buildCheckGroup(containerId, options, selected) {
-  const el = document.getElementById(containerId);
+function buildChecks(containerId, options, selected) {
+  const el = $(containerId);
   el.innerHTML = '';
   for (const opt of options) {
     const label = document.createElement('label');
     label.className = 'check-item';
     const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.value = opt;
+    cb.type    = 'checkbox';
+    cb.value   = opt;
     cb.checked = selected.includes(opt);
     label.append(cb, document.createTextNode(opt));
     el.appendChild(label);
@@ -767,46 +616,43 @@ function buildCheckGroup(containerId, options, selected) {
 }
 
 function addGalleryRow(src = '') {
-  const row = document.createElement('div');
+  const row   = document.createElement('div');
   row.className = 'gallery-row';
   const input = document.createElement('input');
-  input.type = 'text';
-  input.value = src;
+  input.type        = 'text';
+  input.value       = src;
   input.placeholder = '/images/portfolio/filename-02.jpg';
-  const btn = document.createElement('button');
-  btn.type = 'button';
+  const btn   = document.createElement('button');
+  btn.type      = 'button';
   btn.className = 'btn-icon';
   btn.textContent = '×';
   btn.addEventListener('click', () => row.remove());
   row.append(input, btn);
-  document.getElementById('gallery-list').appendChild(row);
+  $('gallery-list').appendChild(row);
 }
 
 function updatePreview() {
-  const src = document.getElementById('f-image').value.trim();
-  const preview = document.getElementById('img-preview');
+  const src     = $('f-image').value.trim();
+  const preview = $('img-preview');
   if (src) { preview.src = src; preview.style.display = 'block'; }
-  else      { preview.style.display = 'none'; }
+  else        preview.style.display = 'none';
 }
 
-// ─────────────────────────────────────────────────────────
-//  Save
-// ─────────────────────────────────────────────────────────
+// ── Save ──────────────────────────────────────────────────────────────────────
+
 async function saveWork() {
   if (!activeWork) return;
 
-  const msg = document.getElementById('save-msg');
+  const msg = $('save-msg');
   msg.textContent = 'Saving…';
-  msg.className = '';
-  document.getElementById('btn-save').disabled = true;
+  msg.className   = '';
+  $('btn-save').disabled = true;
+
+  const yearRaw  = $('f-year').value.trim();
+  const priceRaw = $('f-price').value.trim();
 
   // Rebuild front matter, preserving original key order
-  const fm = { ...activeWork.fm };
-
-  const yearRaw = document.getElementById('f-year').value.trim();
-  const priceRaw = document.getElementById('f-price').value.trim();
-
-  Object.assign(fm, {
+  const fm = { ...activeWork.fm, ...{
     title:      val('f-title'),
     order:      val('f-order'),
     year:       yearRaw  === '' ? undefined : parseInt(yearRaw,  10),
@@ -820,167 +666,63 @@ async function saveWork() {
     price:      priceRaw === '' ? 0 : parseInt(priceRaw, 10),
     collection: val('f-collection'),
     edition:    val('f-edition'),
-    visible:    checked('f-visible'),
-    featured:   checked('f-featured'),
-    forms:      checkedValues('forms-group'),
-    themes:     checkedValues('themes-group'),
-  });
+    visible:    $('f-visible').checked,
+    featured:   $('f-featured').checked,
+    forms:      checked('forms-group'),
+    themes:     checked('themes-group'),
+  }};
 
-  // Gallery
-  const galleryItems = Array.from(
-    document.querySelectorAll('#gallery-list input')
-  ).map(i => i.value.trim()).filter(Boolean);
-
-  if (galleryItems.length > 0) fm.gallery = galleryItems;
+  const gallery = Array.from(document.querySelectorAll('#gallery-list input'))
+    .map(i => i.value.trim()).filter(Boolean);
+  if (gallery.length) fm.gallery = gallery;
   else delete fm.gallery;
 
-  // Remove undefined values (year if blank)
-  for (const k of Object.keys(fm)) {
-    if (fm[k] === undefined) delete fm[k];
-  }
+  // Drop undefined (e.g. blank year)
+  for (const k of Object.keys(fm)) if (fm[k] === undefined) delete fm[k];
 
-  const body = document.getElementById('f-body').value.trim();
+  const body = $('f-body').value.trim();
 
   try {
-    const content = stringify(fm, body);
-    const writable = await activeWork.handle.createWritable();
-    await writable.write(content);
-    await writable.close();
+    const res = await fetch(`/api/works/${activeWork.slug}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ fm, body }),
+    });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
 
-    // Update in-memory state
     activeWork.fm   = fm;
     activeWork.body = body;
 
-    // Sync header
-    document.getElementById('edit-title').textContent = fm.title ?? activeWork.filename;
-    const thumb = document.getElementById('edit-thumb');
-    if (fm.image) { thumb.src = fm.image; thumb.style.display = ''; }
+    $('edit-heading').textContent = fm.title ?? activeWork.filename;
+    if (fm.image) { $('edit-thumb').src = fm.image; $('edit-thumb').style.display = ''; }
 
     msg.textContent = 'Saved';
-    msg.className = 'ok';
-    toast(`Saved: ${fm.title ?? activeWork.filename}`);
+    msg.className   = 'ok';
+    toast(`Saved: ${fm.title ?? activeWork.slug}`);
   } catch (err) {
     msg.textContent = `Error: ${err.message}`;
-    msg.className = 'err';
+    msg.className   = 'err';
   } finally {
-    document.getElementById('btn-save').disabled = false;
+    $('btn-save').disabled = false;
   }
 }
 
-// ─────────────────────────────────────────────────────────
-//  YAML parser (handles this site's front matter format)
-// ─────────────────────────────────────────────────────────
-function parseFrontMatter(text) {
-  // Require opening ---
-  if (!text.startsWith('---')) return { fm: {}, body: text.trim() };
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-  // Find closing ---
-  const closeAt = text.indexOf('\n---', 3);
-  if (closeAt === -1) return { fm: {}, body: text.trim() };
-
-  const yaml = text.slice(4, closeAt);                     // between the two ---
-  const body = text.slice(closeAt + 4).replace(/^\n/, '').trim(); // after closing ---
-
-  const fm    = {};
-  const lines = yaml.split('\n');
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-    if (!line.trim()) { i++; continue; }
-
-    const m = line.match(/^([a-zA-Z][\w-]*)\s*:\s*(.*)/);
-    if (!m) { i++; continue; }
-
-    const key  = m[1];
-    const rest = m[2].trim();
-
-    if (rest === '' || rest === '[]') {
-      // Block sequence (multi-line array) or explicit empty array
-      const items = [];
-      i++;
-      while (i < lines.length && /^  - /.test(lines[i])) {
-        items.push(scalar(lines[i].replace(/^  - /, '').trim()));
-        i++;
-      }
-      fm[key] = items;
-    } else {
-      fm[key] = scalar(rest);
-      i++;
-    }
-  }
-
-  return { fm, body };
-}
-
-function scalar(s) {
-  if (s === 'true')  return true;
-  if (s === 'false') return false;
-  if (s === 'null' || s === '~') return null;
-  if (/^-?\d+$/.test(s))        return parseInt(s, 10);
-  if (/^-?\d*\.\d+$/.test(s))   return parseFloat(s);
-  // Strip surrounding quotes
-  if ((s[0] === '"' && s.at(-1) === '"') || (s[0] === "'" && s.at(-1) === "'"))
-    return s.slice(1, -1).replace(/\\"/g, '"').replace(/\\n/g, '\n');
-  return s;
-}
-
-// ─────────────────────────────────────────────────────────
-//  YAML serializer
-// ─────────────────────────────────────────────────────────
-function stringify(fm, body) {
-  const lines = ['---'];
-
-  for (const [key, v] of Object.entries(fm)) {
-    if (v === null || v === undefined) continue;
-    if (Array.isArray(v)) {
-      lines.push(v.length === 0 ? `${key}: []` : `${key}:`);
-      v.forEach(item => lines.push(`  - ${scalarOut(item)}`));
-    } else {
-      lines.push(`${key}: ${scalarOut(v)}`);
-    }
-  }
-
-  lines.push('---');
-  if (body) lines.push('', body);
-
-  return lines.join('\n') + '\n';
-}
-
-function scalarOut(v) {
-  if (typeof v === 'boolean') return v ? 'true' : 'false';
-  if (typeof v === 'number')  return String(v);
-  if (v === null || v === undefined || v === '') return '""';
-  // Always quote strings for safety
-  return `"${String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
-}
-
-// ─────────────────────────────────────────────────────────
-//  DOM helpers
-// ─────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-
-function val(id)            { return $(id).value.trim(); }
-function set(id, v)         { $(id).value = v ?? ''; }
-function checked(id)        { return $(id).checked; }
-function check(id, v)       { $(id).checked = !!v; }
-function checkedValues(id)  {
+function val(id)     { return $(id).value.trim(); }
+function set(id, v)  { $(id).value = v ?? ''; }
+function chk(id, v)  { $(id).checked = !!v; }
+function arr(v)      { return Array.isArray(v) ? v : []; }
+function checked(id) {
   return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(cb => cb.value);
 }
-function toArray(v)         { return Array.isArray(v) ? v : []; }
-
 function esc(s) {
   return String(s ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function setStatus(t) { $('status-bar').textContent = t; }
-function showError(t) { const e = $('picker-error'); e.textContent = t; e.style.display = ''; }
+// ── Toast ─────────────────────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────────
-//  Toast
-// ─────────────────────────────────────────────────────────
 let toastTimer;
 function toast(msg) {
   const el = $('toast');
@@ -990,27 +732,16 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-// ─────────────────────────────────────────────────────────
-//  Event listeners
-// ─────────────────────────────────────────────────────────
-$('btn-open').addEventListener('click', openFolder);
-$('btn-change').addEventListener('click', openFolder);
-$('btn-back').addEventListener('click', () => { renderGrid(); showView('grid'); });
-$('btn-cancel').addEventListener('click', () => { renderGrid(); showView('grid'); });
-$('btn-add-gallery').addEventListener('click', () => addGalleryRow());
-$('f-image').addEventListener('input', updatePreview);
-$('edit-form').addEventListener('submit', e => { e.preventDefault(); saveWork(); });
+// ── Wire up ───────────────────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────────
-//  Feature detection
-// ─────────────────────────────────────────────────────────
-if (!('showDirectoryPicker' in window)) {
-  $('btn-open').disabled = true;
-  $('picker-error').textContent =
-    'This admin requires a Chromium-based browser (Chrome, Edge, Arc). ' +
-    'The File System Access API is not available here.';
-  $('picker-error').style.display = '';
-}
+$('btn-back').addEventListener('click',        () => { renderGrid(); show('view-grid'); });
+$('btn-cancel').addEventListener('click',      () => { renderGrid(); show('view-grid'); });
+$('btn-add-gallery').addEventListener('click', () => addGalleryRow());
+$('f-image').addEventListener('input',         updatePreview);
+$('edit-form').addEventListener('submit',      e  => { e.preventDefault(); saveWork(); });
+
+// Auto-load on startup
+init();
 </script>
 
 </body>
