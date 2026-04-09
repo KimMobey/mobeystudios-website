@@ -250,6 +250,11 @@
     /* image preview */
     #img-preview { margin-top: 6px; max-width: 120px; max-height: 150px; object-fit: cover; border: 1px solid var(--border); display: none; }
 
+    .dim-row { display: flex; align-items: center; gap: 8px; }
+    .dim-row input { width: 90px; flex: none; }
+    .dim-sep { color: var(--text-2); font-size: 16px; }
+    .dim-unit { color: var(--text-2); font-size: 14px; }
+
     /* gallery list */
     #gallery-list { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
     .gallery-row { display: flex; gap: 7px; align-items: center; }
@@ -369,9 +374,13 @@
           <input type="text" id="f-substrate" placeholder="canvas, linen, board…" autocomplete="off">
         </div>
         <div class="field span2">
-          <label for="f-dimensions">Dimensions</label>
-          <input type="text" id="f-dimensions" placeholder="e.g. 50 × 60" autocomplete="off">
-          <span id="dim-preview" class="hint"></span>
+          <label>Dimensions</label>
+          <div class="dim-row">
+            <input type="number" id="f-dim-w" placeholder="W" min="0" step="any">
+            <span class="dim-sep">×</span>
+            <input type="number" id="f-dim-h" placeholder="H" min="0" step="any">
+            <span class="dim-unit">cm</span>
+          </div>
         </div>
       </div>
     </fieldset>
@@ -573,7 +582,9 @@ function openEdit(work) {
   set('f-statuses',   fm.statuses   ?? 'available');
   set('f-media',      fm.media      ?? '');
   set('f-substrate',  fm.substrate  ?? '');
-  set('f-dimensions', fm.dimensions ?? '');
+  const dimMatch = (fm.dimensions ?? '').match(/(\d+(?:\.\d+)?)\s*[×xX]\s*(\d+(?:\.\d+)?)/);
+  set('f-dim-w', dimMatch ? dimMatch[1] : '');
+  set('f-dim-h', dimMatch ? dimMatch[2] : '');
   set('f-series',     fm.series     ?? '');
   set('f-image',      fm.image      ?? '');
   set('f-category',   fm.category   ?? '');
@@ -592,7 +603,6 @@ function openEdit(work) {
   arr(fm.gallery).forEach(addGalleryRow);
 
   updatePreview();
-  updateDimPreview();
 
   $('save-msg').textContent = '';
   $('save-msg').className   = '';
@@ -660,7 +670,7 @@ async function saveWork() {
     statuses:   val('f-statuses'),
     media:      val('f-media'),
     substrate:  val('f-substrate'),
-    dimensions: normalizeDimensions(val('f-dimensions')),
+    dimensions: buildDimensions(),
     series:     val('f-series'),
     image:      val('f-image'),
     category:   val('f-category'),
@@ -708,32 +718,16 @@ async function saveWork() {
   }
 }
 
-// ── Dimensions normalizer ─────────────────────────────────────────────────────
-
-function normalizeDimensions(raw) {
-  if (!raw) return raw;
-  // Accept: 50x60, 50×60, 50 x 60, 50 × 60, 50x60cm, 50 × 60 cm, etc.
-  const m = raw.match(/(\d+(?:[.,]\d+)?)\s*[×xX]\s*(\d+(?:[.,]\d+)?)/);
-  if (!m) return raw; // unrecognisable — return as-is, don't block saving
-  const w = m[1].replace(',', '.');
-  const h = m[2].replace(',', '.');
-  return `${w} × ${h}cm`;
-}
-
-function updateDimPreview() {
-  const raw       = $('f-dimensions').value.trim();
-  const preview   = $('dim-preview');
-  const normed    = normalizeDimensions(raw);
-  if (!raw) {
-    preview.textContent = '';
-  } else if (normed !== raw) {
-    preview.textContent = `Will save as: ${normed}`;
-  } else {
-    preview.textContent = '✓ ' + normed;
-  }
-}
-
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+function buildDimensions() {
+  const w = $('f-dim-w').value.trim();
+  const h = $('f-dim-h').value.trim();
+  if (w && h) return `${w} × ${h}cm`;
+  if (w)      return `${w}cm`;
+  if (h)      return `${h}cm`;
+  return '';
+}
 
 function val(id)     { return $(id).value.trim(); }
 function set(id, v)  { $(id).value = v ?? ''; }
@@ -764,7 +758,6 @@ $('btn-back').addEventListener('click',        () => { renderGrid(); show('view-
 $('btn-cancel').addEventListener('click',      () => { renderGrid(); show('view-grid'); });
 $('btn-add-gallery').addEventListener('click', () => addGalleryRow());
 $('f-image').addEventListener('input',         updatePreview);
-$('f-dimensions').addEventListener('input',    updateDimPreview);
 $('edit-form').addEventListener('submit',      e  => { e.preventDefault(); saveWork(); });
 
 // Auto-load on startup
