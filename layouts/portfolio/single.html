@@ -2,6 +2,10 @@
 
 {{ define "main" }}
 <main class="work-page">
+    <nav class="work-nav work-nav--top">
+        <a class="work-back-link" href="/portfolio/">← Back to Portfolio</a>
+    </nav>
+
     <div class="work-image">
         {{ with .Params.image }}
         <img src="{{ . }}" alt="{{ $.Title }}">
@@ -26,8 +30,23 @@
         {{ end }}
 
         <nav class="work-nav">
-            <a href="/portfolio/">← Back</a>
+            <a class="work-back-link" href="/portfolio/">← Back to Portfolio</a>
         </nav>
     </div>
 </main>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+    try {
+        var url = sessionStorage.getItem('portfolio-back-url');
+        if (url && url.indexOf('/portfolio/') !== -1) {
+            document.querySelectorAll('.work-back-link').forEach(function (a) {
+                a.href = url;
+            });
+        }
+    } catch (_) {}
+}());
+</script>
 {{ end }}

@@ -3,14 +3,18 @@
 {{ define "main" }}
 <main class="article-page">
     <article>
+        <nav class="article-nav article-nav--top">
+            <a href="/studio/practice/">← Back to Studio Practice</a>
+        </nav>
+
         <header>
             <h1>{{ .Title }}</h1>
         </header>
-        
+
         <div class="article-content">
             {{ .Content }}
         </div>
-        
+
         <nav class="article-nav">
             <a href="/studio/practice/">← Back to Studio Practice</a>
         </nav>

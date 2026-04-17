@@ -54,6 +54,14 @@
   if (urlStatus) { active.status = '.status-' + urlStatus; activateButton(active.status); }
   applyFilters();
 
+  // Store current URL (with active filters) before navigating to a work page
+  document.getElementById('portfolio-grid').addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (link && link.href.indexOf('/portfolio/') !== -1 && link.href !== window.location.href) {
+      try { sessionStorage.setItem('portfolio-back-url', window.location.href); } catch (_) {}
+    }
+  });
+
   document.querySelectorAll('.filter-group').forEach(function (group) {
     var groupKey = group.dataset.group;
     group.querySelectorAll('.filter-option').forEach(function (btn) {

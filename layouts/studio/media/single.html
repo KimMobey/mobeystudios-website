@@ -3,20 +3,24 @@
 {{ define "main" }}
 <main class="video-page">
     <article>
+        <nav class="video-nav video-nav--top">
+            <a href="/studio/media/">← Back to Media</a>
+        </nav>
+
         <header>
             <h1>{{ .Title }}</h1>
         </header>
-        
+
         {{ with .Params.youtube_id }}
         <div class="video-embed">
             {{ partial "youtube.html" . }}
         </div>
         {{ end }}
-        
+
         <div class="video-description">
             {{ .Content }}
         </div>
-        
+
         <nav class="video-nav">
             <a href="/studio/media/">← Back to Media</a>
         </nav>

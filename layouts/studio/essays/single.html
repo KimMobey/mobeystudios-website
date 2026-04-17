@@ -5,6 +5,9 @@
 
 {{/* ── Collated essay layout ── */}}
 <main class="collated-essay">
+    <nav class="essay-nav essay-nav--top">
+        <a href="/studio/essays/">← Back to Essays</a>
+    </nav>
     <h1 class="collated-essay__title">{{ .Title }}</h1>
 
     {{ range $i, $slug := .Params.works }}
@@ -47,6 +50,9 @@
 {{/* ── Standard written essay layout ── */}}
 <main class="essay-page">
     <article>
+        <nav class="essay-nav essay-nav--top">
+            <a href="/studio/essays/">← Back to Essays</a>
+        </nav>
         <header class="essay-header{{ with .Params.thumbnail }} essay-header--with-image{{ end }}">
             {{ with .Params.thumbnail }}
             <img class="essay-header__image" src="{{ . }}" alt="{{ $.Title }}">

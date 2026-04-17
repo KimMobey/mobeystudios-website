@@ -1,6 +1,5 @@
 <nav class="filters" aria-label="Filter portfolio">
     <div class="filter-group" data-group="form">
-        <span class="filter-label">Form</span>
         <button class="filter-option active" data-filter="*">All</button>
         {{ range .Site.Taxonomies.forms }}
         <button class="filter-option" data-filter=".form-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
@@ -8,7 +7,6 @@
     </div>
 
     <div class="filter-group" data-group="status">
-        <span class="filter-label">Status</span>
         <button class="filter-option active" data-filter="*">All</button>
         {{ range .Site.Taxonomies.statuses }}
         <button class="filter-option" data-filter=".status-{{ .Page.Title | urlize }}">{{ .Page.Title }}</button>
