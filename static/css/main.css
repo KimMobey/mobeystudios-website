@@ -843,7 +843,7 @@ footer {
 .article-content,
 .video-description {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
+    font-size: 16px;
     font-weight: 300;
     line-height: var(--leading-loose);
     margin-bottom: 56px;
@@ -910,7 +910,7 @@ footer {
 }
 
 .essay-header__image {
-    max-height: 70px;
+    max-height: 150px;
     width: auto;
     flex-shrink: 0;
     display: block;
@@ -933,9 +933,6 @@ footer {
 @media (max-width: 640px) {
     .essay-header--with-image {
         flex-direction: column;
-    }
-    .essay-header__image {
-        width: 100%;
     }
 }
 
