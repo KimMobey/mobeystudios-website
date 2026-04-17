@@ -47,9 +47,15 @@
 {{/* ── Standard written essay layout ── */}}
 <main class="essay-page">
     <article>
-        <header>
-            <h1>{{ .Title }}</h1>
-            <time>{{ .Date.Format "January 2, 2006" }}</time>
+        <header class="essay-header{{ with .Params.thumbnail }} essay-header--with-image{{ end }}">
+            {{ with .Params.thumbnail }}
+            <img class="essay-header__image" src="{{ . }}" alt="{{ $.Title }}">
+            {{ end }}
+            <div class="essay-header__text">
+                <h1>{{ $.Title }}</h1>
+                {{ with $.Params.subtitle }}<p class="essay-subtitle">{{ . }}</p>{{ end }}
+                <time>{{ $.Date.Format "January 2, 2006" }}</time>
+            </div>
         </header>
 
         <div class="essay-content">

@@ -899,6 +899,51 @@ footer {
     color: var(--color-text-secondary);
 }
 
+.essay-content blockquote p > em:only-child,
+.article-content blockquote p > em:only-child {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    display: block;
+    margin-top: 12px;
+}
+
+/* ── Essay header with optional thumbnail ── */
+.essay-header--with-image {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.essay-header__image {
+    width: 280px;
+    flex-shrink: 0;
+    display: block;
+}
+
+.essay-header__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.essay-subtitle {
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    margin-top: 8px;
+    margin-bottom: 0;
+    font-style: italic;
+}
+
+@media (max-width: 640px) {
+    .essay-header--with-image {
+        flex-direction: column;
+    }
+    .essay-header__image {
+        width: 100%;
+    }
+}
+
 .essay-nav,
 .article-nav,
 .video-nav {

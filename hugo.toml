@@ -20,13 +20,9 @@ title = 'Kim Mobey'
     url = '/studio/'
     weight = 3
   [[menu.main]]
-    name = 'About'
-    url = '/about/'
-    weight = 4
-  [[menu.main]]
     name = 'Contact'
     url = '/contact/'
-    weight = 5
+    weight = 4
 
 [taxonomies]
   form = 'forms'
