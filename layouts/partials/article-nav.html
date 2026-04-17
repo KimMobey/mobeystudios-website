@@ -1,0 +1,7 @@
+{{ $page := .page }}
+{{ $mod  := .modifier }}
+{{ $sectionSlug := $page.Parent.Title | urlize }}
+{{ $sectionTitle := $page.Parent.Title }}
+<nav class="article-back article-back--{{ $mod }}">
+    <a href="/studio/?section={{ $sectionSlug }}">← Back</a>
+</nav>

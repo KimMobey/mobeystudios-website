@@ -1,0 +1,42 @@
+<script>
+(function () {
+  var STORE = 'kim-liked-works';
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || []; }
+    catch (e) { return []; }
+  }
+  function save(list) {
+    localStorage.setItem(STORE, JSON.stringify(list));
+  }
+
+  function applyLiked(btn, liked) {
+    btn.classList.toggle('liked', liked);
+    btn.setAttribute('aria-label', liked ? 'Remove from favourites' : 'Save to favourites');
+  }
+
+  var list = load();
+
+  document.querySelectorAll('.like-btn').forEach(function (btn) {
+    var title = btn.dataset.title;
+    var image = btn.dataset.image;
+    var isLiked = list.some(function (w) { return w.title === title; });
+    applyLiked(btn, isLiked);
+
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var current = load();
+      var idx = current.findIndex(function (w) { return w.title === title; });
+      if (idx >= 0) {
+        current.splice(idx, 1);
+        applyLiked(btn, false);
+      } else {
+        current.push({ title: title, image: image });
+        applyLiked(btn, true);
+      }
+      save(current);
+      window.dispatchEvent(new CustomEvent('savedWorksChanged'));
+    });
+  });
+}());
+</script>
