@@ -94,7 +94,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-primary);
     line-height: var(--leading-tight);
     color: var(--color-text-primary);
 }
@@ -291,7 +291,7 @@ footer {
 }
 
 .audience-pathways > p {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-secondary);
     font-size: var(--text-md);
     color: var(--color-text-secondary);
     margin-bottom: 64px;
@@ -342,7 +342,7 @@ footer {
 }
 
 .portfolio-page h1 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-primary);
     font-size: var(--text-xl);
     font-weight: 400;
     margin-bottom: 60px;
@@ -450,6 +450,15 @@ footer {
 .card-caption {
     padding: 12px 0 0;
     position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.card-caption-body {
+    flex: 1;
+    min-width: 0;
 }
 
 .card-caption h3 {
@@ -461,13 +470,87 @@ footer {
     margin-bottom: 4px;
 }
 
+.card-caption h3 a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .card-medium,
 .card-dimensions {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
+}
+
+/* Like button */
+.like-btn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: var(--color-border);
+    transition: color 0.15s ease;
+    margin-top: 8px;
+}
+
+.like-btn:hover {
+    color: var(--color-text-secondary);
+}
+
+.like-btn.liked {
+    color: var(--color-accent);
+}
+
+.like-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.like-btn.liked .like-icon {
+    fill: currentColor;
+}
+
+/* Saved works indicator */
+#saved-indicator {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    padding: 8px 16px;
+    border-radius: 24px;
+    text-decoration: none;
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-xs);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+}
+
+#saved-indicator.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#saved-indicator-heart {
+    font-size: 14px;
+}
+
+#saved-indicator-count {
+    font-weight: 500;
 }
 
 
@@ -514,7 +597,7 @@ footer {
 }
 
 .caption-block h2 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-primary);
     font-size: var(--text-lg);
     font-weight: 400;
     line-height: var(--leading-tight);
@@ -527,7 +610,7 @@ footer {
 .caption-dimensions,
 .caption-status {
     font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
@@ -563,8 +646,8 @@ footer {
 }
 
 .work-body p {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-base);
     line-height: 1.8;
     color: var(--color-text-primary);
     margin-bottom: 20px;
@@ -619,7 +702,7 @@ footer {
     max-width: 720px;
     margin: 0 auto 80px;
     text-align: center;
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-secondary);
     font-size: var(--text-md);
     color: var(--color-text-secondary);
     line-height: var(--leading-loose);
@@ -923,8 +1006,8 @@ footer {
 }
 
 .collated-block__prose p {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-base);
     line-height: 1.8;
     color: var(--color-text-primary);
     margin-bottom: 20px;
@@ -958,8 +1041,8 @@ footer {
 }
 
 .about-content {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-base);
     line-height: var(--leading-loose);
     color: var(--color-text-primary);
 }
@@ -1181,7 +1264,7 @@ footer {
 }
 
 .not-found-page h1 {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans-primary);
     font-size: var(--text-xl);
     font-weight: 400;
     letter-spacing: 0.03em;
@@ -1190,8 +1273,8 @@ footer {
 }
 
 .not-found-page p {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-base);
     font-style: italic;
     color: var(--color-text-secondary);
     margin-bottom: 40px;
