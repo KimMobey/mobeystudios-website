@@ -637,17 +637,6 @@ footer {
     border-top: 1px solid var(--color-border);
 }
 
-.work-body p {
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
-    line-height: 1.8;
-    color: var(--color-text-primary);
-    margin-bottom: 20px;
-}
-
-.work-body p:last-child {
-    margin-bottom: 0;
-}
 
 /* Work / article back navigation */
 .work-nav {
@@ -838,14 +827,38 @@ footer {
     margin-bottom: 56px;
 }
 
+/* ── Longform prose — shared rules ── */
 .essay-content,
 .article-content,
-.video-description {
+.video-description,
+.work-body,
+.collated-block__prose {
     font-family: var(--font-sans-secondary);
     font-size: 16px;
     font-weight: 300;
     line-height: var(--leading-loose);
+}
+
+.essay-content,
+.article-content,
+.video-description {
     margin-bottom: 56px;
+}
+
+.essay-content p,
+.article-content p,
+.video-description p,
+.work-body p,
+.collated-block__prose p {
+    margin-bottom: 20px;
+}
+
+.essay-content p:last-child,
+.article-content p:last-child,
+.video-description p:last-child,
+.work-body p:last-child,
+.collated-block__prose p:last-child {
+    margin-bottom: 0;
 }
 
 .essay-content h2,
@@ -856,10 +869,29 @@ footer {
     margin: 40px 0 16px;
 }
 
-.essay-content p,
-.article-content p,
-.video-description p {
-    margin-bottom: 20px;
+/* Blockquotes in all prose containers */
+.essay-content blockquote,
+.article-content blockquote,
+.work-body blockquote,
+.collated-block__prose blockquote {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-loose);
+    margin: 40px 0;
+    padding-left: 28px;
+    border-left: 2px solid var(--color-accent);
+    color: var(--color-text-secondary);
+}
+
+/* Blockquote citations — italic-only last paragraph */
+.essay-content blockquote p > em:only-child,
+.article-content blockquote p > em:only-child,
+.work-body blockquote p > em:only-child,
+.collated-block__prose blockquote p > em:only-child {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    display: block;
+    margin-top: 12px;
 }
 
 /* Article inline images — full column width with spacing */
@@ -878,25 +910,6 @@ footer {
     color: var(--color-text-secondary);
     margin-top: 10px;
     margin-bottom: 40px;
-}
-
-.essay-content blockquote,
-.article-content blockquote {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
-    line-height: var(--leading-loose);
-    margin: 40px 0;
-    padding-left: 28px;
-    border-left: 2px solid var(--color-accent);
-    color: var(--color-text-secondary);
-}
-
-.essay-content blockquote p > em:only-child,
-.article-content blockquote p > em:only-child {
-    font-size: var(--text-sm);
-    line-height: 1.4;
-    display: block;
-    margin-top: 12px;
 }
 
 /* ── Essay header with optional thumbnail ── */
@@ -1051,17 +1064,6 @@ footer {
     padding-top: 8px;
 }
 
-.collated-block__prose p {
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
-    line-height: 1.8;
-    color: var(--color-text-primary);
-    margin-bottom: 20px;
-}
-
-.collated-block__prose p:last-child {
-    margin-bottom: 0;
-}
 
 .collated-rule {
     border: none;
