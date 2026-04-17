@@ -14,7 +14,7 @@
     --color-border: #e0e0e0;
 
     /* Fonts */
-    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-serif: 'Cormorant Garamond', Ubuntu, sans-serif;
     --font-sans-primary: 'Montserrat', sans-serif;
     --font-sans-secondary: 'Ubuntu', sans-serif;
 
@@ -95,7 +95,6 @@ h1, h2, h3, h4, h5, h6 {
 blockquote {
     font-family: var(--font-serif);
     font-size: var(--text-md);
-    font-style: italic;
     line-height: var(--leading-loose);
 }
 
@@ -885,7 +884,6 @@ footer {
 .article-content blockquote {
     font-family: var(--font-serif);
     font-size: var(--text-md);
-    font-style: italic;
     line-height: var(--leading-loose);
     margin: 40px 0;
     padding-left: 28px;
