@@ -9,6 +9,8 @@
     <h1>Contact</h1>
 
     <div class="contact-form-container">
+        <p class="contact-note">While sold and reserved works are not available for purchase, enquiries about similar and future works are always welcome.</p>
+
         <p class="required-note">Fields marked <span class="required" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
         <form id="contact-form" action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
 
@@ -34,8 +36,10 @@
 
             <label>
                 Which artworks are you interested in?
-                <input type="text" name="artworks" placeholder="e.g., Portrait series, Sculptures">
+                <input type="text" id="f-artworks" name="artworks" placeholder="e.g., Portrait series, Sculptures">
             </label>
+
+            <input type="hidden" id="f-saved-works" name="savedWorks">
 
             <label>
                 Message <span class="required">*</span>
@@ -60,4 +64,28 @@
         </form>
     </div>
 </main>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+    var STORE = 'kim-liked-works';
+    try {
+        var saved = JSON.parse(localStorage.getItem(STORE)) || [];
+        if (!saved.length) return;
+
+        // Pre-fill the artworks field if it is empty
+        var artworksField = document.getElementById('f-artworks');
+        if (artworksField && !artworksField.value.trim()) {
+            artworksField.value = saved.map(function (w) { return w.title; }).join(', ');
+        }
+
+        // Always populate the hidden metadata field
+        var hiddenField = document.getElementById('f-saved-works');
+        if (hiddenField) {
+            hiddenField.value = saved.map(function (w) { return w.title; }).join(' | ');
+        }
+    } catch (e) {}
+}());
+</script>
 {{ end }}

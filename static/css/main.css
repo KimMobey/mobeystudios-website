@@ -1084,6 +1084,13 @@ footer {
     margin: 0 auto;
 }
 
+.contact-note {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: 32px;
+    line-height: var(--leading-body);
+}
+
 .required-note {
     font-family: var(--font-sans-secondary);
     font-size: var(--text-sm);
