@@ -8,7 +8,6 @@
         {{ range .Pages }}
         <article class="article-preview">
             <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-            <time>{{ .Date.Format "January 2006" }}</time>
             {{ with .Summary }}
             <p>{{ . }}</p>
             {{ end }}

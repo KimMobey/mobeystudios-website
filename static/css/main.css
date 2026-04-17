@@ -844,6 +844,7 @@ footer {
 .video-description {
     font-family: var(--font-sans-secondary);
     font-size: var(--text-base);
+    font-weight: 300;
     line-height: var(--leading-loose);
     margin-bottom: 56px;
 }
@@ -909,7 +910,8 @@ footer {
 }
 
 .essay-header__image {
-    width: 280px;
+    max-height: 70px;
+    width: auto;
     flex-shrink: 0;
     display: block;
 }
