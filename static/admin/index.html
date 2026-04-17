@@ -277,6 +277,49 @@
     #save-msg.ok  { color: var(--green); }
     #save-msg.err { color: var(--red); }
 
+    /* ── Tabs ── */
+    #tab-nav { display: flex; gap: 4px; }
+    .tab-btn {
+      background: none; color: var(--text-2); padding: 5px 14px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; border-radius: 1px;
+      border: 1px solid transparent;
+    }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+    .tab-btn:not(.active):hover { background: var(--bg); }
+
+    /* ── Studio list ── */
+    #studio-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    #studio-toolbar h2 {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-2);
+    }
+    .article-section-block { margin-bottom: 32px; }
+    .article-section-header {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-2);
+      padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px;
+    }
+    .article-row {
+      display: flex; align-items: center; gap: 12px; padding: 11px 0;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+    }
+    .article-row:hover .article-title { color: var(--accent); }
+    .article-title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+    .article-meta  { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+    /* ── Studio edit ── */
+    #studio-edit-nav {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 36px;
+    }
+    #studio-edit-heading { font-size: 22px; font-weight: 400; }
+    #studio-save-msg { margin-left: auto; font-size: 13px; color: var(--text-2); }
+    #studio-save-msg.ok  { color: var(--green); }
+    #studio-save-msg.err { color: var(--red); }
+
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 22px; right: 22px;
@@ -291,7 +334,11 @@
 <body>
 
 <header>
-  <span class="header-label">Kim Mobey — Portfolio Admin</span>
+  <span class="header-label">Kim Mobey — Studio Admin</span>
+  <nav id="tab-nav">
+    <button class="tab-btn active" id="tab-portfolio" onclick="setActiveTab('portfolio')">Portfolio</button>
+    <button class="tab-btn"        id="tab-studio"    onclick="setActiveTab('studio')">Studio</button>
+  </nav>
   <span id="status"></span>
 </header>
 
@@ -501,6 +548,75 @@
   </form>
 </div>
 
+<!-- Studio list -->
+<div id="view-studio" class="page" style="display:none">
+  <div id="studio-toolbar">
+    <h2 id="studio-count"></h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost" onclick="newArticle('essays')">+ New Essay</button>
+      <button class="btn-ghost" onclick="newArticle('practice')">+ New Practice Article</button>
+    </div>
+  </div>
+  <div id="studio-list"></div>
+</div>
+
+<!-- Studio edit -->
+<div id="view-studio-edit" class="page" style="display:none;max-width:820px">
+  <div id="studio-edit-nav">
+    <button class="btn-ghost" id="btn-studio-back">← Back</button>
+    <h1 id="studio-edit-heading">New Article</h1>
+  </div>
+  <form id="studio-edit-form" novalidate>
+
+    <fieldset>
+      <legend>Identity</legend>
+      <div class="fg">
+        <div class="field span2">
+          <label for="sf-title">Title</label>
+          <input type="text" id="sf-title" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="sf-section">Section</label>
+          <select id="sf-section">
+            <option value="essays">Essays</option>
+            <option value="practice">Studio Practice</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sf-weight">Order weight <span class="opt">(practice only)</span></label>
+          <input type="number" id="sf-weight" min="1" step="1" placeholder="1, 2, 3…">
+        </div>
+        <div class="field span2">
+          <label for="sf-slug">Slug <span class="opt">(set once, used as filename)</span></label>
+          <input type="text" id="sf-slug" placeholder="my-article-title" autocomplete="off">
+          <span id="sf-slug-hint" class="hint"></span>
+        </div>
+        <div class="field span2">
+          <label for="sf-description">Description <span class="opt">(optional)</span></label>
+          <input type="text" id="sf-description" placeholder="Short description for listings" autocomplete="off">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Body</legend>
+      <div class="fg fg-1">
+        <div class="field">
+          <label for="sf-body">Content <span class="opt">(markdown)</span></label>
+          <textarea id="sf-body" style="min-height:360px" spellcheck="true"></textarea>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" id="btn-studio-save">Save</button>
+      <button type="button" class="btn-ghost"   id="btn-studio-cancel">Cancel</button>
+      <span id="studio-save-msg"></span>
+    </div>
+
+  </form>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -525,9 +641,22 @@ let priceOverride     = false; // true when user has manually edited the price f
 
 const $ = id => document.getElementById(id);
 
+const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-studio','view-studio-edit'];
 function show(id) {
-  for (const v of ['view-loading','view-error','view-grid','view-edit'])
-    $(v).style.display = v === id ? '' : 'none';
+  for (const v of ALL_VIEWS) $(v).style.display = v === id ? '' : 'none';
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+function setActiveTab(tab) {
+  $('tab-portfolio').classList.toggle('active', tab === 'portfolio');
+  $('tab-studio').classList.toggle('active',    tab === 'studio');
+  if (tab === 'portfolio') {
+    renderGrid();
+    show('view-grid');
+  } else {
+    initStudio();
+  }
 }
 
 // ── Load ──────────────────────────────────────────────────────────────────────
@@ -844,6 +973,147 @@ function esc(s) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Studio ────────────────────────────────────────────────────────────────────
+
+let articles      = [];
+let activeArticle = null;
+let isNewArticle  = false;
+
+async function initStudio() {
+  show('view-loading');
+  try {
+    const res = await fetch('/api/articles');
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    articles = await res.json();
+    renderStudioList();
+    show('view-studio');
+    $('status').textContent = `${articles.length} articles`;
+  } catch (err) {
+    $('error-msg').textContent = `Could not load articles: ${err.message}. Make sure admin_server.py is running.`;
+    show('view-error');
+  }
+}
+
+function renderStudioList() {
+  const list = $('studio-list');
+  list.innerHTML = '';
+  const sections = [
+    { key: 'essays',   label: 'Essays' },
+    { key: 'practice', label: 'Studio Practice' },
+  ];
+  for (const { key, label } of sections) {
+    const items = articles.filter(a => a.section === key);
+    const block = document.createElement('div');
+    block.className = 'article-section-block';
+    const hdr = document.createElement('div');
+    hdr.className   = 'article-section-header';
+    hdr.textContent = label;
+    block.appendChild(hdr);
+    if (!items.length) {
+      const empty = document.createElement('p');
+      empty.style.cssText = 'font-size:13px;color:var(--text-2);padding:12px 0';
+      empty.textContent = 'No articles yet.';
+      block.appendChild(empty);
+    } else {
+      for (const article of items) {
+        const row  = document.createElement('div');
+        row.className = 'article-row';
+        const desc = article.fm.description ? ' · ' + esc(article.fm.description) : '';
+        row.innerHTML = `
+          <div style="flex:1;min-width:0">
+            <div class="article-title">${esc(article.fm.title ?? article.slug)}</div>
+            <div class="article-meta">${esc(String(article.fm.date ?? ''))}${desc}</div>
+          </div>
+          <button class="btn-ghost" style="font-size:12px;flex-shrink:0">Edit</button>
+        `;
+        row.addEventListener('click', () => openArticleEdit(article, false));
+        block.appendChild(row);
+      }
+    }
+    list.appendChild(block);
+  }
+  const n = articles.length;
+  $('studio-count').textContent = `${n} article${n !== 1 ? 's' : ''}`;
+}
+
+function newArticle(section) {
+  openArticleEdit({ slug: '', section, filename: '', fm: {}, body: '' }, true);
+}
+
+function openArticleEdit(article, isNew) {
+  activeArticle = article;
+  isNewArticle  = isNew;
+
+  $('studio-edit-heading').textContent = isNew ? 'New Article' : (article.fm.title ?? article.slug);
+  $('sf-title').value       = article.fm.title       ?? '';
+  $('sf-section').value     = article.section        ?? 'essays';
+  $('sf-weight').value      = article.fm.weight      ?? '';
+  $('sf-description').value = article.fm.description ?? '';
+  $('sf-slug').value        = isNew ? '' : article.slug;
+  $('sf-slug').readOnly     = !isNew;
+  $('sf-body').value        = article.body           ?? '';
+  $('studio-save-msg').textContent = '';
+  $('studio-save-msg').className   = '';
+
+  show('view-studio-edit');
+  window.scrollTo(0, 0);
+}
+
+async function saveArticle() {
+  if (!activeArticle) return;
+  const msg = $('studio-save-msg');
+  msg.textContent = 'Saving…';
+  msg.className   = '';
+  $('btn-studio-save').disabled = true;
+
+  const slug    = isNewArticle ? $('sf-slug').value.trim() : activeArticle.slug;
+  const section = $('sf-section').value;
+
+  if (!slug) {
+    msg.textContent = 'Slug is required for new articles.';
+    msg.className   = 'err';
+    $('btn-studio-save').disabled = false;
+    return;
+  }
+
+  const weightRaw = $('sf-weight').value.trim();
+  const fm = { ...activeArticle.fm,
+    title:       $('sf-title').value.trim() || undefined,
+    description: $('sf-description').value.trim() || undefined,
+    weight:      weightRaw ? parseInt(weightRaw, 10) : undefined,
+  };
+  for (const k of Object.keys(fm)) if (fm[k] === undefined) delete fm[k];
+
+  try {
+    const res = await fetch(`/api/articles/${section}/${slug}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ fm, body: $('sf-body').value.trim() }),
+    });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+    if (isNewArticle) {
+      activeArticle = { slug, section, filename: slug + '.md', fm, body: $('sf-body').value.trim() };
+      articles.push(activeArticle);
+      isNewArticle = false;
+      $('sf-slug').readOnly = true;
+    } else {
+      activeArticle.fm   = fm;
+      activeArticle.body = $('sf-body').value.trim();
+    }
+
+    $('studio-edit-heading').textContent = fm.title ?? slug;
+    msg.textContent = 'Saved';
+    msg.className   = 'ok';
+    toast(`Saved: ${fm.title ?? slug}`);
+  } catch (err) {
+    msg.textContent = `Error: ${err.message}`;
+    msg.className   = 'err';
+  } finally {
+    $('btn-studio-save').disabled = false;
+  }
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
 let toastTimer;
@@ -885,6 +1155,10 @@ $('btn-price-apply').addEventListener('click', () => {
 $('btn-price-keep').addEventListener('click', () => {
   hidePriceConfirm();
 });
+
+$('btn-studio-back').addEventListener('click',   () => { renderStudioList(); show('view-studio'); });
+$('btn-studio-cancel').addEventListener('click', () => { renderStudioList(); show('view-studio'); });
+$('studio-edit-form').addEventListener('submit', e  => { e.preventDefault(); saveArticle(); });
 
 // Auto-load on startup
 init();

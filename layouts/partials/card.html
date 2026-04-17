@@ -1,20 +1,32 @@
-<div class="work-card {{ range .Params.forms }}form-{{ . | urlize }} {{ end }}status-{{ .Params.statuses | urlize }}"
+<div class="work-card {{ range .Params.forms }}form-{{ . | urlize }} {{ end }}{{ with index .Params.statuses 0 }}status-{{ . | urlize }}{{ end }}"
      data-form="{{ if .Params.forms }}{{ delimit .Params.forms " " }}{{ end }}"
-     data-status="{{ .Params.statuses }}"
+     data-status="{{ index .Params.statuses 0 }}"
      data-order="{{ .Params.order }}"
      data-title="{{ .Title }}">
 
-    <a href="{{ .RelPermalink }}">
+    <a href="{{ .RelPermalink }}" class="card-image-link">
         <div class="card-image-wrapper">
             {{ with .Params.image }}
             <img src="{{ . }}" alt="{{ $.Title }}">
             {{ end }}
         </div>
+    </a>
 
-        <div class="card-caption">
-            <h3>{{ .Title }}</h3>
-            <p class="card-medium">{{ .Params.media | lower }}{{ with .Params.substrate }} on {{ . | lower }}{{ end }}</p>
+    <div class="card-caption">
+        <div class="card-caption-body">
+            <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+            {{- $sub := .Params.substrate -}}
+            {{- if reflect.IsSlice $sub }}{{ $sub = index $sub 0 }}{{ end -}}
+            <p class="card-medium">{{ with index .Params.media 0 }}{{ . | lower }}{{ end }}{{ with $sub }} on {{ . | lower }}{{ end }}</p>
             <p class="card-dimensions">{{ .Params.dimensions }}</p>
         </div>
-    </a>
+        <button class="like-btn" aria-label="Save to favourites"
+                data-title="{{ .Title }}"
+                data-image="{{ .Params.image }}">
+            <svg viewBox="0 0 24 24" class="like-icon" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+        </button>
+    </div>
+
 </div>

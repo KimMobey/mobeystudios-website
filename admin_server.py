@@ -13,10 +13,12 @@ from pathlib import Path
 from urllib.parse import urlparse, unquote
 
 PORT = 8080
-ROOT      = Path(__file__).parent
-ADMIN_HTML = ROOT / 'static' / 'admin' / 'index.html'
-PORTFOLIO  = ROOT / 'content' / 'portfolio'
-STATIC     = ROOT / 'static'
+ROOT             = Path(__file__).parent
+ADMIN_HTML       = ROOT / 'static' / 'admin' / 'index.html'
+PORTFOLIO        = ROOT / 'content' / 'portfolio'
+CONTENT_ESSAYS   = ROOT / 'content' / 'studio' / 'essays'
+CONTENT_PRACTICE = ROOT / 'content' / 'studio' / 'practice'
+STATIC           = ROOT / 'static'
 
 
 # ── Request handler ───────────────────────────────────────────────────────────
@@ -26,7 +28,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
 
-        if path in ('', '/'):
+        if path in ('', '/', '/admin', '/admin/'):
             self._file(ADMIN_HTML, 'text/html; charset=utf-8')
 
         elif path.startswith('/images/'):
@@ -43,6 +45,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif path == '/api/works':
             self._json(self._list_works())
 
+        elif path == '/api/articles':
+            self._json(self._list_articles())
+
         else:
             self.send_error(404)
 
@@ -57,6 +62,21 @@ class Handler(http.server.BaseHTTPRequestHandler):
             length = int(self.headers.get('Content-Length', 0))
             data   = json.loads(self.rfile.read(length))
             self._save_work(slug, data)
+
+        elif path.startswith('/api/articles/'):
+            rest = unquote(path[len('/api/articles/'):])
+            parts = rest.split('/', 1)
+            if len(parts) != 2 or parts[0] not in ('essays', 'practice'):
+                self.send_error(400, 'Expected /api/articles/<section>/<slug>')
+                return
+            section, slug = parts
+            if not re.match(r'^[\w-]+$', slug):
+                self.send_error(400, 'Invalid slug')
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            data   = json.loads(self.rfile.read(length))
+            self._save_article(section, slug, data)
+
         else:
             self.send_error(404)
 
@@ -76,6 +96,35 @@ class Handler(http.server.BaseHTTPRequestHandler):
             })
         works.sort(key=lambda w: str(w['fm'].get('order', '')))
         return works
+
+    def _list_articles(self):
+        articles = []
+        for section, base in [('essays', CONTENT_ESSAYS), ('practice', CONTENT_PRACTICE)]:
+            if not base.exists():
+                continue
+            for f in sorted(base.glob('*.md')):
+                if f.name == '_index.md':
+                    continue
+                parsed = parse_front_matter(f.read_text('utf-8'))
+                articles.append({
+                    'slug':     f.stem,
+                    'section':  section,
+                    'filename': f.name,
+                    'fm':       parsed['fm'],
+                    'body':     parsed['body'],
+                })
+        return articles
+
+    def _save_article(self, section, slug, data):
+        from datetime import date as _date
+        base = CONTENT_ESSAYS if section == 'essays' else CONTENT_PRACTICE
+        path = base / f'{slug}.md'
+        fm   = data.get('fm', {})
+        if 'date' not in fm or not fm['date']:
+            fm['date'] = str(_date.today())
+        content = serialize(fm, data.get('body', ''))
+        path.write_text(content, 'utf-8')
+        self._json({'ok': True, 'slug': slug, 'section': section})
 
     def _save_work(self, slug, data):
         path    = PORTFOLIO / f'{slug}.md'

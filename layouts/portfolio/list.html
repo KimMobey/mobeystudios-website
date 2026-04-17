@@ -6,7 +6,7 @@
 
     {{ partial "filters.html" . }}
 
-    <div class="portfolio-grid">
+    <div class="portfolio-grid" id="portfolio-grid">
         {{ range sort .Pages "Params.order" "asc" }}
         {{ if .Params.visible }}
         {{ partial "card.html" . }}
@@ -14,4 +14,87 @@
         {{ end }}
     </div>
 </main>
+{{ end }}
+
+{{ define "scripts" }}
+{{ partial "liked-works-js.html" . }}
+
+<script>
+(function () {
+  var active = { form: '*', status: '*' };
+
+  function applyFilters() {
+    document.querySelectorAll('#portfolio-grid .work-card').forEach(function (card) {
+      var formMatch   = active.form   === '*' || card.classList.contains(active.form.slice(1));
+      var statusMatch = active.status === '*' || card.classList.contains(active.status.slice(1));
+      card.style.display = (formMatch && statusMatch) ? '' : 'none';
+    });
+  }
+
+  function updateURL() {
+    var params = new URLSearchParams();
+    if (active.form   !== '*') params.set('form',   active.form.replace(/^\.form-/, ''));
+    if (active.status !== '*') params.set('status', active.status.replace(/^\.status-/, ''));
+    var qs = params.toString();
+    history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
+  }
+
+  function activateButton(filterValue) {
+    var btn = document.querySelector('.filter-option[data-filter="' + filterValue + '"]');
+    if (!btn) return;
+    var group = btn.closest('.filter-group');
+    if (group) group.querySelectorAll('.filter-option').forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var urlForm   = params.get('form');
+  var urlStatus = params.get('status');
+  if (urlForm)   { active.form   = '.form-'   + urlForm;   activateButton(active.form); }
+  if (urlStatus) { active.status = '.status-' + urlStatus; activateButton(active.status); }
+  applyFilters();
+
+  document.querySelectorAll('.filter-group').forEach(function (group) {
+    var groupKey = group.dataset.group;
+    group.querySelectorAll('.filter-option').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        group.querySelectorAll('.filter-option').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        active[groupKey] = btn.dataset.filter;
+        applyFilters();
+        updateURL();
+      });
+    });
+  });
+}());
+</script>
+
+<a href="/contact/" id="saved-indicator" aria-live="polite" aria-label="Saved works — get in touch">
+    <span id="saved-indicator-heart">♡</span>
+    <span id="saved-indicator-count"></span>
+    <span class="saved-indicator-label">saved · get in touch</span>
+</a>
+<script>
+(function () {
+    var STORE = 'kim-liked-works';
+    var el    = document.getElementById('saved-indicator');
+    var count = document.getElementById('saved-indicator-count');
+
+    function update() {
+        try {
+            var list = JSON.parse(localStorage.getItem(STORE)) || [];
+            if (list.length) {
+                count.textContent = list.length;
+                el.classList.add('visible');
+            } else {
+                el.classList.remove('visible');
+            }
+        } catch (e) {}
+    }
+
+    update();
+    window.addEventListener('storage',           update);
+    window.addEventListener('savedWorksChanged', update);
+}());
+</script>
 {{ end }}
