@@ -25,27 +25,9 @@
         </div>
         {{ end }}
 
-        <div class="work-nav">
-            {{ $pages := sort .Parent.Pages "Params.order" "asc" }}
-            {{ $currentOrder := .Params.order }}
-            {{ range $index, $page := $pages }}
-                {{ if eq $page.Params.order $currentOrder }}
-                    {{ if gt $index 0 }}
-                        {{ with index $pages (sub $index 1) }}
-                        <a href="{{ .RelPermalink }}">← Previous</a>
-                        {{ end }}
-                    {{ else }}
-                        <span></span>
-                    {{ end }}
-                    {{ $last := sub (len $pages) 1 }}
-                    {{ if lt $index $last }}
-                        {{ with index $pages (add $index 1) }}
-                        <a href="{{ .RelPermalink }}">Next →</a>
-                        {{ end }}
-                    {{ end }}
-                {{ end }}
-            {{ end }}
-        </div>
+        <nav class="work-nav">
+            <a href="/portfolio/">← Back</a>
+        </nav>
     </div>
 </main>
 {{ end }}

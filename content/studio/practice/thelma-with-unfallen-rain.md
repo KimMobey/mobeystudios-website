@@ -1,6 +1,7 @@
 ---
 title: "Thelma with Unfallen Rain: The Making Of"
 date: 2026-04-06
+weight: 2
 description: "Process notes on a large acrylic portrait painted during the Cape Town water crisis."
 ---
 
