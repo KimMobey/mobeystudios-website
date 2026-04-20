@@ -21,3 +21,43 @@
     </article>
 </main>
 {{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+    var content = document.querySelector('.article-content');
+    if (!content) return;
+
+    // Only pure image paragraphs (markdown `![](...)` renders as `<p><img></p>`).
+    var imgParas = Array.from(content.querySelectorAll('p')).filter(function (p) {
+        return p.children.length === 1 && p.firstElementChild.tagName === 'IMG';
+    });
+
+    var lastIdx = imgParas.length - 1;
+
+    imgParas.forEach(function (p, i) {
+        var next = p.nextElementSibling;
+        var fig  = document.createElement('figure');
+
+        if (i === 0 || i === lastIdx) {
+            // First and last images: centred half-width frame.
+            fig.className = 'article-figure article-figure--center';
+        } else {
+            // Middle images: alternate left/right floats, starting left.
+            var floatLeft = ((i - 1) % 2 === 0);
+            fig.className = 'article-figure ' + (floatLeft ? 'img-float--left' : 'img-float--right');
+        }
+
+        p.parentNode.insertBefore(fig, p);
+        fig.appendChild(p);
+
+        if (next && next.tagName === 'P' && next.children.length === 1 && next.firstElementChild.tagName === 'EM') {
+            var caption = document.createElement('figcaption');
+            caption.innerHTML = next.firstElementChild.innerHTML;
+            fig.appendChild(caption);
+            next.remove();
+        }
+    });
+}());
+</script>
+{{ end }}

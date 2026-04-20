@@ -1,9 +1,9 @@
 ---
 title: "Empathy as Data — a portrait practice defined"
 subtitle: "On basing ideas on real knowledge, and empathy as a source of understanding."
-date: 2026-04-15
+weight: 1
 thumbnail: "/images/essays/it-looks-like-steve-was-right-thumbnail.webp"
-summary: "On basing ideas on real knowledge, and empathy as a source of understanding."
+description: "On basing ideas on real knowledge, and empathy as a source of understanding."
 ---
 
 Baboons in Cape Town used to sit on our lawn and pick on the ones smaller than them. Under stress, they became even more irrationally violent to each other. Abusive partners and parents do the same, taking out frustrations on the target least likely to hit back, or the one that offers the most emotional reward for provocation.
@@ -18,13 +18,13 @@ The architects of the crisis were almost certainly funded by foreign, anti-Europ
 
 > "This attack, intended to chill and terrify, typically includes threats of law suits, overt and covert attacks on the whistle-blower's credibility, and so on. The attack will often take the form of focusing on ridiculing the person who attempts to hold the offender accountable. [...] [T]he offender rapidly creates the impression that the abuser is the wronged one, while the victim or concerned observer is the offender. Figure and ground are completely reversed. [...] The offender is on the offense and the person attempting to hold the offender accountable is put on the defense."
 >
-> <cite>Jennifer j. Freyd, "Violations of Power, Adaptive Blindness and Betrayal Trauma Theory" (1997)</cite>
+> *Jennifer j. Freyd, "Violations of Power, Adaptive Blindness and Betrayal Trauma Theory" (1997)*
 
 "Brexit means Brexit" became a thought-cancelling tautology. You cannot argue with a tautology. Similarly, "will of the people" made democratic revision structurally illegitimate, while "enemies of the people" criminalised dissent. Robert Lifton called this loaded language: the control of meaning-making through the control of vocabulary, making alternative meanings unspeakable. These phrases, along with "thought cancelling cliches", have been used in many languages across history, right up to today. It is striking how reliably the will of the people is ignored when it wants the wrong things from those in power.
 
 > "The basic tool for the manipulation of reality is the manipulation of words. If you can control the meaning of words, you can control the people who must use the words."
 >
-> <cite>Philip K. Dick, "How To Build A Universe That Doesn't Fall Apart Two Days Later" (1978). Published in <em>The Shifting Realities of Philip K. Dick: Selected Literary and Philosophical Writings</em>, ed. Lawrence Sutin. Vintage Books, 1995.</cite>
+> *Philip K. Dick, "How To Build A Universe That Doesn't Fall Apart Two Days Later" (1978). Published in "The Shifting Realities of Philip K. Dick: Selected Literary and Philosophical Writings", ed. Lawrence Sutin. Vintage Books, 1995.*
 
 In 2019 I visited the UK, tentatively planning my migration there. I walked London until my hiking shoes needed new insoles. Most days I didn't take my camera, but I did on the day I went specifically to the Houses of Parliament to try to understand the protesters. Both sides. I was living that month with a family who had voted Leave, and I was profoundly confused by their logic since none of the evidence seemed to match, even though they were perfectly intelligent people who prided themselves on being "intellectual".
 

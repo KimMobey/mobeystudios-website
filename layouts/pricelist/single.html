@@ -1,0 +1,187 @@
+{{ define "title" }}{{ .Title }}{{ end }}
+
+{{ define "head" }}
+<meta name="robots" content="noindex, nofollow">
+{{ end }}
+
+{{ define "main" }}
+<main class="pricelist-page">
+
+  <section id="pricelist-gate" class="pricelist-gate">
+    <h1>Private</h1>
+    <p class="pricelist-gate__hint">Enter password to continue.</p>
+    <form id="pricelist-form" autocomplete="off">
+      <input type="password" id="pricelist-input" aria-label="Password" autocomplete="current-password">
+      <button type="submit" class="btn-primary">Unlock</button>
+    </form>
+    <p id="pricelist-error" class="pricelist-gate__error" role="alert"></p>
+  </section>
+
+  <section id="pricelist-content" class="pricelist-content" hidden>
+    <div class="pricelist-toolbar">
+      <h1>Pricelist</h1>
+      <input type="search" id="pricelist-filter" placeholder="Filter…" aria-label="Filter works">
+      <span id="pricelist-count" class="pricelist-count"></span>
+      <button type="button" id="pricelist-lock" class="btn-ghost">Lock</button>
+    </div>
+
+    {{ $works := where (where .Site.RegularPages "Section" "portfolio") "Params.stub" "ne" true }}
+    {{ $works := sort $works "Params.order" "asc" }}
+
+    <table class="pricelist-table">
+      <thead>
+        <tr>
+          <th data-sort="title">Title</th>
+          <th data-sort="status">Status</th>
+          <th data-sort="year">Year</th>
+          <th data-sort="dimensions">Dimensions</th>
+          <th data-sort="medium">Medium</th>
+          <th data-sort="substrate">Substrate</th>
+          <th data-sort="series">Series</th>
+          <th data-sort="category">Category</th>
+          <th data-sort="price" class="num">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $works }}
+        {{ $status := index .Params.statuses 0 | default "" }}
+        {{ $medium := "" }}
+        {{ with .Params.media }}
+          {{ if reflect.IsSlice . }}{{ $medium = delimit . ", " }}{{ else }}{{ $medium = . }}{{ end }}
+        {{ end }}
+        {{ $substrate := "" }}
+        {{ with .Params.substrate }}
+          {{ if reflect.IsSlice . }}{{ $substrate = delimit . ", " }}{{ else }}{{ $substrate = . }}{{ end }}
+        {{ end }}
+        <tr data-status="{{ $status }}">
+          <td data-label="Title">{{ .Title }}</td>
+          <td data-label="Status" class="status status--{{ $status | urlize }}">{{ $status }}</td>
+          <td data-label="Year">{{ .Params.year }}</td>
+          <td data-label="Dimensions">{{ .Params.dimensions }}</td>
+          <td data-label="Medium">{{ $medium }}</td>
+          <td data-label="Substrate">{{ $substrate }}</td>
+          <td data-label="Series">{{ .Params.series }}</td>
+          <td data-label="Category">{{ .Params.category }}</td>
+          <td data-label="Price" class="num" data-sort-value="{{ .Params.price | default 0 }}">
+            {{ with .Params.price }}{{ printf "%d" . }}{{ end }}
+          </td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </section>
+</main>
+{{ end }}
+
+{{ define "scripts" }}
+<script>
+(function () {
+  // SHA-256 of the password. Plaintext is not stored anywhere.
+  const EXPECTED_HASH = 'ee4bdcee86aca7395e28c415305c77dc465a934b7cb83decf8c264e7588467ee';
+  const STORAGE_KEY   = 'kim-pricelist-unlocked';
+
+  const gate     = document.getElementById('pricelist-gate');
+  const content  = document.getElementById('pricelist-content');
+  const form     = document.getElementById('pricelist-form');
+  const input    = document.getElementById('pricelist-input');
+  const errorMsg = document.getElementById('pricelist-error');
+  const filter   = document.getElementById('pricelist-filter');
+  const countEl  = document.getElementById('pricelist-count');
+  const lockBtn  = document.getElementById('pricelist-lock');
+  const table    = document.querySelector('.pricelist-table');
+  const tbody    = table && table.querySelector('tbody');
+
+  async function sha256Hex(str) {
+    const buf = new TextEncoder().encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', buf);
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+
+  function unlock() {
+    gate.hidden    = true;
+    content.hidden = false;
+    updateCount();
+    input.value = '';
+    errorMsg.textContent = '';
+    setTimeout(() => filter && filter.focus(), 0);
+  }
+
+  function lock() {
+    content.hidden = true;
+    gate.hidden    = false;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    setTimeout(() => input.focus(), 0);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const hex = await sha256Hex(input.value);
+    if (hex === EXPECTED_HASH) {
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+      unlock();
+    } else {
+      errorMsg.textContent = 'Wrong password.';
+      input.focus();
+      input.select();
+    }
+  });
+
+  lockBtn.addEventListener('click', lock);
+
+  // Remembered unlock
+  try {
+    if (localStorage.getItem(STORAGE_KEY) === '1') unlock();
+  } catch (e) {}
+
+  // ── Table behaviour ────────────────────────────────────────────────────────
+
+  function updateCount() {
+    if (!tbody || !countEl) return;
+    const total   = tbody.children.length;
+    const visible = Array.from(tbody.children).filter(r => r.style.display !== 'none').length;
+    countEl.textContent = (visible === total) ? `${total} works` : `${visible} / ${total}`;
+  }
+
+  if (filter) {
+    filter.addEventListener('input', () => {
+      const q = filter.value.trim().toLowerCase();
+      Array.from(tbody.children).forEach(tr => {
+        const text = tr.textContent.toLowerCase();
+        tr.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+      updateCount();
+    });
+  }
+
+  // Sorting
+  if (table) {
+    const headers = table.querySelectorAll('th[data-sort]');
+    const sortState = { col: null, asc: true };
+    headers.forEach((th, i) => {
+      th.addEventListener('click', () => {
+        const rows = Array.from(tbody.children);
+        const asc  = (sortState.col === i) ? !sortState.asc : true;
+        sortState.col = i;
+        sortState.asc = asc;
+        rows.sort((a, b) => {
+          const ac = a.children[i];
+          const bc = b.children[i];
+          const av = ac.dataset.sortValue ?? ac.textContent.trim();
+          const bv = bc.dataset.sortValue ?? bc.textContent.trim();
+          const an = parseFloat(av), bn = parseFloat(bv);
+          let cmp;
+          if (!isNaN(an) && !isNaN(bn)) cmp = an - bn;
+          else cmp = av.localeCompare(bv);
+          return asc ? cmp : -cmp;
+        });
+        rows.forEach(r => tbody.appendChild(r));
+        headers.forEach(h => h.removeAttribute('data-direction'));
+        th.setAttribute('data-direction', asc ? 'asc' : 'desc');
+      });
+    });
+  }
+})();
+</script>
+{{ end }}

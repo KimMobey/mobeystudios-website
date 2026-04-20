@@ -9,3 +9,7 @@ _dev/
 
 # OS
 .DS_Store
+
+# Python bytecode cache (admin_server.py)
+__pycache__/
+*.pyc

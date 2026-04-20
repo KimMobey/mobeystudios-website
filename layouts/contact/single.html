@@ -11,8 +11,16 @@
     <div class="contact-form-container">
         <p class="contact-note">While sold and reserved works are not available for purchase, enquiries about similar and future works are always welcome.</p>
 
+        <section id="liked-works-panel" aria-label="Selected artworks" hidden>
+            <div class="liked-works-header">
+                <h2>Selected artworks</h2>
+                <a class="liked-works-add" href="/portfolio/">Add more items to your enquiry →</a>
+            </div>
+            <div id="liked-works-grid" class="liked-works-grid"></div>
+        </section>
+
         <p class="required-note">Fields marked <span class="required" aria-hidden="true">*</span><span class="sr-only">with an asterisk</span> are required.</p>
-        <form id="contact-form" action="https://formspree.io/f/xzdbyoza" method="POST" enctype="multipart/form-data">
+        <form id="contact-form" action="https://formspree.io/f/xzdbyoza" method="POST">
 
             <label>
                 First Name <span class="required">*</span>
@@ -40,16 +48,11 @@
             </label>
 
             <input type="hidden" id="f-saved-works" name="savedWorks">
+            <textarea id="f-selected-artworks" name="selectedArtworks" hidden></textarea>
 
             <label>
                 Message <span class="required">*</span>
                 <textarea name="message" required rows="6"></textarea>
-            </label>
-
-            <label>
-                Attach artwork image (optional)
-                <input type="file" name="upload" accept="image/*" aria-describedby="upload-hint">
-                <small id="upload-hint">You can attach an image of the artwork you're interested in</small>
             </label>
 
             <input type="hidden" name="_subject" value="New inquiry from Kim Mobey Art website">
@@ -69,23 +72,91 @@
 {{ define "scripts" }}
 <script>
 (function () {
-    var STORE = 'kim-liked-works';
-    try {
-        var saved = JSON.parse(localStorage.getItem(STORE)) || [];
-        if (!saved.length) return;
+  var STORE    = 'kim-liked-works';
+  var EXCLUDED = 'kim-excluded-works';
 
-        // Pre-fill the artworks field if it is empty
-        var artworksField = document.getElementById('f-artworks');
-        if (artworksField && !artworksField.value.trim()) {
-            artworksField.value = saved.map(function (w) { return w.title; }).join(', ');
-        }
+  function load(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; }
+    catch (e) { return []; }
+  }
+  function save(key, list) { localStorage.setItem(key, JSON.stringify(list)); }
 
-        // Always populate the hidden metadata field
-        var hiddenField = document.getElementById('f-saved-works');
-        if (hiddenField) {
-            hiddenField.value = saved.map(function (w) { return w.title; }).join(' | ');
-        }
-    } catch (e) {}
+  var saved    = load(STORE);
+  var excluded = load(EXCLUDED);
+
+  var panel   = document.getElementById('liked-works-panel');
+  var grid    = document.getElementById('liked-works-grid');
+  var payload = document.getElementById('f-selected-artworks');
+  var legacy  = document.getElementById('f-saved-works');
+  var artF    = document.getElementById('f-artworks');
+  var form    = document.getElementById('contact-form');
+
+  if (!saved.length) return;
+  panel.hidden = false;
+
+  function isExcluded(title) { return excluded.indexOf(title) !== -1; }
+  function toggleExclude(title) {
+    var i = excluded.indexOf(title);
+    if (i === -1) excluded.push(title);
+    else          excluded.splice(i, 1);
+    save(EXCLUDED, excluded);
+    render();
+    buildPayload();
+  }
+
+  function render() {
+    grid.innerHTML = '';
+    saved.forEach(function (w) {
+      var card = document.createElement('div');
+      card.className = 'liked-thumb' + (isExcluded(w.title) ? ' is-excluded' : '');
+
+      var img = document.createElement('img');
+      img.src = w.image || '';
+      img.alt = w.title || '';
+      img.loading = 'lazy';
+
+      var label = document.createElement('div');
+      label.className = 'liked-thumb-title';
+      label.textContent = w.title || '';
+
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'liked-thumb-remove';
+      rm.setAttribute('aria-label', isExcluded(w.title) ? 'Re-include in enquiry' : 'Exclude from enquiry');
+      rm.textContent = isExcluded(w.title) ? '↺' : '×';
+      rm.addEventListener('click', function () { toggleExclude(w.title); });
+
+      card.appendChild(img);
+      card.appendChild(label);
+      card.appendChild(rm);
+      grid.appendChild(card);
+    });
+  }
+
+  function buildPayload() {
+    var active = saved.filter(function (w) { return !isExcluded(w.title); });
+    var lines = active.map(function (w) {
+      var parts = [w.title || ''];
+      if (w.url)   parts.push(w.url);
+      if (w.image) parts.push('image: ' + w.image);
+      return parts.join(' — ');
+    });
+    if (payload) payload.value = lines.join('\n');
+    if (legacy)  legacy.value  = active.map(function (w) { return w.title; }).join(' | ');
+    if (artF && !artF.value.trim()) {
+      artF.value = active.map(function (w) { return w.title; }).join(', ');
+    }
+  }
+
+  render();
+  buildPayload();
+
+  if (form) {
+    form.addEventListener('submit', function () {
+      buildPayload();
+      localStorage.removeItem(EXCLUDED);
+    });
+  }
 }());
 </script>
 {{ end }}

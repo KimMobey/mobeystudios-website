@@ -8,11 +8,13 @@ Here it is:
 
 **TAXONOMIES** *These drive navigation and filtering. Values must match exactly — capitalisation and spelling are fixed.*
 
-**medium** Values: `oil` `acrylic` `pastel` `charcoal` `ink` `mixed-media` `bronze` `resin` `pewter` `concrete` `linocut` `etching` `screenprint` `aquarelle`
+**medium** Values: `oil` `acrylic` `pastel` `charcoal` `ink` `mixed-media` `bronze` `resin` `pewter` `concrete` `linocut` `etching` `screenprint` `aquarelle` *Now list-valued on each work — a single piece can list multiple media (e.g. oil + charcoal).*
 
-**form** Values: `portrait` `figure` `landscape` `floral` `interior` `abstract` `still-life` `hybrid` *Note: still-life to be confirmed pending portfolio review*
+**substrate** Values: `canvas` `linen` `board` `paper` `wood` `stone` `metal` `ceramic` *Now list-valued. Optional — sculpture often has no substrate. Extend the list as new materials enter the practice.*
 
-**theme** Values: `migration` `identity` `mythology` `ecology` *Note: this list is deliberately short at launch — add terms only when three or more works share a theme*
+**form** Values: `portrait` `figure` `landscape` `floral` `interior` `abstract` `still-life` `hybrid` `surreal` *Note: still-life to be confirmed pending portfolio review*
+
+**theme** Values: `migration` `identity` `mythology` `ecology` `political` `biography` *Note: this list is deliberately short at launch — add terms only when three or more works share a theme*
 
 **status** Values: `available` `reserved` `sold`
 
@@ -26,8 +28,8 @@ Here it is:
 | ----- | ----- | ----- | ----- |
 | `title` | text | yes | Use title case |
 | `year` | integer | yes | Year of completion |
-| `medium` | taxonomy | yes | Base material only — oil, acrylic etc |
-| `substrate` | text | yes | canvas, linen, board, paper, resin etc |
+| `medium` | taxonomy (list) | yes | Base material(s) — oil, acrylic etc. Mandatory. |
+| `substrate` | taxonomy (list) | yes | canvas, linen, board, paper etc. Optional — sculpture often has none. |
 | `dimensions` | text | yes | Format: 90 × 120cm always |
 | `form` | taxonomy | yes | What is depicted |
 | `theme` | taxonomy | yes | What it is about — optional |

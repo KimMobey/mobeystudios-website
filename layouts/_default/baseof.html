@@ -17,7 +17,8 @@
     {{ partial "nav.html" . }}
     
     <div id="main-content">{{ block "main" . }}{{ end }}</div>
-    
+
+    {{ partial "selection-strip.html" . }}
     {{ partial "footer.html" . }}
     
     <script>
@@ -32,6 +33,7 @@
             }
         })();
     </script>
+    {{ partial "liked-works-js.html" . }}
     {{ block "scripts" . }}{{ end }}
 </body>
 </html>

@@ -1,8 +1,8 @@
 ---
-title: "Thelma with Unfallen Rain: The Making Of"
-date: 2026-04-06
+title: "The Making Of Thelma with Unfallen Rain"
 weight: 2
 description: "Process notes on a large acrylic portrait painted during the Cape Town water crisis."
+thumbnail: "/images/articles/unfallen-rain-1.jpg"
 ---
 
 ![Early stages of underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-1.jpg)

@@ -1,16 +1,30 @@
-{{ define "title" }}Studio Practice - {{ .Site.Title }}{{ end }}
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
 
 {{ define "main" }}
 <main class="studio-subsection">
-    <h1>Studio Practice</h1>
-    
+    <h1>{{ .Title }}</h1>
+
     <div class="article-list">
-        {{ range .Pages }}
-        <article class="article-preview">
-            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-            {{ with .Summary }}
-            <p>{{ . }}</p>
+        {{ $practice   := (.Site.GetPage "/studio/practice").Pages }}
+        {{ $media      := (.Site.GetPage "/studio/media").Pages }}
+        {{ $combined   := union $practice $media }}
+        {{ $weighted   := where $combined "Params.weight" "ne" nil }}
+        {{ $unweighted := where $combined "Params.weight" nil }}
+        {{ range union (sort $weighted "Params.weight" "asc") $unweighted }}
+        {{ $permalink := .RelPermalink }}
+        {{ $title := .Title }}
+        <article class="article-preview{{ with .Params.thumbnail }} article-preview--with-thumb{{ end }}">
+            {{ with .Params.thumbnail }}
+            <a href="{{ $permalink }}" class="article-thumb-link" tabindex="-1" aria-hidden="true">
+                <img class="article-thumb" src="{{ . }}" alt="">
+            </a>
             {{ end }}
+            <div class="article-preview__body">
+                <h2><a href="{{ $permalink }}">{{ $title }}</a></h2>
+                {{ with .Params.description }}
+                <p>{{ . }}</p>
+                {{ end }}
+            </div>
         </article>
         {{ end }}
     </div>

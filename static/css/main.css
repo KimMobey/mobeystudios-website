@@ -25,7 +25,6 @@
     --text-md: 20px;
     --text-lg: 26px;
     --text-xl: 34px;
-    --text-2xl: 52px;
 
     /* Line heights */
     --leading-tight: 1.2;
@@ -35,6 +34,10 @@
     /* Spacing */
     --max-width: 1200px;
     --max-width-wide: 1400px;
+    /* Reading measure — single source of truth for any longform prose container
+       (home intro, studio intro, essays, articles, video descriptions, contact
+       copy, section indexes). Change here to widen/narrow every reading column. */
+    --max-width-reading: 880px;
     --page-padding: 40px;
 }
 
@@ -79,9 +82,9 @@ a {
 
 body {
     font-family: var(--font-sans-secondary);
-    font-size: 18px;
-    font-weight: 400;
-    line-height: var(--leading-body);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: var(--leading-loose);
     color: var(--color-text-primary);
     background-color: var(--color-bg-primary);
 }
@@ -289,6 +292,22 @@ footer {
     margin-bottom: 64px;
 }
 
+.home-intro {
+    max-width: var(--max-width-reading);
+    margin: 0 auto 64px;
+}
+
+.home-intro p {
+    margin-bottom: 1.2em;
+}
+
+.home-intro hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 2em auto;
+    max-width: 120px;
+}
+
 .pathways {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -363,14 +382,6 @@ footer {
     margin-left: 48px;
     border-left: 1px solid #d4d0cd;
     /* Constrain rule height by using line-height on the group */
-}
-
-.filter-label {
-    font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--color-text-primary);
-    margin-right: 16px;
 }
 
 .filter-option {
@@ -476,7 +487,27 @@ footer {
     line-height: var(--leading-body);
 }
 
-/* Like button */
+/* Like button + status dot stack in top-right corner of card */
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: transparent;
+    margin-top: 2px;
+}
+
+.status-dot--available { background-color: #7fa864; }
+.status-dot--reserved  { background-color: #8e7965; }
+.status-dot--sold      { background-color: #b35454; }
+
 .like-btn {
     flex-shrink: 0;
     background: none;
@@ -511,38 +542,33 @@ footer {
     fill: currentColor;
 }
 
-/* Saved works indicator */
-#saved-indicator {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background-color: var(--color-accent);
-    color: var(--color-white);
-    padding: 8px 16px;
-    border-radius: 24px;
+/* Site-wide selection strip — sits in flow above footer */
+#selection-strip {
+    display: none;
+    max-width: var(--max-width-wide);
+    margin: 0 auto;
+    padding: 18px var(--page-padding);
+    text-align: right;
+}
+
+#selection-strip.visible {
+    display: block;
+}
+
+#selection-strip-link {
+    display: inline-block;
+    padding: 4px 8px;
     text-decoration: none;
-    font-family: var(--font-sans-secondary);
+    font-family: var(--font-sans-primary);
     font-size: var(--text-xs);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    z-index: 100;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    transition: color 0.2s ease;
 }
 
-#saved-indicator.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-#saved-indicator-heart {
-    font-size: 14px;
-}
-
-#saved-indicator-count {
-    font-weight: 500;
+#selection-strip-link:hover {
+    color: var(--color-accent);
 }
 
 
@@ -583,9 +609,70 @@ footer {
     display: block;
 }
 
-/* Caption */
+/* Caption row: metadata on the left, like-button balanced on the right */
+.caption-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
 .caption-block {
+    position: relative;
     max-width: 560px;
+    flex: 1;
+    min-width: 0;
+}
+
+.caption-actions {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.like-btn--caption {
+    margin-top: 0;
+    padding: 8px;
+    color: var(--color-text-secondary);
+    opacity: 0.45;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.like-btn--caption:hover {
+    opacity: 1;
+    color: var(--color-text-primary);
+}
+
+.like-btn--caption .like-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.status-dot--caption {
+    width: 12px;
+    height: 12px;
+}
+
+.caption-status-line {
+    position: relative;
+    display: block;
+    width: 12px;
+    height: 12px;
+}
+
+.caption-status-word {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 10px);
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    line-height: 1;
 }
 
 .caption-block h2 {
@@ -624,6 +711,16 @@ footer {
     text-decoration: none;
     margin-right: 16px;
     transition: opacity 0.2s ease;
+}
+
+.tax-link--theme {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    text-transform: lowercase;
+    color: var(--color-accent);
+    opacity: 0.7;
+    margin-right: 10px;
 }
 
 .tax-link:hover {
@@ -680,13 +777,16 @@ footer {
 }
 
 .studio-intro {
-    max-width: 720px;
+    max-width: var(--max-width-reading);
     margin: 0 auto 80px;
-    text-align: center;
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-md);
-    color: var(--color-text-secondary);
-    line-height: var(--leading-loose);
+}
+
+.studio-intro p {
+    margin-bottom: 1.2em;
+}
+
+.studio-intro p:last-child {
+    margin-bottom: 0;
 }
 
 .studio-sections {
@@ -696,8 +796,16 @@ footer {
 }
 
 .studio-section-card {
+    display: block;
     padding: 40px;
     background-color: var(--color-bg-secondary);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: opacity 0.2s ease;
+}
+
+.studio-section-card:hover {
+    opacity: 0.75;
 }
 
 .studio-section-card h2 {
@@ -706,16 +814,7 @@ footer {
     font-weight: 400;
     letter-spacing: 0.05em;
     margin-bottom: 16px;
-}
-
-.studio-section-card h2 a {
-    text-decoration: none;
     color: var(--color-text-primary);
-    transition: color 0.2s ease;
-}
-
-.studio-section-card h2 a:hover {
-    color: var(--color-accent);
 }
 
 .studio-section-card p {
@@ -740,7 +839,7 @@ footer {
 .essay-list,
 .article-list,
 .video-list {
-    max-width: 720px;
+    max-width: var(--max-width-reading);
     margin: 0 auto;
 }
 
@@ -781,16 +880,6 @@ footer {
     color: var(--color-accent);
 }
 
-.essay-preview time,
-.article-preview time,
-.video-preview time {
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    display: block;
-    margin-bottom: 12px;
-}
-
 .essay-preview p,
 .article-preview p,
 .video-preview p {
@@ -800,10 +889,34 @@ footer {
     color: var(--color-text-secondary);
 }
 
+/* Practice and essay lists: thumbnail + text row */
+.article-preview--with-thumb,
+.essay-preview--with-thumb {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.article-thumb-link {
+    flex-shrink: 0;
+    display: block;
+}
+
+.article-thumb {
+    height: 80px;
+    width: auto;
+    display: block;
+}
+
+.article-preview__body {
+    flex: 1;
+    min-width: 0;
+}
+
 .essay-page,
 .article-page,
 .video-page {
-    max-width: 720px;
+    max-width: var(--max-width-reading);
     margin: 0 auto;
     padding: 80px var(--page-padding);
 }
@@ -817,28 +930,7 @@ footer {
     margin-bottom: 12px;
 }
 
-.essay-page time,
-.article-page time,
-.video-page time {
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-sm);
-    color: var(--color-text-secondary);
-    display: block;
-    margin-bottom: 56px;
-}
-
-/* ── Longform prose — shared rules ── */
-.essay-content,
-.article-content,
-.video-description,
-.work-body,
-.collated-block__prose {
-    font-family: var(--font-sans-secondary);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: var(--leading-loose);
-}
-
+/* ── Longform prose — shared rules (typography inherits from body) ── */
 .essay-content,
 .article-content,
 .video-description {
@@ -895,21 +987,118 @@ footer {
 }
 
 /* Article inline images — full column width with spacing */
-.article-content p:has(> img) {
+/* Excludes floated images (handled by JS-assigned classes) */
+.article-content p:has(> img):not(.img-float--left):not(.img-float--right),
+.essay-content   p:has(> img):not(.img-float--left):not(.img-float--right) {
     margin-top: 48px;
     margin-bottom: 0;
 }
 
-.article-content img {
+.article-content img,
+.essay-content img {
     width: 100%;
 }
 
 /* Italic-only paragraphs treated as image captions */
-.article-content p:has(> em:only-child) {
+.article-content p:has(> em:only-child),
+.essay-content   p:has(> em:only-child) {
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
     margin-top: 10px;
     margin-bottom: 40px;
+}
+
+/* Alternating left/right floats for middle images in practice articles */
+.img-float--left,
+.img-float--right {
+    width: 44%;
+    margin-top: 8px;
+    margin-bottom: 32px;
+}
+
+.img-float--left {
+    float: left;
+    margin-right: 48px;
+}
+
+.img-float--right {
+    float: right;
+    margin-left: 48px;
+}
+
+/* Cap image height so a tall image never overflows past its paired paragraph */
+.img-float--left img,
+.img-float--right img {
+    max-height: 26em;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Centred frame for first/last article images (auto-detected by JS) */
+.article-figure--center {
+    clear: both;
+    display: block;
+    margin: 48px auto;
+    text-align: center;
+}
+
+.article-figure--center img {
+    max-height: 300px;
+    max-width: 100%;
+    width: auto;
+    display: inline-block;
+}
+
+/* Image + caption figure — ensures caption stays directly beneath its image */
+.article-figure {
+    margin: 0 0 24px;
+}
+
+.article-figure p {
+    margin: 0;
+}
+
+.article-figure img {
+    width: 100%;
+    display: block;
+}
+
+.article-figure figcaption {
+    margin-top: 8px;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-secondary);
+    line-height: var(--leading-body);
+}
+
+.article-figure.img-float--left,
+.article-figure.img-float--right {
+    margin-bottom: 24px;
+}
+
+/* Clearfix so article/essay content expands past floated children */
+.article-content::after,
+.essay-content::after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+/* Callout / pull-quote block */
+.callout {
+    margin: 40px 0;
+    padding: 20px 28px;
+    border-left: 2px solid var(--color-accent);
+    background-color: var(--color-bg-secondary);
+    font-family: var(--font-sans-secondary);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-loose);
+}
+
+.callout p {
+    margin-bottom: 0;
 }
 
 /* ── Essay header with optional thumbnail ── */
@@ -960,7 +1149,8 @@ footer {
 .work-nav--top {
     margin-top: 0;
     padding-top: 0;
-    padding-bottom: 32px;
+    padding-bottom: 20px;
+    margin-bottom: 48px;
     border-top: none;
     border-bottom: 1px solid var(--color-border);
 }
@@ -1072,50 +1262,11 @@ footer {
 }
 
 /* =============================================================================
-   11. ABOUT PAGE
-   ============================================================================= */
-
-.about-page {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 80px var(--page-padding);
-}
-
-.about-page h1 {
-    font-size: var(--text-xl);
-    font-weight: 400;
-    margin-bottom: 56px;
-    text-align: center;
-}
-
-.about-content {
-    font-family: var(--font-sans-secondary);
-    font-size: var(--text-base);
-    line-height: var(--leading-loose);
-    color: var(--color-text-primary);
-}
-
-.about-content h2 {
-    font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin: 48px 0 16px;
-    color: var(--color-text-primary);
-}
-
-.about-content p {
-    margin-bottom: 24px;
-}
-
-
-/* =============================================================================
    12. CONTACT PAGE
    ============================================================================= */
 
 .contact-page {
-    max-width: 720px;
+    max-width: var(--max-width-reading);
     margin: 0 auto;
     padding: 80px var(--page-padding);
 }
@@ -1138,6 +1289,90 @@ footer {
     margin-bottom: 32px;
     line-height: var(--leading-body);
 }
+
+/* Selected-artworks panel on contact page */
+#liked-works-panel {
+    margin-bottom: 40px;
+    padding: 20px 22px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.liked-works-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.liked-works-header h2 {
+    font-family: var(--font-sans-primary);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.liked-works-add {
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    text-decoration: none;
+}
+.liked-works-add:hover { text-decoration: underline; }
+
+.liked-works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 100px));
+    gap: 10px;
+}
+
+.liked-thumb {
+    position: relative;
+    width: 100px;
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.liked-thumb img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.liked-thumb-title {
+    font-family: var(--font-sans-secondary);
+    font-size: 11px;
+    color: var(--color-text-primary);
+    padding: 4px 6px;
+    line-height: 1.25;
+}
+
+.liked-thumb-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(26, 26, 26, 0.72);
+    color: var(--color-white);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.liked-thumb-remove:hover { background-color: var(--color-accent); }
+
+.liked-thumb.is-excluded { opacity: 0.35; filter: grayscale(0.9); }
+.liked-thumb.is-excluded .liked-thumb-title { text-decoration: line-through; }
 
 .required-note {
     font-family: var(--font-sans-secondary);
@@ -1278,7 +1513,7 @@ footer {
 }
 
 .taxonomy-terms {
-    max-width: 720px;
+    max-width: var(--max-width-reading);
     margin: 0 auto;
     padding: 80px var(--page-padding);
 }
@@ -1375,13 +1610,6 @@ footer {
 @media (max-width: 768px) {
     :root {
         --page-padding: 20px;
-    }
-
-    /* Cormorant Garamond base size increases on mobile */
-    .about-content,
-    .studio-intro,
-    blockquote {
-        font-size: var(--text-md);
     }
 
     /* Header collapses */
@@ -1485,4 +1713,184 @@ footer {
         margin-left: 0;
         border-left: none;
     }
+
+    /* Article image layout: stack everything on mobile */
+    .img-float--left,
+    .img-float--right {
+        float: none;
+        width: 100%;
+        margin: 32px 0 0;
+    }
+
+    .img-float--left img,
+    .img-float--right img {
+        max-height: none;
+    }
+
+    .article-figure--center {
+        max-width: 100%;
+    }
+}
+
+/* ── Private pricelist (/good-things-happen/) ───────────────────────────── */
+
+.pricelist-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px var(--page-padding);
+}
+
+.pricelist-gate {
+    max-width: 420px;
+    margin: 40px auto;
+    text-align: center;
+}
+
+.pricelist-gate h1 {
+    font-family: var(--font-sans-primary);
+    font-weight: 400;
+    font-size: var(--text-lg);
+    margin-bottom: 12px;
+}
+
+.pricelist-gate__hint {
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+}
+
+.pricelist-gate form {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.pricelist-gate input {
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
+.pricelist-gate__error {
+    margin-top: 14px;
+    color: #b64a3c;
+    min-height: 1.4em;
+}
+
+.pricelist-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.pricelist-toolbar h1 {
+    font-family: var(--font-sans-primary);
+    font-weight: 400;
+    font-size: var(--text-lg);
+    margin: 0 8px 0 0;
+}
+
+.pricelist-toolbar input[type="search"] {
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
+.pricelist-count {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+.pricelist-toolbar .btn-ghost {
+    margin-left: auto;
+}
+
+.pricelist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.pricelist-table th,
+.pricelist-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+}
+
+.pricelist-table th {
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    cursor: pointer;
+    user-select: none;
+    position: sticky;
+    top: 0;
+    white-space: nowrap;
+}
+
+.pricelist-table th[data-direction="asc"]::after  { content: ' ▲'; font-size: 10px; }
+.pricelist-table th[data-direction="desc"]::after { content: ' ▼'; font-size: 10px; }
+
+.pricelist-table td.num,
+.pricelist-table th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.pricelist-table tr[data-status="sold"]     td { opacity: 0.55; }
+.pricelist-table tr[data-status="reserved"] td { color: var(--color-text-secondary); }
+.pricelist-table .status { text-transform: capitalize; }
+.pricelist-table .status--available { color: #2f7a3f; font-weight: 500; }
+.pricelist-table .status--reserved  { color: #a97020; }
+.pricelist-table .status--sold      { color: var(--color-text-secondary); }
+
+/* Mobile: collapse rows into stacked cards */
+@media (max-width: 720px) {
+    .pricelist-table,
+    .pricelist-table thead,
+    .pricelist-table tbody,
+    .pricelist-table tr,
+    .pricelist-table td {
+        display: block;
+        width: 100%;
+    }
+    .pricelist-table thead { display: none; }
+    .pricelist-table tr {
+        border: 1px solid var(--color-border);
+        border-radius: 4px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        background: var(--color-bg-primary);
+    }
+    .pricelist-table td {
+        border: none;
+        padding: 4px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .pricelist-table td::before {
+        content: attr(data-label);
+        color: var(--color-text-secondary);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+    }
+    .pricelist-table td:empty { display: none; }
 }

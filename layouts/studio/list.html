@@ -3,26 +3,21 @@
 {{ define "main" }}
 <main class="studio-index">
     <h1>Studio</h1>
-    
-    <div class="studio-intro">
-        <p>Writing, research, and process from the studio</p>
-    </div>
-    
+
+    {{ with .Content }}
+    <div class="studio-intro">{{ . }}</div>
+    {{ end }}
+
     <div class="studio-sections">
-        <div class="studio-section-card">
-            <h2><a href="/studio/essays/">Essays</a></h2>
-            <p>Academic writing, critical essays, institutional research</p>
-        </div>
-        
-        <div class="studio-section-card">
-            <h2><a href="/studio/practice/">Studio Practice</a></h2>
-            <p>Process, making-of, techniques, materials</p>
-        </div>
-        
-        <div class="studio-section-card">
-            <h2><a href="/studio/media/">Media</a></h2>
-            <p>Auto-did-act YouTube content, external articles, and references</p>
-        </div>
+        <a href="/studio/essays/" class="studio-section-card">
+            <h2>Essays</h2>
+            <p>Writing on process, philosophy, and the ideas that don't fit on a canvas.</p>
+        </a>
+
+        <a href="/studio/practice/" class="studio-section-card">
+            <h2>Practice</h2>
+            <p>Process and making-of — techniques, materials, and recorded conversations.</p>
+        </a>
     </div>
 </main>
 {{ end }}

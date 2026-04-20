@@ -1,0 +1,2 @@
+User-agent: *
+Disallow: /good-things-happen/

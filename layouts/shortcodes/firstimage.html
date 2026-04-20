@@ -1,4 +1,0 @@
-<div class="article-frame article-frame--{{ with .Get "width" }}{{ . }}{{ else }}third{{ end }}">
-  <img src="{{ .Get "src" }}" alt="{{ .Get "alt" | default "" }}">
-  {{ with .Inner }}<p class="caption">{{ . | safeHTML }}</p>{{ end }}
-</div>

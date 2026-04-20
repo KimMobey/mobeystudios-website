@@ -15,28 +15,52 @@
     btn.setAttribute('aria-label', liked ? 'Remove from favourites' : 'Save to favourites');
   }
 
-  var list = load();
+  function syncButtons() {
+    var list = load();
+    document.querySelectorAll('.like-btn').forEach(function (btn) {
+      applyLiked(btn, list.some(function (w) { return w.title === btn.dataset.title; }));
+    });
+  }
+
+  function updateStrip() {
+    var strip = document.getElementById('selection-strip');
+    if (!strip) return;
+    var label = document.getElementById('selection-strip-label');
+    var n     = load().length;
+    if (!n) {
+      strip.classList.remove('visible');
+      return;
+    }
+    strip.classList.add('visible');
+    if (label) {
+      label.textContent = n === 1
+        ? 'Enquire about your selected artwork'
+        : 'Enquire about your ' + n + ' selected artworks';
+    }
+  }
 
   document.querySelectorAll('.like-btn').forEach(function (btn) {
-    var title = btn.dataset.title;
-    var image = btn.dataset.image;
-    var isLiked = list.some(function (w) { return w.title === title; });
-    applyLiked(btn, isLiked);
-
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       var current = load();
+      var title   = btn.dataset.title;
+      var image   = btn.dataset.image;
       var idx = current.findIndex(function (w) { return w.title === title; });
       if (idx >= 0) {
         current.splice(idx, 1);
         applyLiked(btn, false);
       } else {
-        current.push({ title: title, image: image });
+        current.push({ title: title, image: image, url: window.location.pathname });
         applyLiked(btn, true);
       }
       save(current);
       window.dispatchEvent(new CustomEvent('savedWorksChanged'));
     });
   });
+
+  syncButtons();
+  updateStrip();
+  window.addEventListener('storage',           function () { syncButtons(); updateStrip(); });
+  window.addEventListener('savedWorksChanged', function () { syncButtons(); updateStrip(); });
 }());
 </script>

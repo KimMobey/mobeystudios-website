@@ -1,6 +1,12 @@
-<div class="work-card {{ range .Params.forms }}form-{{ . | urlize }} {{ end }}{{ with index .Params.statuses 0 }}status-{{ . | urlize }}{{ end }}"
+{{- $status := .Params.statuses -}}
+{{- if reflect.IsSlice $status }}{{ $status = index $status 0 }}{{ end -}}
+{{- $med := .Params.media -}}
+{{- if reflect.IsSlice $med }}{{ $med = index $med 0 }}{{ end -}}
+{{- $sub := .Params.substrate -}}
+{{- if reflect.IsSlice $sub }}{{ $sub = index $sub 0 }}{{ end -}}
+<div class="work-card {{ range .Params.forms }}form-{{ . | urlize }} {{ end }}{{ with $status }}status-{{ . | urlize }}{{ end }}"
      data-form="{{ if .Params.forms }}{{ delimit .Params.forms " " }}{{ end }}"
-     data-status="{{ index .Params.statuses 0 }}"
+     data-status="{{ $status }}"
      data-order="{{ .Params.order }}"
      data-title="{{ .Title }}">
 
@@ -15,18 +21,21 @@
     <div class="card-caption">
         <div class="card-caption-body">
             <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-            {{- $sub := .Params.substrate -}}
-            {{- if reflect.IsSlice $sub }}{{ $sub = index $sub 0 }}{{ end -}}
-            <p class="card-medium">{{ with index .Params.media 0 }}{{ . | lower }}{{ end }}{{ with $sub }} on {{ . | lower }}{{ end }}</p>
+            <p class="card-medium">{{ with $med }}{{ . | lower }}{{ end }}{{ with $sub }} on {{ . | lower }}{{ end }}</p>
             <p class="card-dimensions">{{ .Params.dimensions }}</p>
         </div>
-        <button class="like-btn" aria-label="Save to favourites"
-                data-title="{{ .Title }}"
-                data-image="{{ .Params.image }}">
-            <svg viewBox="0 0 24 24" class="like-icon" aria-hidden="true">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-        </button>
+        <div class="card-actions">
+            <button class="like-btn" aria-label="Save to favourites"
+                    data-title="{{ .Title }}"
+                    data-image="{{ .Params.image }}">
+                <svg viewBox="0 0 24 24" class="like-icon" aria-hidden="true">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </button>
+            {{ with $status }}
+            <span class="status-dot status-dot--{{ . | urlize }}" aria-label="Status: {{ . | title }}" title="{{ . | title }}"></span>
+            {{ end }}
+        </div>
     </div>
 
 </div>

@@ -3,31 +3,35 @@
 {{ define "main" }}
 <main class="homepage">
     <div class="hero-carousel" aria-label="Featured artworks">
-        <div class="carousel-slide"><img src="/images/home/repro-print-000.jpg" alt="Featured artwork"></div>
-        <div class="carousel-slide"><img src="/images/home/repro-print-041.jpg" alt="Featured artwork"></div>
-        <div class="carousel-slide"><img src="/images/home/repro-print-042.jpg" alt="Featured artwork"></div>
-        <div class="carousel-slide"><img src="/images/home/repro-print-043.jpg" alt="Featured artwork"></div>
-        <div class="carousel-slide"><img src="/images/home/repro-print-044.jpg" alt="Featured artwork"></div>
+        {{ range (readDir "static/images/home") }}
+            {{ if not .IsDir }}
+                <div class="carousel-slide"><img src="/images/home/{{ .Name }}" alt="Featured artwork"></div>
+            {{ end }}
+        {{ end }}
     </div>
     
     <div class="audience-pathways">
         <h2>{{ .Site.Title }}</h2>
+        {{ with .Content }}
+        <div class="home-intro">{{ . }}</div>
+        {{ else }}
         <p>{{ .Site.Params.description }}</p>
-        
+        {{ end }}
+
         <div class="pathways">
             <a href="/portfolio/?status=available" class="pathway">
-                <h3>Collecting</h3>
-                <p>Available works, editions, inquiries</p>
+                <h3>Artworks</h3>
+                <p>Available works, editions, and enquiries</p>
             </a>
-            
+
             <a href="/studio/essays/" class="pathway">
-                <h3>Exhibitions & Institutions</h3>
-                <p>CV, series, research, writing</p>
+                <h3>Essays</h3>
+                <p>Writing, research, and the CV</p>
             </a>
-            
+
             <a href="/studio/practice/" class="pathway">
-                <h3>Studio & Practice</h3>
-                <p>Process, making, materials</p>
+                <h3>Practice</h3>
+                <p>Process, making, and reference</p>
             </a>
         </div>
     </div>

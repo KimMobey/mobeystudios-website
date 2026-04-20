@@ -39,9 +39,10 @@ This is a Hugo static site with **no theme** — all layouts are hand-built unde
 |---|---|---|
 | Portfolio | `content/portfolio/` | Artwork — each work is a page bundle (folder with `index.md` + image file) |
 | Studio → Essays | `content/studio/essays/` | Writing, CV content |
-| Studio → Practice | `content/studio/practice/` | Process/making content |
-| About | `content/about.md` | Biography and artist statement |
+| Studio → Practice | `content/studio/practice/` | Process/making content — combined list also surfaces `content/studio/media/` entries |
 | Contact | `content/contact.md` | Contact page |
+
+The About section has been decommissioned. `layouts/about/single.html` remains in the repo as dormant code; there is no `content/about.md` and nothing renders at `/about/`. Do not add About back without explicit instruction.
 
 ### Taxonomies
 
@@ -71,7 +72,7 @@ Dimension format: W × H, cm always implied and never written. Whitespace around
 
 ### Root-level content pages
 
-`content/about.md` and `content/contact.md` sit at the root of `content/` with no section. They must declare `type` explicitly in front matter (`type: "about"`, `type: "contact"`) so Hugo resolves the correct layout template regardless of version.
+`content/contact.md` sits at the root of `content/` with no section. It must declare `type` explicitly in front matter (`type: "contact"`) so Hugo resolves the correct layout template regardless of version.
 
 ### Controlled vocabulary
 

@@ -17,8 +17,6 @@
 {{ end }}
 
 {{ define "scripts" }}
-{{ partial "liked-works-js.html" . }}
-
 <script>
 (function () {
   var active = { form: '*', status: '*' };
@@ -74,35 +72,6 @@
       });
     });
   });
-}());
-</script>
-
-<a href="/contact/" id="saved-indicator" aria-live="polite" aria-label="Saved works — get in touch">
-    <span id="saved-indicator-heart">♡</span>
-    <span id="saved-indicator-count"></span>
-    <span class="saved-indicator-label">saved · get in touch</span>
-</a>
-<script>
-(function () {
-    var STORE = 'kim-liked-works';
-    var el    = document.getElementById('saved-indicator');
-    var count = document.getElementById('saved-indicator-count');
-
-    function update() {
-        try {
-            var list = JSON.parse(localStorage.getItem(STORE)) || [];
-            if (list.length) {
-                count.textContent = list.length;
-                el.classList.add('visible');
-            } else {
-                el.classList.remove('visible');
-            }
-        } catch (e) {}
-    }
-
-    update();
-    window.addEventListener('storage',           update);
-    window.addEventListener('savedWorksChanged', update);
 }());
 </script>
 {{ end }}
