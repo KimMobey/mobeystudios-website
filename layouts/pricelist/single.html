@@ -26,11 +26,10 @@
     </div>
 
     {{ $works := where (where .Site.RegularPages "Section" "portfolio") "Params.stub" "ne" true }}
+    {{ $works := sort $works "Title" "asc" }}
     {{ $priced := where $works "Params.price" "gt" 0 }}
-    {{ $unpriced := where $works "Params.price" nil }}
-    {{ $priced := sort $priced "Title" "asc" }}
-    {{ $unpriced := sort $unpriced "Title" "asc" }}
-    {{ $works := union $priced $unpriced }}
+    {{ $unpriced := complement $priced $works }}
+    {{ $works := $priced | append $unpriced }}
 
     <table class="pricelist-table">
       <thead>
