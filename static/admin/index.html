@@ -192,6 +192,17 @@
       border-color: #d8b98a;
       color: var(--amber);
     }
+    .badge-hidden {
+      background: #f5ede0;
+      border-color: #d8b98a;
+      color: var(--amber);
+    }
+    .card-details {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-2);
+      line-height: 1.35;
+    }
     .work-card.is-incomplete { border-color: #d8b98a; }
     .work-card.is-incomplete:hover { border-color: var(--amber); }
 
@@ -1208,6 +1219,16 @@ function renderGrid() {
     const stubBadge = fm.stub
       ? `<span class="badge" title="Stub — placeholder record">stub</span>`
       : '';
+    const visibilityBadge = hidden
+      ? '<span class="badge badge-hidden" title="Not visible to visitors">hidden</span>'
+      : '<span class="badge" title="Visible to visitors">visible</span>';
+    const mediumStr = Array.isArray(fm.media) ? fm.media.join(', ') : (fm.media ?? '');
+    const detailsParts = [];
+    if (fm.dimensions) detailsParts.push(esc(fm.dimensions));
+    if (mediumStr)     detailsParts.push(esc(mediumStr));
+    const details = detailsParts.length
+      ? `<div class="card-details">${detailsParts.join(' · ')}</div>`
+      : '';
 
     card.innerHTML = `
       <div class="card-img">${imgEl}</div>
@@ -1215,11 +1236,11 @@ function renderGrid() {
         <div class="card-title">${esc(fm.title ?? work.filename)}</div>
         <div class="card-meta">
           <span class="dot ${dotClass}"></span>
-          <span>${esc(String(fm.order ?? ''))}</span>
-          ${hidden ? '<span class="badge">hidden</span>' : ''}
+          ${visibilityBadge}
           ${incompleteBadge}
           ${stubBadge}
         </div>
+        ${details}
       </div>
       ${fm.stub && activeFilter === 'stubs'
         ? `<div class="stub-card-delete"><button type="button" data-action="delete">Delete stub</button></div>`
