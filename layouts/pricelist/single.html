@@ -26,25 +26,31 @@
     </div>
 
     {{ $works := where (where .Site.RegularPages "Section" "portfolio") "Params.stub" "ne" true }}
-    {{ $works := sort $works "Params.order" "asc" }}
+    {{ $priced := where $works "Params.price" "gt" 0 }}
+    {{ $unpriced := where $works "Params.price" nil }}
+    {{ $priced := sort $priced "Title" "asc" }}
+    {{ $unpriced := sort $unpriced "Title" "asc" }}
+    {{ $works := union $priced $unpriced }}
 
     <table class="pricelist-table">
       <thead>
         <tr>
           <th data-sort="title">Title</th>
-          <th data-sort="status">Status</th>
-          <th data-sort="year">Year</th>
+          <th data-sort="price" class="num">Price</th>
           <th data-sort="dimensions">Dimensions</th>
+          <th data-sort="status">Availability</th>
           <th data-sort="medium">Medium</th>
-          <th data-sort="substrate">Substrate</th>
           <th data-sort="series">Series</th>
           <th data-sort="category">Category</th>
-          <th data-sort="price" class="num">Price</th>
+          <th data-sort="year">Year</th>
         </tr>
       </thead>
       <tbody>
         {{ range $works }}
-        {{ $status := index .Params.statuses 0 | default "" }}
+        {{ $status := "" }}
+        {{ with .Params.statuses }}
+          {{ if reflect.IsSlice . }}{{ $status = index . 0 }}{{ else }}{{ $status = . }}{{ end }}
+        {{ end }}
         {{ $medium := "" }}
         {{ with .Params.media }}
           {{ if reflect.IsSlice . }}{{ $medium = delimit . ", " }}{{ else }}{{ $medium = . }}{{ end }}
@@ -53,18 +59,19 @@
         {{ with .Params.substrate }}
           {{ if reflect.IsSlice . }}{{ $substrate = delimit . ", " }}{{ else }}{{ $substrate = . }}{{ end }}
         {{ end }}
+        {{ $materials := $medium }}
+        {{ if and $medium $substrate }}{{ $materials = printf "%s, %s" $medium $substrate }}{{ else if $substrate }}{{ $materials = $substrate }}{{ end }}
         <tr data-status="{{ $status }}">
           <td data-label="Title">{{ .Title }}</td>
-          <td data-label="Status" class="status status--{{ $status | urlize }}">{{ $status }}</td>
-          <td data-label="Year">{{ .Params.year }}</td>
-          <td data-label="Dimensions">{{ .Params.dimensions }}</td>
-          <td data-label="Medium">{{ $medium }}</td>
-          <td data-label="Substrate">{{ $substrate }}</td>
-          <td data-label="Series">{{ .Params.series }}</td>
-          <td data-label="Category">{{ .Params.category }}</td>
           <td data-label="Price" class="num" data-sort-value="{{ .Params.price | default 0 }}">
             {{ with .Params.price }}{{ printf "%d" . }}{{ end }}
           </td>
+          <td data-label="Dimensions">{{ .Params.dimensions }}</td>
+          <td data-label="Availability" class="status status--{{ $status | urlize }}">{{ $status }}</td>
+          <td data-label="Medium">{{ $materials }}</td>
+          <td data-label="Series">{{ .Params.series }}</td>
+          <td data-label="Category">{{ .Params.category }}</td>
+          <td data-label="Year">{{ .Params.year }}</td>
         </tr>
         {{ end }}
       </tbody>

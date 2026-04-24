@@ -10,16 +10,6 @@
         <p class="caption-medium">{{ with $med }}{{ . | lower }}{{ end }}{{ with $sub }} on {{ . | lower }}{{ end }}</p>
         <p class="caption-dimensions">{{ .Params.dimensions }}</p>
 
-        {{ if or .Params.forms .Params.themes }}
-        <div class="caption-taxonomies">
-            {{ range .Params.forms }}
-            <a href="/forms/{{ . | urlize }}/" class="tax-link tax-link--form">{{ . }}</a>
-            {{ end }}
-            {{ range .Params.themes }}
-            <a href="/themes/{{ . | urlize }}/" class="tax-link tax-link--theme">{{ . }}</a>
-            {{ end }}
-        </div>
-        {{ end }}
     </div>
 
     <div class="caption-actions">

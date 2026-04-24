@@ -6,17 +6,29 @@
         <a class="work-back-link" href="/portfolio/">← Back</a>
     </nav>
 
+    {{ $hero := .Params.image }}
+    {{ $gallery := .Params.gallery | default slice }}
+    {{ $all := slice }}
+    {{ with $hero }}{{ $all = $all | append . }}{{ end }}
+    {{ range $gallery }}{{ $all = $all | append . }}{{ end }}
+
     <div class="work-image">
-        {{ with .Params.image }}
-        <img src="{{ . }}" alt="{{ $.Title }}">
+        {{ with $hero }}
+        <img id="work-hero" src="{{ . }}" alt="{{ $.Title }}">
         {{ end }}
     </div>
 
-    {{ with .Params.gallery }}
-    <div class="work-gallery">
-        {{ range . }}
-        <img src="{{ . }}" alt="{{ $.Title }}">
-        {{ end }}
+    {{ if gt (len $all) 1 }}
+    <div class="work-thumbstrip" role="group" aria-label="Additional images">
+        <button type="button" class="work-thumbstrip__arrow work-thumbstrip__arrow--prev" aria-label="Previous image">‹</button>
+        <div class="work-thumbstrip__list">
+            {{ range $i, $src := $all }}
+            <button type="button" class="work-thumb{{ if eq $i 0 }} is-active{{ end }}" data-src="{{ $src }}" aria-label="Show image {{ add $i 1 }}">
+                <img src="{{ $src }}" alt="">
+            </button>
+            {{ end }}
+        </div>
+        <button type="button" class="work-thumbstrip__arrow work-thumbstrip__arrow--next" aria-label="Next image">›</button>
     </div>
     {{ end }}
 
@@ -47,6 +59,36 @@
             });
         }
     } catch (_) {}
+}());
+
+(function () {
+    var hero = document.getElementById('work-hero');
+    var strip = document.querySelector('.work-thumbstrip');
+    if (!hero || !strip) return;
+    var thumbs = Array.from(strip.querySelectorAll('.work-thumb'));
+    var prevBtn = strip.querySelector('.work-thumbstrip__arrow--prev');
+    var nextBtn = strip.querySelector('.work-thumbstrip__arrow--next');
+    var idx = 0;
+
+    function select(i) {
+        idx = (i + thumbs.length) % thumbs.length;
+        var src = thumbs[idx].dataset.src;
+        if (src) hero.src = src;
+        thumbs.forEach(function (t, j) {
+            t.classList.toggle('is-active', j === idx);
+        });
+    }
+
+    thumbs.forEach(function (t, i) {
+        t.addEventListener('click', function () { select(i); });
+    });
+    prevBtn && prevBtn.addEventListener('click', function () { select(idx - 1); });
+    nextBtn && nextBtn.addEventListener('click', function () { select(idx + 1); });
+
+    strip.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft')  { e.preventDefault(); select(idx - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); select(idx + 1); }
+    });
 }());
 </script>
 {{ end }}
