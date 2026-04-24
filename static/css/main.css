@@ -543,13 +543,52 @@ footer {
     fill: currentColor;
 }
 
-/* Site-wide selection strip — sits in flow above footer */
+/* Site-wide selection strip — sits directly below content, separated
+   by a subtle rule. Page containers collapse their bottom padding when
+   the strip is visible (see rules below) so the strip reads as part of
+   the content's tail rather than a detached footer island. */
 #selection-strip {
     display: none;
     max-width: var(--max-width-wide);
     margin: 0 auto;
-    padding: 18px var(--page-padding);
+    padding: 12px var(--page-padding) 16px;
     text-align: right;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Collapse bottom padding of listing/index page containers when the
+   strip is visible, so the rule sits directly after the last content
+   element. Single-page layouts (essay/article/video/portfolio) are
+   excluded — they host the strip inside their bottom back-nav via the
+   .page-end-nav teleport below. Contact is deliberately excluded too,
+   since the strip is hidden there. */
+body:has(#selection-strip.visible) .portfolio-page,
+body:has(#selection-strip.visible) .studio-index,
+body:has(#selection-strip.visible) .studio-subsection,
+body:has(#selection-strip.visible) .taxonomy-page,
+body:has(#selection-strip.visible) .pricelist-page,
+body:has(#selection-strip.visible) .not-found-page {
+    padding-bottom: 24px;
+}
+
+/* Enquire link makes no sense on the contact page — hide the strip. */
+body:has(.contact-page) #selection-strip {
+    display: none;
+}
+
+/* Single-page layouts host the strip inside their bottom back-nav row
+   (marked with .page-end-nav) so it shares a line with the back link.
+   Reset the site-wide strip styles once it's inside the nav. */
+.page-end-nav #selection-strip {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+    border-top: none;
+    text-align: right;
+}
+
+.page-end-nav #selection-strip.visible {
+    display: inline-block;
 }
 
 #selection-strip.visible {
@@ -630,10 +669,14 @@ footer {
     display: block;
 }
 
-.work-thumb:hover,
+.work-thumb:hover {
+    opacity: 1;
+}
+
 .work-thumb:focus-visible {
     opacity: 1;
-    outline: none;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
 .work-thumb.is-active {
@@ -655,10 +698,14 @@ footer {
     transition: color 0.15s ease;
 }
 
-.work-thumbstrip__arrow:hover,
+.work-thumbstrip__arrow:hover {
+    color: var(--color-text-primary);
+}
+
 .work-thumbstrip__arrow:focus-visible {
     color: var(--color-text-primary);
-    outline: none;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
 /* Caption row: metadata on the left, like-button balanced on the right */
@@ -742,38 +789,6 @@ footer {
     font-weight: 400;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
-}
-
-/* Taxonomy labels */
-.caption-taxonomies {
-    margin-top: 20px;
-}
-
-.tax-link {
-    display: inline-block;
-    font-family: var(--font-sans-primary);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-text-primary);
-    text-decoration: none;
-    margin-right: 16px;
-    transition: opacity 0.2s ease;
-}
-
-.tax-link--theme {
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    text-transform: lowercase;
-    color: var(--color-accent);
-    opacity: 0.7;
-    margin-right: 10px;
-}
-
-.tax-link:hover {
-    opacity: 0.65;
 }
 
 /* Artist statement / body text on single artwork page */
@@ -1108,7 +1123,9 @@ footer {
     margin: 0;
 }
 
-.article-figure img {
+/* Default: full-width block (inline/float figures). Centre figures opt out
+   so their natural aspect ratio is preserved against max-height: 300px. */
+.article-figure:not(.article-figure--center) img {
     width: 100%;
     display: block;
 }
@@ -1190,6 +1207,9 @@ footer {
 .video-nav {
     padding-top: 40px;
     border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .essay-nav--top,

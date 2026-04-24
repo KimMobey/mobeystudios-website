@@ -22,6 +22,16 @@
     });
   }
 
+  // Teleport the strip into the page-end-nav if the current page has one,
+  // so the strip shares a row with the bottom back link.
+  (function () {
+    var strip = document.getElementById('selection-strip');
+    var endNav = document.querySelector('.page-end-nav');
+    if (strip && endNav && strip.parentNode !== endNav) {
+      endNav.appendChild(strip);
+    }
+  }());
+
   function updateStrip() {
     var strip = document.getElementById('selection-strip');
     if (!strip) return;

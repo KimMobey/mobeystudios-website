@@ -10,20 +10,31 @@ Kim Mobey is a visual artist with thirty years of professional practice in paint
 ## Selected Exhibitions
 
 **2021** — The Cape Gallery *Wildlife 2021*
+
 **2021** — Rust en Vrede Gallery, Cape Town — *Not A Portrait*
+
 **2020** — Zeitz MOCAA, Cape Town — *Home is where the Art is*
-**2020** —Rust en Vrede Gallery, Cape Town  — *The Grand*
+
+**2020** — Rust en Vrede Gallery, Cape Town — *The Grand*
+
 **2019** — Rust en Vrede Gallery, Cape Town — *National Portrait Top 40*
+
 **2018** — Investec Cape Town Art Fair, Cape Town
+
 **2017** — Turbine Art Fair, Johannesburg
+
 **2017** — Johannesburg Art Fair, Johannesburg
+
 **2017** — Art Africa Fair, V&A Watershed, Cape Town
+
 **2011** — In This Skin (solo), Knysna Gallery — sponsored by Sanlam Private Investments
 
 ## Awards and Competitions
 
 **2019** — Sanlam Portrait Award, Top 40 Shortlist
+
 **2017** — PPC Imaginarium Awards, Sculpture Finalist
+
 **2017** — World of Design Competition, Finalist — CTICC, Cape Town
 
 ## Fellowships and Residencies
