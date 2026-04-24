@@ -9,7 +9,7 @@ media:
   - "oil"
 substrate:
   - "canvas"
-dimensions: "30 × 30cm"
+dimensions: "25 × 25cm"
 series: ""
 category: ""
 price: 0

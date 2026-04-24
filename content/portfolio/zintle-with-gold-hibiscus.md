@@ -2,7 +2,7 @@
 title: "Zintle with Gold Hibiscus"
 media: "oil"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "84 × 120cm"
 statuses: "available"
 forms:
   - "portrait"

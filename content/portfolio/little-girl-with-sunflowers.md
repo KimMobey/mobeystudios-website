@@ -1,9 +1,11 @@
 ---
 title: "Little Girl with Sunflowers"
-media: "oil"
-substrate: "canvas"
-dimensions: "60 × 80cm"
-statuses: "available"
+media:
+  - "oil"
+substrate:
+  - "canvas"
+dimensions: "90 × 120cm"
+statuses: "sold"
 forms:
   - "portrait"
 themes: []
@@ -11,7 +13,7 @@ series: ""
 order: "A009"
 featured: true
 category: "original"
-price: 3220
+price: 4830
 visible: true
 collection: ""
 edition: ""

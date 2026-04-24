@@ -1,8 +1,8 @@
 ---
 title: "Thelma with Arabic Screen"
-media: "oil"
+media: "acrylic"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "90 × 70cm"
 statuses: "available"
 forms:
   - "portrait"

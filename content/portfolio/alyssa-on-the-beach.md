@@ -1,9 +1,11 @@
 ---
 title: "Alyssa on the Beach"
-media: "oil"
-substrate: "canvas"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "60 × 80cm"
-statuses: "available"
+statuses: "reserved"
 forms:
   - "portrait"
 themes: []

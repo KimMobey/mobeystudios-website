@@ -1,15 +1,18 @@
 ---
 title: "Child in a Doorway"
-media: "oil"
-substrate: "canvas"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "60 × 80cm"
-statuses: "available"
+statuses: "sold"
 forms:
   - "portrait"
-themes: []
+themes:
+  - "identity"
 series: ""
 order: "A004"
-featured: true
+featured: false
 category: "original"
 price: 3220
 visible: true

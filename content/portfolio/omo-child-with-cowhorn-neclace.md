@@ -1,8 +1,8 @@
 ---
 title: "Omo Child with Cowhorn Neclace"
-media: "oil"
+media: "acrylic"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "70 × 90cm"
 statuses: "available"
 forms:
   - "portrait"

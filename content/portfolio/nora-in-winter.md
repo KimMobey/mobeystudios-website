@@ -2,7 +2,7 @@
 title: "Nora in Winter"
 media: "oil"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "50 × 70cm"
 statuses: "available"
 forms:
   - "portrait"

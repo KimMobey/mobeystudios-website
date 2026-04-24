@@ -1,9 +1,11 @@
 ---
 title: "Gugulethu Girl"
-media: "oil"
-substrate: "canvas"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "60 × 80cm"
-statuses: "available"
+statuses: "sold"
 forms:
   - "portrait"
 themes: []

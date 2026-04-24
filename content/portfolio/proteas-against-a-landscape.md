@@ -4,9 +4,9 @@ image: "/images/portfolio/proteas-against-a-landscape.jpg"
 visible: false
 statuses: "available"
 forms: []
-media: ""
-substrate: ""
-dimensions: ""
+media: "watercolour"
+substrate: "paper"
+dimensions: "11 × 15cm"
 category: "original"
 price: 0
 order: ""

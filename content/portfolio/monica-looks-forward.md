@@ -1,8 +1,8 @@
 ---
 title: "Monica Looks Forward"
-media: "oil"
+media: "acrylic"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "120 × 90cm"
 statuses: "available"
 forms:
   - "portrait"

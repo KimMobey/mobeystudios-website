@@ -4,9 +4,9 @@ image: "/images/portfolio/in-this-skin.jpg"
 visible: false
 statuses: "available"
 forms: []
-media: ""
+media: "concrete"
 substrate: ""
-dimensions: ""
+dimensions: "18 × 12 × 31cm"
 category: "original"
 price: 0
 order: ""

@@ -2,7 +2,7 @@
 title: "This Most Ancient Beauty"
 media: "oil"
 substrate: "canvas"
-dimensions: "60 × 80cm"
+dimensions: "80 × 108cm"
 statuses: "available"
 forms:
   - "portrait"

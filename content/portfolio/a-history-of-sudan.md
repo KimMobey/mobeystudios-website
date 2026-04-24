@@ -1,17 +1,22 @@
 ---
 title: "A History of Sudan"
-media: "oil"
-substrate: "canvas"
-dimensions: "60 × 80cm"
+media:
+  - "oil"
+substrate:
+  - "canvas"
+dimensions: "90 × 120cm"
 statuses: "available"
 forms:
   - "portrait"
-themes: []
+  - "surreal"
+themes:
+  - "migration"
+  - "political"
 series: ""
 order: "A001"
 featured: true
 category: "original"
-price: 3220
+price: 4830
 visible: true
 collection: ""
 edition: ""

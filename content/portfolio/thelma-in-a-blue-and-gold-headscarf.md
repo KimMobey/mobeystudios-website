@@ -1,12 +1,16 @@
 ---
 title: "Thelma in a Blue and Gold Headscarf"
-media: "oil"
-substrate: "canvas"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "60 × 80cm"
-statuses: "available"
+statuses: "sold"
 forms:
   - "portrait"
-themes: []
+themes:
+  - "migration"
+  - "identity"
 series: ""
 order: "A017"
 featured: true
