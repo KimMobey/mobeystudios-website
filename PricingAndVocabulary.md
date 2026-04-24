@@ -8,7 +8,7 @@ Here it is:
 
 **TAXONOMIES** *These drive navigation and filtering. Values must match exactly — capitalisation and spelling are fixed.*
 
-**medium** Values: `oil` `acrylic` `pastel` `charcoal` `ink` `mixed-media` `bronze` `resin` `pewter` `concrete` `linocut` `etching` `screenprint` `aquarelle` *Now list-valued on each work — a single piece can list multiple media (e.g. oil + charcoal).*
+**medium** Values: `oil` `acrylic` `pastel` `charcoal` `ink` `mixed-media` `bronze` `resin` `pewter` `concrete` `cast-stone` `found-objects` `linocut` `etching` `screenprint` `watercolour` *Now list-valued on each work — a single piece can list multiple media (e.g. oil + charcoal).*
 
 **substrate** Values: `canvas` `linen` `board` `paper` `wood` `stone` `metal` `ceramic` *Now list-valued. Optional — sculpture often has no substrate. Extend the list as new materials enter the practice.*
 
