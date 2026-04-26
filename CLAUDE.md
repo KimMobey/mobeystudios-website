@@ -34,11 +34,7 @@ The site is served at `http://localhost:1313/`. Build output lives in `public/` 
 
 ## Local development workflow
 
-**Default behaviour: never push to remote unless explicitly instructed to do so in the current prompt.** If a task implies pushing — such as "deploy", "go live", "publish" — ask for confirmation before proceeding. A local commit is always the default endpoint for any task unless the prompt contains the exact words "push to remote" or "git push".
-
-All development and testing must be done locally using `hugo server` before any push to remote. A pre-push hook at `.git/hooks/pre-push` enforces a confirmation step before every push — type `YES` to proceed, anything else cancels. The hook reads from `/dev/tty`, so non-interactive sessions cannot push; ask Kim to run `git push` from her own terminal.
-
-Push only when a meaningful and tested set of changes is complete. Batch related changes into single commits. Never push for individual small fixes.
+Test locally with `hugo server` before pushing. Standard git workflow applies — commit and push as you would on any other project. The previous Netlify-era restrictions (the `YES` pre-push hook and the per-push authorisation gate) have been removed; they existed only to ration Netlify's 15-credit-per-deploy cost. With GitHub Actions building to S3+CloudFront, deploys are effectively free.
 
 ## Architecture
 
