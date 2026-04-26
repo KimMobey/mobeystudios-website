@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Private S3 bucket with Origin Access Control — never use S3 static website hosting mode
 - **Netlify is being decommissioned.** It was the previous deploy target during early development. Do not treat any Netlify constraints (15 credits/deploy, 20 deploys/month) as live. `netlify.toml` is kept until the AWS pipeline is confirmed working, then deleted in a small dedicated commit *after* disconnecting Netlify from the GitHub repo in the Netlify console.
 - **DNS cutover (Google Sites → CloudFront on kimmobey.com) is the final step**, performed manually by Kim only after the CloudFront distribution and ACM certificate are validated. Until then the Google Sites setup must remain untouched.
+- **Pre-existing AWS infrastructure on kimmobey.com from a partial migration ~3 years ago.** Treat as untouchable until inventoried. **Live SES/email records (DKIM, SPF, MX) on this zone must never be touched.** Dormant CloudFront distributions exist (apex points to `d2qpmq0g3x3tv.cloudfront.net`, `dev.kimmobey.com` points to `d1hr4gcvv1txzh.cloudfront.net`). Existing ACM validation CNAMEs and `www` CNAME must also not be modified. Any new CloudFormation work must inventory these and surface conflicts before provisioning.
 - **Form handling:** Formspree (external), unchanged through migration.
 - **Audience:** buyers are mostly European. Kim has lived in South Africa and Uruguay — do not infer audience from her residence.
 
