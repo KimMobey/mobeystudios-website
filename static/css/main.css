@@ -1406,6 +1406,17 @@ body:has(.contact-page) #selection-strip {
     flex-direction: column;
 }
 
+.liked-thumb-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+.liked-thumb-link:hover .liked-thumb-title { text-decoration: underline; }
+.liked-thumb-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
 .liked-thumb img {
     width: 100%;
     height: 100px;

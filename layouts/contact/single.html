@@ -119,6 +119,15 @@
       label.className = 'liked-thumb-title';
       label.textContent = w.title || '';
 
+      var link = document.createElement(w.url ? 'a' : 'div');
+      link.className = 'liked-thumb-link';
+      if (w.url) {
+        link.href = w.url;
+        link.setAttribute('aria-label', 'View ' + (w.title || 'artwork'));
+      }
+      link.appendChild(img);
+      link.appendChild(label);
+
       var rm = document.createElement('button');
       rm.type = 'button';
       rm.className = 'liked-thumb-remove';
@@ -126,8 +135,7 @@
       rm.textContent = isExcluded(w.title) ? '↺' : '×';
       rm.addEventListener('click', function () { toggleExclude(w.title); });
 
-      card.appendChild(img);
-      card.appendChild(label);
+      card.appendChild(link);
       card.appendChild(rm);
       grid.appendChild(card);
     });
