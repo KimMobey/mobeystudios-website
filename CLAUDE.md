@@ -2,6 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Production status (READ FIRST)
+
+- **Live production site:** Google Sites at `kimmobey.com`. **This Hugo repo does not yet serve any live traffic.**
+- **Production domain:** `kimmobey.com` (apex + www). **Not** `mobey.co.za` — that is a legacy domain Kim still uses for email; it DNS-redirects to kimmobey.com but does not serve a website.
+- **Hosting target:** AWS S3 + CloudFront, provisioned by CloudFormation, with GitHub Actions (OIDC, no long-lived keys) building Hugo and syncing to S3 on push to `main`.
+  - Region: `eu-west-1` (Ireland — closest to the European buyer base)
+  - Route 53 hosted zone for kimmobey.com: `Z0282701OSAPI8VKA1OT`
+  - ACM certificate provisioned in `us-east-1` (CloudFront requirement, regardless of stack region)
+  - Private S3 bucket with Origin Access Control — never use S3 static website hosting mode
+- **Netlify is being decommissioned.** It was the previous deploy target during early development. Do not treat any Netlify constraints (15 credits/deploy, 20 deploys/month) as live. `netlify.toml` is kept until the AWS pipeline is confirmed working, then deleted in a small dedicated commit *after* disconnecting Netlify from the GitHub repo in the Netlify console.
+- **DNS cutover (Google Sites → CloudFront on kimmobey.com) is the final step**, performed manually by Kim only after the CloudFront distribution and ACM certificate are validated. Until then the Google Sites setup must remain untouched.
+- **Form handling:** Formspree (external), unchanged through migration.
+- **Audience:** buyers are mostly European. Kim has lived in South Africa and Uruguay — do not infer audience from her residence.
+
 ## Commands
 
 ```bash
@@ -15,19 +29,15 @@ hugo
 hugo server -D
 ```
 
-The site is served at `http://localhost:1313/`. Netlify deploys from the `public/` directory using Hugo 0.160.0.
+The site is served at `http://localhost:1313/`. Build output lives in `public/` and is built with Hugo 0.160.0.
 
 ## Local development workflow
 
-**Default behaviour: never push to remote unless explicitly instructed to do so in the current prompt.** If a task implies pushing — such as "deploy", "go live", "publish", or "send to Netlify" — ask for confirmation before proceeding. A local commit is always the default endpoint for any task unless the prompt contains the exact words "push to remote" or "git push".
+**Default behaviour: never push to remote unless explicitly instructed to do so in the current prompt.** If a task implies pushing — such as "deploy", "go live", "publish" — ask for confirmation before proceeding. A local commit is always the default endpoint for any task unless the prompt contains the exact words "push to remote" or "git push".
 
-Netlify free tier allows 300 credits per month. Each production deploy costs 15 credits, giving a maximum of 20 deploys per month. Credits reset on the 1st of each month.
-
-All development and testing must be done locally using `hugo server` before any push to remote. A pre-push hook at `.git/hooks/pre-push` enforces a confirmation step before every push — type `YES` to proceed, anything else cancels.
+All development and testing must be done locally using `hugo server` before any push to remote. A pre-push hook at `.git/hooks/pre-push` enforces a confirmation step before every push — type `YES` to proceed, anything else cancels. The hook reads from `/dev/tty`, so non-interactive sessions cannot push; ask Kim to run `git push` from her own terminal.
 
 Push only when a meaningful and tested set of changes is complete. Batch related changes into single commits. Never push for individual small fixes.
-
-**The site is currently paused until May 1 when credits reset. Do not push to remote until then.**
 
 ## Architecture
 
