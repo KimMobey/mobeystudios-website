@@ -17,6 +17,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Form handling:** Formspree (external), unchanged through migration.
 - **Audience:** buyers are mostly European. Kim has lived in South Africa and Uruguay — do not infer audience from her residence.
 
+### Pending feature work
+
+- **Article-image lightbox: "View in portfolio" link** — the article/essay image lightbox in `layouts/partials/article-lightbox-js.html` currently shows image + caption + archival disclaimer. It does *not* yet show a "View in portfolio →" link for images that correspond to a portfolio work. Implementation needs (1) a Hugo shortcode `{{< work-image src="..." caption="..." slug="..." >}}` that emits `<img data-portfolio-slug="...">`, and (2) a dropdown in the admin editor listing portfolio works when inserting an article image, so the shortcode form is selectable. The JS already has a TODO comment with the plan; uncomment/extend the open() handler when (1) and (2) land.
+
 ## Commands
 
 ```bash

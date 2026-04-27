@@ -37,7 +37,7 @@
     /* Reading measure — single source of truth for any longform prose container
        (home intro, studio intro, essays, articles, video descriptions, contact
        copy, section indexes). Change here to widen/narrow every reading column. */
-    --max-width-reading: 880px;
+    --max-width-reading: 1040px;
     --page-padding: 40px;
 }
 
@@ -853,38 +853,31 @@ body:has(.contact-page) #selection-strip {
     margin-bottom: 0;
 }
 
-.studio-sections {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
+/* Studio overview groups: Essays / Practice / Documents on /studio/. */
+.studio-section {
+    max-width: var(--max-width-reading);
+    margin: 0 auto;
+    padding: 56px 0;
 }
 
-.studio-section-card {
-    display: block;
-    padding: 40px;
-    background-color: var(--color-bg-secondary);
-    text-decoration: none;
-    color: var(--color-text-primary);
-    transition: opacity 0.2s ease;
+.studio-section + .studio-section {
+    border-top: 1px solid var(--color-border);
 }
 
-.studio-section-card:hover {
-    opacity: 0.75;
+.studio-section:first-of-type {
+    padding-top: 0;
 }
 
-.studio-section-card h2 {
+.studio-section:last-of-type {
+    padding-bottom: 0;
+}
+
+.studio-section__heading {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-md);
+    font-size: var(--text-lg);
     font-weight: 400;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
     color: var(--color-text-primary);
-}
-
-.studio-section-card p {
-    font-family: var(--font-sans-secondary);
-    line-height: var(--leading-loose);
-    color: var(--color-text-secondary);
+    margin: 0 0 48px;
 }
 
 .studio-subsection {
@@ -911,36 +904,34 @@ body:has(.contact-page) #selection-strip {
 .article-preview,
 .video-preview {
     margin-bottom: 56px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid var(--color-border);
 }
 
 .essay-preview:last-child,
 .article-preview:last-child,
 .video-preview:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
-.essay-preview h2,
-.article-preview h2,
-.video-preview h2 {
+.essay-preview h2, .essay-preview h3,
+.article-preview h2, .article-preview h3,
+.video-preview h2, .video-preview h3 {
     font-family: var(--font-sans-primary);
     font-size: var(--text-md);
     font-weight: 400;
     margin-bottom: 8px;
 }
 
-.essay-preview h2 a,
-.article-preview h2 a,
-.video-preview h2 a {
+.essay-preview h2 a, .essay-preview h3 a,
+.article-preview h2 a, .article-preview h3 a,
+.video-preview h2 a, .video-preview h3 a {
     text-decoration: none;
     color: var(--color-text-primary);
     transition: color 0.2s ease;
 }
 
-.essay-preview h2 a:hover,
-.article-preview h2 a:hover,
-.video-preview h2 a:hover {
+.essay-preview h2 a:hover, .essay-preview h3 a:hover,
+.article-preview h2 a:hover, .article-preview h3 a:hover,
+.video-preview h2 a:hover, .video-preview h3 a:hover {
     color: var(--color-accent);
 }
 
@@ -1034,8 +1025,6 @@ body:has(.contact-page) #selection-strip {
     font-size: var(--text-md);
     line-height: var(--leading-loose);
     margin: 40px 0;
-    padding-left: 28px;
-    border-left: 2px solid var(--color-accent);
     color: var(--color-text-secondary);
 }
 
@@ -1072,62 +1061,75 @@ body:has(.contact-page) #selection-strip {
     margin-bottom: 40px;
 }
 
-/* Alternating left/right floats for middle images in practice articles */
-.img-float--left,
-.img-float--right {
-    width: 44%;
-    margin-top: 8px;
-    margin-bottom: 32px;
-}
-
-.img-float--left {
-    float: left;
-    margin-right: 48px;
-}
-
-.img-float--right {
-    float: right;
-    margin-left: 48px;
-}
-
-/* Cap image height so a tall image never overflows past its paired paragraph */
-.img-float--left img,
-.img-float--right img {
-    max-height: 26em;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-}
-
-/* Centred frame for first/last article images (auto-detected by JS) */
-.article-figure--center {
-    clear: both;
-    display: block;
-    margin: 48px auto;
-    text-align: center;
-}
-
-.article-figure--center img {
-    max-height: 300px;
-    max-width: 100%;
-    width: auto;
-    display: inline-block;
-}
-
-/* Image + caption figure — ensures caption stays directly beneath its image */
+/* Article images: small editorial thumbnails.
+   On desktop, JS rearranges images into an .article-grid__images column;
+   on mobile (no JS rearrangement), the float keeps thumbnails next to text. */
 .article-figure {
-    margin: 0 0 24px;
+    float: left;
+    clear: left;
+    max-width: 220px;
+    margin: 8px 32px 24px 0;
+}
+
+/* Two-column independent flow (desktop only).
+   Images and prose flow in separate columns; neither column wraps under the other. */
+@media (min-width: 768px) {
+    .article-grid {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        column-gap: 40px;
+        align-items: start;
+    }
+
+    .article-grid__images > .article-figure {
+        float: none;
+        clear: none;
+        max-width: 100%;
+        margin: 0 0 32px 0;
+    }
+
+    .article-grid__text > * {
+        min-width: 0;
+    }
+}
+
+.article-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: zoom-in;
+    transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.article-figure img:hover,
+.article-figure img:focus-visible {
+    opacity: 0.88;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+    outline: none;
+}
+
+/* Archival images (low-resolution masters): keep clickable but no hover affordance,
+   since clicking won't reveal additional detail. */
+.article-figure img[data-archival="true"] {
+    cursor: default;
+}
+
+.article-figure img[data-archival="true"]:hover,
+.article-figure img[data-archival="true"]:focus-visible {
+    opacity: 1;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    .article-figure {
+        float: none;
+        max-width: 100%;
+        margin: 32px 0;
+    }
 }
 
 .article-figure p {
     margin: 0;
-}
-
-/* Default: full-width block (inline/float figures). Centre figures opt out
-   so their natural aspect ratio is preserved against max-height: 300px. */
-.article-figure:not(.article-figure--center) img {
-    width: 100%;
-    display: block;
 }
 
 .article-figure figcaption {
@@ -1138,10 +1140,6 @@ body:has(.contact-page) #selection-strip {
     line-height: var(--leading-body);
 }
 
-.article-figure.img-float--left,
-.article-figure.img-float--right {
-    margin-bottom: 24px;
-}
 
 /* Clearfix so article/essay content expands past floated children */
 .article-content::after,
@@ -1149,6 +1147,91 @@ body:has(.contact-page) #selection-strip {
     content: '';
     display: table;
     clear: both;
+}
+
+/* Image lightbox: opens on click of any .article-figure img.
+   Sized to ~85% of viewport with absolute caps so 4K monitors don't upscale. */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 32px;
+}
+
+.lightbox[hidden] {
+    display: none;
+}
+
+.lightbox__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    max-width: min(90vw, 1400px);
+}
+
+.lightbox__image {
+    max-width: 100%;
+    max-height: min(80vh, 1400px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.lightbox__caption {
+    color: rgba(255, 255, 255, 0.92);
+    font-style: italic;
+    font-size: var(--text-sm);
+    text-align: center;
+    max-width: 600px;
+    line-height: var(--leading-body);
+    margin: 0;
+}
+
+.lightbox__caption[hidden] {
+    display: none;
+}
+
+.lightbox__archival {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: var(--text-xs, 0.8rem);
+    text-align: center;
+    margin: 0;
+}
+
+.lightbox__archival[hidden] {
+    display: none;
+}
+
+.lightbox__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox__close:hover,
+.lightbox__close:focus-visible {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    outline: none;
 }
 
 /* Callout / pull-quote block */
@@ -1677,10 +1760,6 @@ body:has(.contact-page) #selection-strip {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .studio-sections {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .pathways {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1733,11 +1812,6 @@ body:has(.contact-page) #selection-strip {
 
     /* Homepage pathways: 1 column */
     .pathways {
-        grid-template-columns: 1fr;
-    }
-
-    /* Studio sections: 1 column */
-    .studio-sections {
         grid-template-columns: 1fr;
     }
 

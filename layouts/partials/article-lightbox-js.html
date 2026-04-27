@@ -1,0 +1,109 @@
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+ * TODO (deferred): "View in portfolio" link in the lightbox.
+ * When an article image corresponds to an artwork with its own
+ * /portfolio/<slug>/ page, the lightbox should show a "View in portfolio"
+ * link below the caption. Implementation plan:
+ *   1. Hugo shortcode "work-image" with src/caption/slug params, rendering
+ *      an <img data-portfolio-slug="..."> element.
+ *   2. Admin editor: dropdown when inserting an article image, listing
+ *      portfolio works; selection switches to the shortcode form.
+ *   3. This JS reads img.dataset.portfolioSlug and renders the link.
+ * Currently inactive because (1) and (2) are not yet built.
+ * See CLAUDE.md "Pending feature work" for the same note.
+ * ───────────────────────────────────────────────────────────────────────── */
+(function () {
+    var ARCHIVAL_THRESHOLD = 800; // pixels on either axis below which an image is treated as archival
+    var content = document.querySelector('.article-content, .essay-content');
+    if (!content) return;
+
+    var images = Array.from(content.querySelectorAll('.article-figure img'));
+    if (!images.length) return;
+
+    var lightbox = null;
+    var lastTrigger = null;
+    var previouslyFocused = null;
+
+    function tagArchival(img) {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var archival = (w > 0 && (w < ARCHIVAL_THRESHOLD || h < ARCHIVAL_THRESHOLD));
+        img.dataset.archival = archival ? 'true' : 'false';
+    }
+
+    function buildLightbox() {
+        var lb = document.createElement('div');
+        lb.className = 'lightbox';
+        lb.hidden = true;
+        lb.setAttribute('role', 'dialog');
+        lb.setAttribute('aria-modal', 'true');
+        lb.setAttribute('aria-label', 'Image viewer');
+        lb.innerHTML =
+            '<button class="lightbox__close" type="button" aria-label="Close image viewer">×</button>' +
+            '<figure class="lightbox__figure">' +
+                '<img class="lightbox__image" alt="">' +
+                '<figcaption class="lightbox__caption"></figcaption>' +
+                '<p class="lightbox__archival" hidden>Archival photo — no higher resolution available.</p>' +
+            '</figure>';
+        document.body.appendChild(lb);
+
+        function close() {
+            lb.hidden = true;
+            document.body.style.overflow = '';
+            if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
+        }
+
+        lb.addEventListener('click', function (e) {
+            if (e.target === lb || e.target.classList.contains('lightbox__close')) close();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !lb.hidden) close();
+        });
+
+        return lb;
+    }
+
+    function open(img) {
+        if (!lightbox) lightbox = buildLightbox();
+
+        var fig = img.closest('.article-figure');
+        var capEl = fig && fig.querySelector('figcaption');
+        var caption = capEl ? capEl.textContent.trim() : '';
+        var archival = img.dataset.archival === 'true';
+
+        var dest = lightbox.querySelector('.lightbox__image');
+        dest.src = img.src;
+        dest.alt = img.alt || '';
+
+        var capDest = lightbox.querySelector('.lightbox__caption');
+        capDest.textContent = caption;
+        capDest.hidden = !caption;
+
+        lightbox.querySelector('.lightbox__archival').hidden = !archival;
+
+        previouslyFocused = document.activeElement;
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+        lightbox.querySelector('.lightbox__close').focus();
+    }
+
+    images.forEach(function (img) {
+        if (img.complete) {
+            tagArchival(img);
+        } else {
+            img.addEventListener('load', function () { tagArchival(img); }, { once: true });
+        }
+
+        img.tabIndex = 0;
+        img.setAttribute('role', 'button');
+        img.setAttribute('aria-label', 'View image at larger size');
+
+        img.addEventListener('click', function () { open(img); });
+        img.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                open(img);
+            }
+        });
+    });
+}());
+</script>

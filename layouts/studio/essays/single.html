@@ -86,18 +86,10 @@
         return p.children.length === 1 && p.firstElementChild.tagName === 'IMG';
     });
 
-    var lastIdx = imgParas.length - 1;
-
-    imgParas.forEach(function (p, i) {
+    imgParas.forEach(function (p) {
         var next = p.nextElementSibling;
         var fig  = document.createElement('figure');
-
-        if (i === 0 || i === lastIdx) {
-            fig.className = 'article-figure article-figure--center';
-        } else {
-            var floatLeft = ((i - 1) % 2 === 0);
-            fig.className = 'article-figure ' + (floatLeft ? 'img-float--left' : 'img-float--right');
-        }
+        fig.className = 'article-figure';
 
         p.parentNode.insertBefore(fig, p);
         fig.appendChild(p);
@@ -109,6 +101,49 @@
             next.remove();
         }
     });
+
+    if (imgParas.length === 0) return;
+
+    var query = window.matchMedia('(min-width: 768px)');
+    var originalOrder = Array.from(content.children);
+    var grid = null;
+
+    function rearrange() {
+        if (grid) return;
+        grid = document.createElement('div');
+        grid.className = 'article-grid';
+        var imagesCol = document.createElement('div');
+        imagesCol.className = 'article-grid__images';
+        var textCol = document.createElement('div');
+        textCol.className = 'article-grid__text';
+        grid.appendChild(imagesCol);
+        grid.appendChild(textCol);
+        content.appendChild(grid);
+
+        originalOrder.forEach(function (child) {
+            if (child.classList && child.classList.contains('article-figure')) {
+                imagesCol.appendChild(child);
+            } else {
+                textCol.appendChild(child);
+            }
+        });
+    }
+
+    function restore() {
+        if (!grid) return;
+        originalOrder.forEach(function (child) { content.appendChild(child); });
+        grid.remove();
+        grid = null;
+    }
+
+    function syncLayout() {
+        if (query.matches) rearrange();
+        else restore();
+    }
+
+    syncLayout();
+    query.addEventListener('change', syncLayout);
 }());
 </script>
+{{ partial "article-lightbox-js.html" . }}
 {{ end }}
