@@ -8,16 +8,75 @@
     <div class="studio-intro">{{ . }}</div>
     {{ end }}
 
-    <div class="studio-sections">
-        <a href="/studio/essays/" class="studio-section-card">
-            <h2>Essays</h2>
-            <p>Writing on process, philosophy, and the ideas that don't fit on a canvas.</p>
-        </a>
+    {{/* Three groups, each ordered by weight (drafts excluded by Hugo). */}}
+    {{ $essays    := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "ne" "document") }}
+    {{ $practice  := partial "weight-sort.html" (union (.Site.GetPage "/studio/practice").Pages (.Site.GetPage "/studio/media").Pages) }}
+    {{ $documents := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "document") }}
 
-        <a href="/studio/practice/" class="studio-section-card">
-            <h2>Practice</h2>
-            <p>Process and making-of — techniques, materials, and recorded conversations.</p>
-        </a>
-    </div>
+    {{ if $essays }}
+    <section class="studio-section">
+        <h2 class="studio-section__heading">Essays</h2>
+        <div class="article-list">
+            {{ range $i, $page := $essays }}
+                
+                <article class="article-preview{{ with $page.Params.thumbnail }} article-preview--with-thumb{{ end }}">
+                    {{ with $page.Params.thumbnail }}
+                    <a href="{{ $page.RelPermalink }}" class="article-thumb-link" tabindex="-1" aria-hidden="true">
+                        <img class="article-thumb" src="{{ . }}" alt="">
+                    </a>
+                    {{ end }}
+                    <div class="article-preview__body">
+                        <h3><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h3>
+                        {{ with $page.Params.description }}<p>{{ . }}</p>{{ end }}
+                    </div>
+                </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if $practice }}
+    <section class="studio-section">
+        <h2 class="studio-section__heading">Practice</h2>
+        <div class="article-list">
+            {{ range $i, $page := $practice }}
+                
+                <article class="article-preview{{ with $page.Params.thumbnail }} article-preview--with-thumb{{ end }}">
+                    {{ with $page.Params.thumbnail }}
+                    <a href="{{ $page.RelPermalink }}" class="article-thumb-link" tabindex="-1" aria-hidden="true">
+                        <img class="article-thumb" src="{{ . }}" alt="">
+                    </a>
+                    {{ end }}
+                    <div class="article-preview__body">
+                        <h3><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h3>
+                        {{ with $page.Params.description }}<p>{{ . }}</p>{{ end }}
+                    </div>
+                </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
+
+    {{ if $documents }}
+    <section class="studio-section">
+        <h2 class="studio-section__heading">Documents</h2>
+        <div class="article-list">
+            {{ range $i, $page := $documents }}
+                
+                <article class="article-preview{{ with $page.Params.thumbnail }} article-preview--with-thumb{{ end }}">
+                    {{ with $page.Params.thumbnail }}
+                    <a href="{{ $page.RelPermalink }}" class="article-thumb-link" tabindex="-1" aria-hidden="true">
+                        <img class="article-thumb" src="{{ . }}" alt="">
+                    </a>
+                    {{ end }}
+                    <div class="article-preview__body">
+                        <h3><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h3>
+                        {{ with $page.Params.description }}<p>{{ . }}</p>{{ end }}
+                    </div>
+                </article>
+            {{ end }}
+        </div>
+    </section>
+    {{ end }}
 </main>
 {{ end }}

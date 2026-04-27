@@ -1,0 +1,5 @@
+{{/* Sort a Pages slice by weight (asc), with weight-less pages appended at the end.
+     Default ordering for editorial content sitewide. Never sort by date. */ -}}
+{{ $weighted   := where . "Params.weight" "ne" nil -}}
+{{ $unweighted := where . "Params.weight" nil -}}
+{{ return union (sort $weighted "Params.weight" "asc") $unweighted -}}

@@ -3,6 +3,7 @@ title: "CV"
 weight: 999
 description: "Professional biography, selected exhibitions, awards, and residencies."
 thumbnail: "/images/essays/cape-gallery-group-show.webp"
+category: "document"
 ---
 
 Kim Mobey is a visual artist with thirty years of professional practice in painting, sculpture, printmaking, and drawing. Her work examines identity, migration, displacement, and belonging. Her work treats age, race, gender, and historical era as fluid elements, generating meaning through implication and direct contrast within the work itself. She has sold to international collectors throughout her career and exhibits internationally. She relocated from South Africa to Montevideo, Uruguay in 2025, where she maintains an active studio practice.
