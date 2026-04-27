@@ -5,10 +5,6 @@ description: "Process notes on a large acrylic portrait painted during the Cape 
 thumbnail: "/images/articles/unfallen-rain-1.jpg"
 ---
 
-![Early stages of underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-1.jpg)
-
-*Work in Progress 1 — The huge canvas waiting in a corner of my Cape Town studio*
-
 It happened almost by accident, in between other paintings. I'd begun an enormous painting of Thelma in an ornate black necklace but I just couldn't bring myself to finish it as it stood. I'd smoothed the canvas with texture paste, applied pretty washes and laid out a structure that really compelled me but I couldn't work out what happened next. I spent time with my family, waited for insight and we all waited for rain.
 
 Months passed with little inspiration and even less rain; and ever more hysterical media messages about saving water, not using taps, penalties, bylaws and threats of punitive taxes for living in a city with big, new buildings and small, old dams. There was deathly silence from the politicians whenever it rained though. Perhaps they were hoping we wouldn't notice it running off the Civic Center, or into the hovels of the people who live under the broken Metrorail station roof opposite the City Hall.
