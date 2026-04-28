@@ -10,7 +10,7 @@
 
     {{/* Three groups, each ordered by weight (drafts excluded by Hugo). */}}
     {{ $essays    := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "ne" "document") }}
-    {{ $practice  := partial "weight-sort.html" (union (.Site.GetPage "/studio/practice").Pages (.Site.GetPage "/studio/media").Pages) }}
+    {{ $articles  := partial "weight-sort.html" (union (.Site.GetPage "/studio/articles").Pages (.Site.GetPage "/studio/media").Pages) }}
     {{ $documents := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "document") }}
 
     {{ if $essays }}
@@ -35,11 +35,11 @@
     </section>
     {{ end }}
 
-    {{ if $practice }}
+    {{ if $articles }}
     <section class="studio-section">
-        <h2 class="studio-section__heading">Practice</h2>
+        <h2 class="studio-section__heading">Articles</h2>
         <div class="article-list">
-            {{ range $i, $page := $practice }}
+            {{ range $i, $page := $articles }}
                 
                 <article class="article-preview{{ with $page.Params.thumbnail }} article-preview--with-thumb{{ end }}">
                     {{ with $page.Params.thumbnail }}

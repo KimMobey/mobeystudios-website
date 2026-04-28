@@ -5,9 +5,9 @@
     <h1>{{ .Title }}</h1>
 
     <div class="article-list">
-        {{ $practice   := (.Site.GetPage "/studio/practice").Pages }}
-        {{ $media      := (.Site.GetPage "/studio/media").Pages }}
-        {{ $combined   := union $practice $media }}
+        {{ $articles  := (.Site.GetPage "/studio/articles").Pages }}
+        {{ $media     := (.Site.GetPage "/studio/media").Pages }}
+        {{ $combined  := union $articles $media }}
         {{ $weighted   := where $combined "Params.weight" "ne" nil }}
         {{ $unweighted := where $combined "Params.weight" nil }}
         {{ range union (sort $weighted "Params.weight" "asc") $unweighted }}

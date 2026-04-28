@@ -17,7 +17,7 @@ ROOT             = Path(__file__).parent
 ADMIN_HTML       = ROOT / 'static' / 'admin' / 'index.html'
 PORTFOLIO        = ROOT / 'content' / 'portfolio'
 CONTENT_ESSAYS   = ROOT / 'content' / 'studio' / 'essays'
-CONTENT_PRACTICE = ROOT / 'content' / 'studio' / 'practice'
+CONTENT_ARTICLES = ROOT / 'content' / 'studio' / 'articles'
 STATIC           = ROOT / 'static'
 IMAGES_ROOT      = STATIC / 'images'
 
@@ -83,7 +83,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
 
         # /api/articles/<section>/<slug>/delete  (must come before the generic save route)
-        m = re.match(r'^/api/articles/(essays|practice)/([\w-]+)/delete$', path)
+        m = re.match(r'^/api/articles/(essays|articles)/([\w-]+)/delete$', path)
         if m:
             self._delete_article(m.group(1), m.group(2))
             return
@@ -124,7 +124,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif path.startswith('/api/articles/'):
             rest = unquote(path[len('/api/articles/'):])
             parts = rest.split('/', 1)
-            if len(parts) != 2 or parts[0] not in ('essays', 'practice'):
+            if len(parts) != 2 or parts[0] not in ('essays', 'articles'):
                 self.send_error(400, 'Expected /api/articles/<section>/<slug>')
                 return
             section, slug = parts
@@ -163,7 +163,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def _list_articles(self):
         articles = []
-        for section, base in [('essays', CONTENT_ESSAYS), ('practice', CONTENT_PRACTICE)]:
+        for section, base in [('essays', CONTENT_ESSAYS), ('articles', CONTENT_ARTICLES)]:
             if not base.exists():
                 continue
             for f in sorted(base.glob('*.md')):
@@ -230,7 +230,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self._json({'ok': True, 'filename': filename, 'path': f'/images/{dir_name}/{filename}'})
 
     def _save_article(self, section, slug, data):
-        base = CONTENT_ESSAYS if section == 'essays' else CONTENT_PRACTICE
+        base = CONTENT_ESSAYS if section == 'essays' else CONTENT_ARTICLES
         path = base / f'{slug}.md'
         fm   = data.get('fm', {})
         # Studio content is not a blog — date is never written by the admin.
@@ -336,7 +336,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self._json({'ok': True, 'slug': slug})
 
     def _delete_article(self, section, slug):
-        base = CONTENT_ESSAYS if section == 'essays' else CONTENT_PRACTICE
+        base = CONTENT_ESSAYS if section == 'essays' else CONTENT_ARTICLES
         path = base / f'{slug}.md'
         if not path.exists():
             self.send_error(404, f'{section}/{slug}.md not found')

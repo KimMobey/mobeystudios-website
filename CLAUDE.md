@@ -50,7 +50,7 @@ This is a Hugo static site with **no theme** — all layouts are hand-built unde
 |---|---|---|
 | Portfolio | `content/portfolio/` | Artwork — each work is a page bundle (folder with `index.md` + image file) |
 | Studio → Essays | `content/studio/essays/` | Writing, CV content |
-| Studio → Practice | `content/studio/practice/` | Process/making content — combined list also surfaces `content/studio/media/` entries |
+| Studio → Articles | `content/studio/articles/` | Process/making content — combined list also surfaces `content/studio/media/` entries. Renamed from `practice` 2026-04-28; old URLs redirect via Hugo aliases on each article. |
 | Contact | `content/contact.md` | Contact page |
 
 The About section has been decommissioned. `layouts/about/single.html` remains in the repo as dormant code; there is no `content/about.md` and nothing renders at `/about/`. Do not add About back without explicit instruction.

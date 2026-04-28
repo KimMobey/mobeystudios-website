@@ -896,7 +896,7 @@
     <h2 id="studio-count"></h2>
     <div style="display:flex;gap:8px">
       <button class="btn-ghost" onclick="newArticle('essays')">+ New Essay</button>
-      <button class="btn-ghost" onclick="newArticle('practice')">+ New Practice Article</button>
+      <button class="btn-ghost" onclick="newArticle('articles')">+ New Article</button>
     </div>
   </div>
   <div id="studio-filter-bar">
@@ -931,7 +931,7 @@
           <label for="sf-section">Section</label>
           <select id="sf-section">
             <option value="essays">Essays</option>
-            <option value="practice">Practice</option>
+            <option value="articles">Articles</option>
           </select>
         </div>
         <div class="field">
@@ -972,9 +972,9 @@
       <div class="fg fg-1">
         <div class="field">
           <label for="sf-body">Content <span class="opt">(markdown)</span></label>
-          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+          <div id="sf-image-controls" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
             <button type="button" class="btn-ghost" id="btn-insert-image" style="font-size:13px">Insert image…</button>
-            <span class="hint" style="font-size:12px">First and last images on the page will be centred automatically. Middle images alternate left/right.</span>
+            <span class="hint" style="font-size:12px">Images render as small thumbnails alongside text; clicking opens a larger view.</span>
           </div>
           <textarea id="sf-body" style="min-height:360px" spellcheck="true"></textarea>
         </div>
@@ -1822,7 +1822,7 @@ function renderStudioList() {
   list.innerHTML = '';
   const sections = [
     { key: 'essays',   label: 'Essays' },
-    { key: 'practice', label: 'Practice' },
+    { key: 'articles', label: 'Articles' },
   ];
   for (const { key, label } of sections) {
     const items = articles
@@ -1921,9 +1921,13 @@ function openArticleEdit(article, isNew) {
   activeArticle = article;
   isNewArticle  = isNew;
 
-  $('studio-edit-heading').textContent = isNew ? 'New Article' : (article.fm.title ?? article.slug);
+  const section = article.section ?? 'essays';
+  $('studio-edit-heading').textContent = isNew
+    ? (section === 'essays' ? 'New Essay' : 'New Article')
+    : (article.fm.title ?? article.slug);
   $('sf-title').value       = article.fm.title       ?? '';
-  $('sf-section').value     = article.section        ?? 'essays';
+  $('sf-section').value     = section;
+  syncSectionUI();
   $('sf-weight').value      = article.fm.weight      ?? '';
   $('sf-description').value = article.fm.description ?? '';
   $('sf-thumbnail').value   = article.fm.thumbnail   ?? '';
@@ -2300,7 +2304,7 @@ $('studio-edit-form').addEventListener('submit', e  => { e.preventDefault(); sav
 // matching directory under static/images/.
 const SECTION_IMAGE_DIR = {
   essays:   'essays',
-  practice: 'articles',
+  articles: 'articles',
 };
 
 let pickedImagePath = '';
@@ -2380,6 +2384,16 @@ function pickerPreview(path) {
 $('btn-insert-image').addEventListener('click', () => openImagePicker('body'));
 $('btn-thumb-picker').addEventListener('click', () => openImagePicker('thumbnail'));
 $('btn-img-picker-cancel').addEventListener('click', closeImagePicker);
+
+// Update heading + image-controls visibility when the section dropdown changes.
+function syncSectionUI() {
+  const section = $('sf-section').value;
+  $('sf-image-controls').style.display = (section === 'essays') ? 'none' : '';
+  if (isNewArticle) {
+    $('studio-edit-heading').textContent = (section === 'essays') ? 'New Essay' : 'New Article';
+  }
+}
+$('sf-section').addEventListener('change', syncSectionUI);
 
 $('img-picker-select').addEventListener('change', e => {
   pickerPreview(e.target.value);

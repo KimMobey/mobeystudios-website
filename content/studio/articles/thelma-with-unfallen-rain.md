@@ -3,6 +3,8 @@ title: "The Making Of Thelma with Unfallen Rain"
 weight: 2
 description: "Process notes on a large acrylic portrait painted during the Cape Town water crisis."
 thumbnail: "/images/articles/unfallen-rain-1.jpg"
+aliases:
+  - /studio/practice/thelma-with-unfallen-rain/
 ---
 
 It happened almost by accident, in between other paintings. I'd begun an enormous painting of Thelma in an ornate black necklace but I just couldn't bring myself to finish it as it stood. I'd smoothed the canvas with texture paste, applied pretty washes and laid out a structure that really compelled me but I couldn't work out what happened next. I spent time with my family, waited for insight and we all waited for rain.
