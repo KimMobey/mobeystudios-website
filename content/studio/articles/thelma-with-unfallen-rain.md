@@ -2,9 +2,7 @@
 title: "The Making Of Thelma with Unfallen Rain"
 weight: 2
 description: "Process notes on a large acrylic portrait painted during the Cape Town water crisis."
-thumbnail: "/images/articles/unfallen-rain-1.jpg"
-aliases:
-  - /studio/practice/thelma-with-unfallen-rain/
+thumbnail: "/images/articles/unfallen-rain-1.webp"
 ---
 
 It happened almost by accident, in between other paintings. I'd begun an enormous painting of Thelma in an ornate black necklace but I just couldn't bring myself to finish it as it stood. I'd smoothed the canvas with texture paste, applied pretty washes and laid out a structure that really compelled me but I couldn't work out what happened next. I spent time with my family, waited for insight and we all waited for rain.
@@ -13,7 +11,7 @@ Months passed with little inspiration and even less rain; and ever more hysteric
 
 The big painting stumped me. I tried all my favourite things: pure colour, transparent glazes, messy splashes of wet paint over areas that annoyed me. Nada. Only small parts worked. The whole felt thin and unresolvable.
 
-![Progressing underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-2.jpg)
+![Progressing underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-2.webp)
 
 *Work in Progress 2 — Massive and unsolved…*
 
@@ -21,7 +19,7 @@ Painting is problem solving. You may have a plan when you start out, but as you 
 
 After a few days I'd given up on the background, the hibiscus and the necklace several times with no end in sight. The painting was never going to work as it was, so I reexamined Thelma's face. She is tiny and sweet but her character and will are indomitable, and I needed the viewer to see this in her eyes. During the photo shoot we'd played with jewelry, dresses and fabric but the thing we'd all loved most was the face paint; which I'd left out of the paintings entirely…
 
-![Progressing underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-3.jpg)
+![Progressing underpainting for an acrylic portrait about drought](/images/articles/unfallen-rain-3.webp)
 
 *Work in Progress 3 — With some parts working and others fighting me tooth and nail*
 
@@ -31,7 +29,7 @@ At moments like this, artists learn to "lean in" or face never finishing anythin
 
 It stopped raining.
 
-![Beginning to add detail on an acrylic portrait about drought](/images/articles/unfallen-rain-4.jpg)
+![Beginning to add detail on an acrylic portrait about drought](/images/articles/unfallen-rain-4.webp)
 
 *Work in Progress 4 (With my foot, for reasons…)*
 
@@ -39,7 +37,7 @@ Playing with colour and getting to "fiddle with reality" brings me intense joy s
 
 Eventually I had to do some basic housekeeping or run out of dishes, clothes and patience with the sticky summer heat. I did my weekly load of laundry, filling buckets with water from the washing machine to reuse flushing, mopping and cleaning and keeping my tomato plants alive. I hauled buckets around the awkward old apartment and watched fat drops of water fall from the sky and into the gutters and storm drains outside.
 
-![Adding more detail to an acrylic portrait about drought](/images/articles/unfallen-rain-5.jpg)
+![Adding more detail to an acrylic portrait about drought](/images/articles/unfallen-rain-5.webp)
 
 *Work in Progress 5 — Water for diamonds, water for gold.*
 
@@ -49,7 +47,7 @@ How many schools, hospitals, and blue-light brigades was this rain splashing off
 
 And to pump sea water back onto land: How much money will the failing bureaucracy "reallocate" toward desalinization tenders, and away from hospitals, public works, universities and the very people who could fix the problem?
 
-![Portrait of Thelma with unfallen rain necklace](/images/articles/unfallen-rain-6.jpg)
+![Portrait of Thelma with unfallen rain necklace](/images/articles/unfallen-rain-6.webp)
 
 *Will you be ready when the rain does fall? Because it still falls.*
 

@@ -2,8 +2,6 @@
 title: "About the Studio"
 weight: 3
 draft: true
-aliases:
-  - /studio/practice/about-the-studio/
 ---
 
 I prefer to work in an aesthetic, efficient environment with multiple projects running simultaneously, each in its own dedicated space. The balance between beauty and function keeps me grounded.

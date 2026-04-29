@@ -3,8 +3,6 @@ title: "The Making of \"In This Skin\""
 weight: 1
 description: "Process notes on casting a cement sculpture for the PPC Imaginarium competition, from failed moulds to a gold-leafed finalist."
 thumbnail: "/images/articles/in-this-skin-1.webp"
-aliases:
-  - /studio/practice/in-this-skin/
 ---
 
 ![Cast cement head sculpture with gold leaf detail](/images/articles/in-this-skin-1.webp)
