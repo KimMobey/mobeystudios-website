@@ -897,6 +897,8 @@
     <div style="display:flex;gap:8px">
       <button class="btn-ghost" onclick="newArticle('essays')">+ New Essay</button>
       <button class="btn-ghost" onclick="newArticle('articles')">+ New Article</button>
+      <button class="btn-ghost" onclick="newArticle('documents')">+ New Document</button>
+      <button class="btn-ghost" onclick="newArticle('media')">+ New Media</button>
     </div>
   </div>
   <div id="studio-filter-bar">
@@ -932,6 +934,8 @@
           <select id="sf-section">
             <option value="essays">Essays</option>
             <option value="articles">Articles</option>
+            <option value="documents">Documents</option>
+            <option value="media">Media</option>
           </select>
         </div>
         <div class="field">
@@ -1821,8 +1825,10 @@ function renderStudioList() {
   const list = $('studio-list');
   list.innerHTML = '';
   const sections = [
-    { key: 'essays',   label: 'Essays' },
-    { key: 'articles', label: 'Articles' },
+    { key: 'essays',    label: 'Essays' },
+    { key: 'articles',  label: 'Articles' },
+    { key: 'documents', label: 'Documents' },
+    { key: 'media',     label: 'Media' },
   ];
   for (const { key, label } of sections) {
     const items = articles
@@ -1922,8 +1928,9 @@ function openArticleEdit(article, isNew) {
   isNewArticle  = isNew;
 
   const section = article.section ?? 'essays';
+  const NEW_HEADINGS = { essays: 'New Essay', articles: 'New Article', documents: 'New Document', media: 'New Media' };
   $('studio-edit-heading').textContent = isNew
-    ? (section === 'essays' ? 'New Essay' : 'New Article')
+    ? (NEW_HEADINGS[section] ?? 'New Entry')
     : (article.fm.title ?? article.slug);
   $('sf-title').value       = article.fm.title       ?? '';
   $('sf-section').value     = section;
@@ -2303,8 +2310,10 @@ $('studio-edit-form').addEventListener('submit', e  => { e.preventDefault(); sav
 // Section → image directory mapping. New writing types add a row here and a
 // matching directory under static/images/.
 const SECTION_IMAGE_DIR = {
-  essays:   'essays',
-  articles: 'articles',
+  essays:    'essays',
+  articles:  'articles',
+  documents: 'documents',
+  media:     'media',
 };
 
 let pickedImagePath = '';
