@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/jane-dressed-up.jpg"
+image: "/images/portfolio/jane-dressed-up.webp"
 ---

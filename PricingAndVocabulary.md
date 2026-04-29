@@ -55,10 +55,10 @@ The primary image filename goes in the `image` field and is used as the portfoli
 The admin interface gallery input must be a dynamic list — add and remove rows — to accommodate works with any number of additional angles.
 
 ```yaml
-image: "wabele-01.jpg"
+image: "wabele-01.webp"
 gallery:
-  - "wabele-02.jpg"
-  - "wabele-03.jpg"
+  - "wabele-02.webp"
+  - "wabele-03.webp"
 ```
 
 ---

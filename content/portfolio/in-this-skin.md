@@ -1,6 +1,6 @@
 ---
 title: "In This Skin"
-image: "/images/portfolio/in-this-skin.jpg"
+image: "/images/portfolio/in-this-skin.webp"
 visible: false
 statuses: "available"
 forms: []

@@ -1,6 +1,6 @@
 ---
 title: "Thelma with Pink Shweshwe and Roses"
-image: "/images/portfolio/thelma-with-pink-shweshwe-and-roses.jpg"
+image: "/images/portfolio/thelma-with-pink-shweshwe-and-roses.webp"
 visible: true
 statuses: "available"
 forms:

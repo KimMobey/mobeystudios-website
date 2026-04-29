@@ -19,5 +19,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/thelma-in-a-blue-and-gold-headscarf.jpg"
+image: "/images/portfolio/thelma-in-a-blue-and-gold-headscarf.webp"
 ---

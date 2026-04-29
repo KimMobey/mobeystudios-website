@@ -822,7 +822,7 @@
       <div class="fg">
         <div class="field" data-required="image">
           <label for="f-image">Primary image path<span class="req-star">*</span></label>
-          <input type="text" id="f-image" placeholder="/images/portfolio/filename.jpg" autocomplete="off">
+          <input type="text" id="f-image" placeholder="/images/portfolio/filename.webp" autocomplete="off">
           <img id="img-preview" alt="">
         </div>
         <div class="field">
@@ -950,7 +950,7 @@
         <div class="field span2">
           <label for="sf-thumbnail">Thumbnail <span class="opt">(optional — shown in listings)</span></label>
           <div style="display:flex;gap:8px;align-items:stretch">
-            <input type="text" id="sf-thumbnail" placeholder="/images/articles/filename.jpg" autocomplete="off" style="flex:1">
+            <input type="text" id="sf-thumbnail" placeholder="/images/articles/filename.webp" autocomplete="off" style="flex:1">
             <button type="button" class="btn-ghost" id="btn-thumb-picker" style="font-size:13px;white-space:nowrap">Choose thumbnail…</button>
           </div>
         </div>
@@ -994,7 +994,7 @@
           </div>
           <div class="field">
             <label for="img-picker-upload">…or upload a new one</label>
-            <input type="file" id="img-picker-upload" accept=".jpg,.jpeg,.png,.webp,.gif">
+            <input type="file" id="img-picker-upload" accept=".webp">
             <span id="img-picker-upload-msg" class="hint" style="font-size:12px"></span>
           </div>
           <div class="field">
@@ -1561,7 +1561,7 @@ function addGalleryRow(src = '') {
   const input = document.createElement('input');
   input.type        = 'text';
   input.value       = src;
-  input.placeholder = '/images/portfolio/filename-02.jpg';
+  input.placeholder = '/images/portfolio/filename-02.webp';
   const btn   = document.createElement('button');
   btn.type      = 'button';
   btn.className = 'btn-icon';

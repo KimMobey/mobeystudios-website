@@ -18,5 +18,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/child-in-a-doorway.jpg"
+image: "/images/portfolio/child-in-a-doorway.webp"
 ---

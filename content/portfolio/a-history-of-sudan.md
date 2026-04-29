@@ -20,5 +20,5 @@ price: 4830
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/a-history-of-sudan.jpg"
+image: "/images/portfolio/a-history-of-sudan.webp"
 ---

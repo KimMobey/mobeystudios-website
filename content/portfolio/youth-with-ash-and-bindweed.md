@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/youth-with-ash-and-bindweed.jpg"
+image: "/images/portfolio/youth-with-ash-and-bindweed.webp"
 ---

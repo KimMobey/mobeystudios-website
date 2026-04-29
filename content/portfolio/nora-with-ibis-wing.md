@@ -1,6 +1,6 @@
 ---
 title: "Nora with Ibis Wing"
-image: "/images/portfolio/nora-with-ibis-wing.jpg"
+image: "/images/portfolio/nora-with-ibis-wing.webp"
 visible: false
 statuses: "available"
 forms: []

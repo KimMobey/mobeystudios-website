@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/thelma-with-arabic-screen.jpg"
+image: "/images/portfolio/thelma-with-arabic-screen.webp"
 ---

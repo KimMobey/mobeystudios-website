@@ -15,5 +15,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/home-is-far-from-here.jpg"
+image: "/images/portfolio/home-is-far-from-here.webp"
 ---

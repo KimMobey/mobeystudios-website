@@ -1,6 +1,6 @@
 ---
 title: "Mucubal Youth"
-image: "/images/portfolio/mucubal-youth.jpg"
+image: "/images/portfolio/mucubal-youth.webp"
 visible: false
 statuses: "available"
 forms: []

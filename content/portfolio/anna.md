@@ -1,6 +1,6 @@
 ---
 title: "Anna"
-image: "/images/portfolio/anna.jpg"
+image: "/images/portfolio/anna.webp"
 visible: false
 statuses: "available"
 forms: []

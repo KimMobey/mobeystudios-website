@@ -17,5 +17,5 @@ price: 3220
 visible: true
 collection: ""
 edition: ""
-image: "/images/portfolio/gugulethu-girl.jpg"
+image: "/images/portfolio/gugulethu-girl.webp"
 ---
