@@ -1,0 +1,32 @@
+{{ define "title" }}{{ .Title }} - {{ .Site.Title }}{{ end }}
+
+{{ define "main" }}
+<main class="essay-page">
+    <article>
+        <nav class="essay-nav essay-nav--top">
+            <a href="/studio/documents/">← Back</a>
+        </nav>
+        <header class="essay-header{{ with .Params.thumbnail }} essay-header--with-image{{ end }}">
+            {{ with .Params.thumbnail }}
+            <img class="essay-header__image" src="{{ . }}" alt="{{ $.Title }}">
+            {{ end }}
+            <div class="essay-header__text">
+                <h1>{{ $.Title }}</h1>
+                {{ with $.Params.subtitle }}<p class="essay-subtitle">{{ . }}</p>{{ end }}
+            </div>
+        </header>
+
+        <div class="essay-content">
+            {{ .Content }}
+        </div>
+
+        <nav class="essay-nav page-end-nav">
+            <a href="/studio/documents/">← Back</a>
+        </nav>
+    </article>
+</main>
+{{ end }}
+
+{{ define "scripts" }}
+{{ partial "article-lightbox-js.html" . }}
+{{ end }}

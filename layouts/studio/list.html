@@ -9,9 +9,9 @@
     {{ end }}
 
     {{/* Three groups, each ordered by weight (drafts excluded by Hugo). */}}
-    {{ $essays    := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "ne" "document") }}
+    {{ $essays    := partial "weight-sort.html" (.Site.GetPage "/studio/essays").Pages }}
     {{ $articles  := partial "weight-sort.html" (union (.Site.GetPage "/studio/articles").Pages (.Site.GetPage "/studio/media").Pages) }}
-    {{ $documents := partial "weight-sort.html" (where (.Site.GetPage "/studio/essays").Pages "Params.category" "document") }}
+    {{ $documents := partial "weight-sort.html" (.Site.GetPage "/studio/documents").Pages }}
 
     {{ if $essays }}
     <section class="studio-section">

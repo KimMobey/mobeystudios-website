@@ -309,34 +309,69 @@ footer {
 }
 
 .pathways {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    max-width: 960px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    max-width: var(--max-width);
     margin: 0 auto;
+    text-align: left;
 }
 
 .pathway {
-    padding: 40px 30px;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+    gap: 48px;
+    align-items: center;
+}
+
+.pathway--left {
+    direction: ltr;
+}
+
+.pathway--right {
+    direction: rtl;
+}
+
+.pathway--right > * {
+    direction: ltr;
+}
+
+.pathway-image {
+    display: block;
+    overflow: hidden;
     background-color: var(--color-bg-secondary);
-    text-decoration: none;
-    color: var(--color-text-primary);
+    aspect-ratio: 1 / 1;
+}
+
+.pathway-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     transition: opacity 0.2s ease;
 }
 
-.pathway:hover {
-    opacity: 0.75;
+.pathway-image:hover img {
+    opacity: 0.85;
 }
 
-.pathway h3 {
+.pathway-text h3 {
     font-family: var(--font-sans-primary);
-    font-size: var(--text-base);
+    font-size: var(--text-lg);
     font-weight: 400;
     letter-spacing: 0.05em;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
-.pathway p {
+.pathway-text h3 a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+.pathway-text h3 a:hover {
+    color: var(--color-accent);
+}
+
+.pathway-text p {
     font-family: var(--font-sans-secondary);
     color: var(--color-text-secondary);
 }
@@ -1760,8 +1795,8 @@ body:has(.contact-page) #selection-strip {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .pathways {
-        grid-template-columns: repeat(2, 1fr);
+    .pathway {
+        gap: 32px;
     }
 }
 
@@ -1810,9 +1845,17 @@ body:has(.contact-page) #selection-strip {
         grid-template-columns: 1fr;
     }
 
-    /* Homepage pathways: 1 column */
+    /* Homepage pathways: stack image above text, full width */
     .pathways {
+        gap: 56px;
+    }
+
+    .pathway,
+    .pathway--left,
+    .pathway--right {
         grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 20px;
     }
 
     /* Collated essay: single column, image → caption → prose */
