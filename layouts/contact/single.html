@@ -38,11 +38,6 @@
                 <input type="tel" name="phone">
             </label>
 
-            <label>
-                Which artworks are you interested in?
-                <input type="text" id="f-artworks" name="artworks" placeholder="e.g., Portrait series, Sculptures">
-            </label>
-
             <input type="hidden" id="f-saved-works" name="savedWorks">
             <textarea id="f-selected-artworks" name="selectedArtworks" hidden></textarea>
 
@@ -82,7 +77,6 @@
   var grid    = document.getElementById('liked-works-grid');
   var payload = document.getElementById('f-selected-artworks');
   var legacy  = document.getElementById('f-saved-works');
-  var artF    = document.getElementById('f-artworks');
   var form    = document.getElementById('contact-form');
 
   if (!saved.length) return;
@@ -145,9 +139,6 @@
     });
     if (payload) payload.value = lines.join('\n');
     if (legacy)  legacy.value  = active.map(function (w) { return w.title; }).join(' | ');
-    if (artF && !artF.value.trim()) {
-      artF.value = active.map(function (w) { return w.title; }).join(', ');
-    }
   }
 
   render();
