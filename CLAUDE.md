@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Live production site:** Google Sites at `kimmobey.com`. **This Hugo repo does not yet serve any live traffic.**
 - **Production domain:** `kimmobey.com` (apex + www). **Not** `mobey.co.za` — that is a legacy domain Kim still uses for email; it DNS-redirects to kimmobey.com but does not serve a website.
-- **Hosting target:** AWS S3 + CloudFront, provisioned by CloudFormation, with GitHub Actions (OIDC, no long-lived keys) building Hugo and syncing to S3 on push to `main`.
+- **Hosting target:** AWS S3 + CloudFront, provisioned by CloudFormation. **Deploys are manual** — there is no GitHub Actions workflow and there will never be one. After pushing to GitHub, run `hugo && STACK_NAME=kimmobey-site ./infrastructure/deploy.sh` from a shell with AWS CLI credentials. The script syncs `public/` to S3 and invalidates CloudFront `/*`.
   - Region: `eu-west-1` (Ireland — closest to the European buyer base)
   - Route 53 hosted zone for kimmobey.com: `Z0282701OSAPI8VKA1OT`
   - ACM certificate provisioned in `us-east-1` (CloudFront requirement, regardless of stack region)
   - Private S3 bucket with Origin Access Control — never use S3 static website hosting mode
-- **Netlify is being decommissioned.** It was the previous deploy target during early development. Do not treat any Netlify constraints (15 credits/deploy, 20 deploys/month) as live. `netlify.toml` is kept until the AWS pipeline is confirmed working, then deleted in a small dedicated commit *after* disconnecting Netlify from the GitHub repo in the Netlify console.
+- **Netlify is dead.** Do not reference it, do not consult `netlify.toml` for deploy behaviour, do not treat it as a fallback. It was disconnected from the repo and the file has been removed.
 - **DNS cutover (Google Sites → CloudFront on kimmobey.com) is the final step**, performed manually by Kim only after the CloudFront distribution and ACM certificate are validated. Until then the Google Sites setup must remain untouched.
 - **Pre-existing AWS infrastructure on kimmobey.com from a partial migration ~3 years ago.** Treat as untouchable until inventoried. **Live SES/email records (DKIM, SPF, MX) on this zone must never be touched.** Dormant CloudFront distributions exist (apex points to `d2qpmq0g3x3tv.cloudfront.net`, `dev.kimmobey.com` points to `d1hr4gcvv1txzh.cloudfront.net`). Existing ACM validation CNAMEs and `www` CNAME must also not be modified. Any new CloudFormation work must inventory these and surface conflicts before provisioning.
 - **Form handling:** Formspree (external), unchanged through migration.
@@ -38,7 +38,7 @@ The site is served at `http://localhost:1313/`. Build output lives in `public/` 
 
 ## Local development workflow
 
-Test locally with `hugo server` before pushing. Standard git workflow applies — commit and push as you would on any other project. The previous Netlify-era restrictions (the `YES` pre-push hook and the per-push authorisation gate) have been removed; they existed only to ration Netlify's 15-credit-per-deploy cost. With GitHub Actions building to S3+CloudFront, deploys are effectively free.
+Test locally with `hugo server` before pushing. Standard git workflow applies — commit and push as you would on any other project. **Pushing to GitHub does not deploy.** After every push you want live, run `hugo && STACK_NAME=kimmobey-site ./infrastructure/deploy.sh` to sync to S3 and invalidate CloudFront. There is no auto-deploy and there will not be one.
 
 ## Architecture
 
