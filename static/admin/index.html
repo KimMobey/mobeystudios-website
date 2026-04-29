@@ -205,6 +205,13 @@
     }
     .work-card.is-incomplete { border-color: #d8b98a; }
     .work-card.is-incomplete:hover { border-color: var(--amber); }
+    .card-img-missing {
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%;
+      background: color-mix(in srgb, var(--red) 8%, var(--bg));
+      color: var(--red);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    }
 
     /* ── Sticky toolbar: filter + sort stay visible while scrolling the grid ── */
     #grid-controls {
@@ -887,6 +894,30 @@
       <span id="save-msg"></span>
     </div>
 
+    <fieldset id="work-danger-zone" class="danger-zone">
+      <legend>Danger zone</legend>
+      <div id="work-delete-initial">
+        <p class="hint" style="margin-bottom:10px">Permanently removes this work's markdown file. Image files on disk are left in place. This cannot be undone.</p>
+        <button type="button" class="btn-danger-ghost" id="btn-work-delete-reveal">Delete this work…</button>
+      </div>
+      <div id="work-delete-confirm" style="display:none">
+        <p class="danger-warn">
+          <strong>This will permanently delete</strong>
+          <span id="work-delete-filename" class="mono"></span>.
+          The file will be removed from disk. There is no undo.
+        </p>
+        <label for="work-delete-match" style="display:block;margin-bottom:6px">
+          Type the work's title exactly to confirm: <span class="mono" id="work-delete-expected"></span>
+        </label>
+        <input type="text" id="work-delete-match" autocomplete="off" style="width:100%;max-width:560px;margin-bottom:10px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <button type="button" class="btn-danger" id="btn-work-delete-confirm" disabled>Delete permanently</button>
+          <button type="button" class="btn-ghost"  id="btn-work-delete-cancel">Cancel</button>
+          <span id="work-delete-msg" class="hint"></span>
+        </div>
+      </div>
+    </fieldset>
+
   </form>
 </div>
 
@@ -1214,7 +1245,7 @@ function renderGrid() {
     const missing   = missingFields(fm);
     if (missing.length) card.classList.add('is-incomplete');
     const imgEl     = fm.image
-      ? `<img src="${esc(fm.image)}" alt="${esc(fm.title ?? '')}" loading="lazy">`
+      ? `<img src="${esc(fm.image)}" alt="${esc(fm.title ?? '')}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'card-img-missing',textContent:'missing'}))">`
       : '○';
 
     const incompleteBadge = missing.length
@@ -1539,6 +1570,8 @@ function openEdit(work) {
   $('save-msg').className   = '';
   $('save-warn').className  = '';
   $('save-warn').innerHTML  = '';
+
+  if (typeof resetWorkDelete === 'function') resetWorkDelete();
 
   show('view-edit');
   window.scrollTo(0, 0);
@@ -1949,6 +1982,10 @@ function openArticleEdit(article, isNew) {
   const warn = $('studio-save-warn');
   if (warn) { warn.className = ''; warn.innerHTML = ''; }
 
+  // Hide the danger zone for new (unsaved) entries — nothing to delete yet.
+  $('studio-danger-zone').style.display = isNew ? 'none' : '';
+  if (typeof resetStudioDelete === 'function') resetStudioDelete();
+
   show('view-studio-edit');
   window.scrollTo(0, 0);
 }
@@ -2182,6 +2219,100 @@ async function moveArticle(article, dir) {
   toast('Order saved');
   renderStudioList();
 }
+
+// ── Danger zone: typed-title delete confirmation ──────────────────────────────
+
+function setupTypedDelete({ revealBtn, panel, initial, input, confirmBtn, cancelBtn,
+                            filenameEl, expectedEl, msgEl, getTarget, doDelete }) {
+  $(revealBtn).addEventListener('click', () => {
+    const t = getTarget();
+    if (!t) return;
+    $(filenameEl).textContent = t.filename;
+    $(expectedEl).textContent = t.title;
+    $(input).value = '';
+    $(confirmBtn).disabled = true;
+    $(msgEl).textContent = '';
+    $(initial).style.display = 'none';
+    $(panel).style.display = '';
+  });
+  const reset = () => {
+    $(panel).style.display = 'none';
+    $(initial).style.display = '';
+    $(input).value = '';
+    $(confirmBtn).disabled = true;
+    $(msgEl).textContent = '';
+  };
+  $(cancelBtn).addEventListener('click', reset);
+  $(input).addEventListener('input', () => {
+    const t = getTarget();
+    $(confirmBtn).disabled = !t || $(input).value !== t.title;
+  });
+  $(confirmBtn).addEventListener('click', async () => {
+    const t = getTarget();
+    if (!t || $(input).value !== t.title) return;
+    $(confirmBtn).disabled = true;
+    $(msgEl).textContent = 'Deleting…';
+    try {
+      await doDelete(t);
+      reset();
+    } catch (err) {
+      $(msgEl).textContent = `Failed: ${err.message}`;
+      $(confirmBtn).disabled = false;
+    }
+  });
+  return reset;
+}
+
+const resetWorkDelete = setupTypedDelete({
+  revealBtn:  'btn-work-delete-reveal',
+  panel:      'work-delete-confirm',
+  initial:    'work-delete-initial',
+  input:      'work-delete-match',
+  confirmBtn: 'btn-work-delete-confirm',
+  cancelBtn:  'btn-work-delete-cancel',
+  filenameEl: 'work-delete-filename',
+  expectedEl: 'work-delete-expected',
+  msgEl:      'work-delete-msg',
+  getTarget: () => activeWork && {
+    filename: activeWork.filename,
+    title:    activeWork.fm.title ?? activeWork.slug,
+    slug:     activeWork.slug,
+  },
+  doDelete: async (t) => {
+    const res = await fetch(`/api/works/${t.slug}/delete`, { method: 'POST' });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    toast(`Deleted ${t.filename}`);
+    await reloadAll();
+    show('view-grid');
+  },
+});
+
+const resetStudioDelete = setupTypedDelete({
+  revealBtn:  'btn-studio-delete-reveal',
+  panel:      'studio-delete-confirm',
+  initial:    'studio-delete-initial',
+  input:      'studio-delete-match',
+  confirmBtn: 'btn-studio-delete-confirm',
+  cancelBtn:  'btn-studio-delete-cancel',
+  filenameEl: 'studio-delete-filename',
+  expectedEl: 'studio-delete-expected',
+  msgEl:      'studio-delete-msg',
+  getTarget: () => activeArticle && activeArticle.slug && {
+    filename: `${activeArticle.section}/${activeArticle.filename || activeArticle.slug + '.md'}`,
+    title:    activeArticle.fm.title ?? activeArticle.slug,
+    slug:     activeArticle.slug,
+    section:  activeArticle.section,
+  },
+  doDelete: async (t) => {
+    const res = await fetch(`/api/articles/${t.section}/${t.slug}/delete`, { method: 'POST' });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    toast(`Deleted ${t.filename}`);
+    const articlesRes = await fetch('/api/articles');
+    if (articlesRes.ok) articles = await articlesRes.json();
+    renderStudioList();
+    show('view-studio');
+  },
+});
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
