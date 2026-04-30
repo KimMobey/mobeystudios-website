@@ -642,6 +642,7 @@
   <nav id="tab-nav">
     <button class="tab-btn active" id="tab-portfolio" onclick="setActiveTab('portfolio')">Portfolio</button>
     <button class="tab-btn"        id="tab-studio"    onclick="setActiveTab('studio')">Studio</button>
+    <button class="tab-btn"        id="tab-pages"     onclick="setActiveTab('pages')">Pages</button>
   </nav>
   <span id="status"></span>
 </header>
@@ -1086,6 +1087,60 @@
   </form>
 </div>
 
+<!-- Pages list -->
+<div id="view-pages" class="page" style="display:none">
+  <div id="studio-toolbar">
+    <h2 id="pages-count"></h2>
+    <span class="hint">Body copy for the main pages of the site. Section indices, contact, and the home page intro live here.</span>
+  </div>
+  <div id="pages-list"></div>
+</div>
+
+<!-- Page edit -->
+<div id="view-page-edit" class="page" style="display:none">
+  <div id="studio-edit-nav">
+    <button class="btn-ghost" id="btn-page-back">← Back</button>
+    <h1 id="page-edit-heading">Edit page</h1>
+    <div class="edit-actions">
+      <button type="button" class="btn-primary" id="btn-page-save-top">Save</button>
+      <button type="button" class="btn-ghost"   id="btn-page-cancel-top">Cancel</button>
+      <span id="page-save-msg-top"></span>
+    </div>
+  </div>
+  <form id="page-edit-form" novalidate>
+    <fieldset>
+      <legend>Page</legend>
+      <div class="fg">
+        <div class="field span2">
+          <label for="pf-title">Title</label>
+          <input type="text" id="pf-title" autocomplete="off">
+          <span class="hint">The frontmatter title — used in the browser tab and (for indices) as the page heading.</span>
+        </div>
+        <div class="field span2">
+          <label for="pf-description">Description <span class="opt">(optional)</span></label>
+          <input type="text" id="pf-description" autocomplete="off">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Body</legend>
+      <div class="fg fg-1">
+        <div class="field">
+          <label for="pf-body">Body copy <span class="opt">(markdown supported — leave blank for index-only pages)</span></label>
+          <textarea id="pf-body" spellcheck="true"></textarea>
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" id="btn-page-save">Save</button>
+      <button type="button" class="btn-ghost" id="btn-page-cancel">Cancel</button>
+      <span id="page-save-msg"></span>
+    </div>
+  </form>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1119,11 +1174,31 @@ let orphans           = [];
 let activeWork        = null;
 let priceOverride     = false; // true when user has manually edited the price field
 
+// ── Persisted UI state ────────────────────────────────────────────────────────
+// Survives hard refreshes. Edit views are intentionally not persisted —
+// reloading mid-edit would resurrect a half-filled form.
+
+const UI_STATE_KEY = 'kimmobey-admin-ui-v1';
+
+function loadUiState() {
+  try {
+    const raw = localStorage.getItem(UI_STATE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (_) { return {}; }
+}
+
+function saveUiState(patch) {
+  try {
+    const cur = loadUiState();
+    localStorage.setItem(UI_STATE_KEY, JSON.stringify({ ...cur, ...patch }));
+  } catch (_) { /* localStorage may be unavailable — non-fatal */ }
+}
+
 // ── Views ─────────────────────────────────────────────────────────────────────
 
 const $ = id => document.getElementById(id);
 
-const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit'];
+const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit'];
 function show(id) {
   for (const v of ALL_VIEWS) $(v).style.display = v === id ? '' : 'none';
 }
@@ -1133,11 +1208,15 @@ function show(id) {
 function setActiveTab(tab) {
   $('tab-portfolio').classList.toggle('active', tab === 'portfolio');
   $('tab-studio').classList.toggle('active',    tab === 'studio');
+  $('tab-pages').classList.toggle('active',     tab === 'pages');
+  saveUiState({ tab });
   if (tab === 'portfolio') {
     renderGrid();
     show('view-grid');
-  } else {
+  } else if (tab === 'studio') {
     initStudio();
+  } else {
+    initPages();
   }
 }
 
@@ -1153,10 +1232,40 @@ async function init() {
     if (!worksRes.ok) throw new Error(`Server returned ${worksRes.status}`);
     works   = await worksRes.json();
     orphans = orphansRes.ok ? await orphansRes.json() : [];
+    $('status').textContent = `${works.length} works`;
+
+    // Restore persisted UI state from the last session.
+    const ui = loadUiState();
+
+    if (['all','incomplete','stubs','orphans'].includes(ui.portfolioFilter)) {
+      activeFilter = ui.portfolioFilter;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === activeFilter);
+      });
+    }
+    if (['complete-first','catalogue','title'].includes(ui.portfolioSort)) {
+      activeSort = ui.portfolioSort;
+      document.querySelectorAll('.sort-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.sort === activeSort);
+      });
+    }
+    if (['all','published','drafts'].includes(ui.studioFilter)) {
+      studioFilter = ui.studioFilter;
+      document.querySelectorAll('#studio-filter-bar .filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.studioFilter === studioFilter);
+      });
+    }
+
     renderGrid();
     renderOrphans();
-    show('view-grid');
-    $('status').textContent = `${works.length} works`;
+
+    if (ui.tab === 'studio') {
+      setActiveTab('studio');
+    } else if (ui.tab === 'pages') {
+      setActiveTab('pages');
+    } else {
+      show('view-grid');
+    }
   } catch (err) {
     $('error-msg').textContent =
       `Could not load works: ${err.message}. ` +
@@ -1509,6 +1618,7 @@ async function createEmptyStub(e) {
 function setFilter(f) {
   if (f === 'match') { openMatchView(); return; }
   activeFilter = f;
+  saveUiState({ portfolioFilter: f });
   document.querySelectorAll('.filter-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.filter === f);
   });
@@ -1691,6 +1801,12 @@ async function saveWork() {
 
     activeWork.fm   = fm;
     activeWork.body = body;
+
+    // Refresh orphans so a newly-attached image disappears from that filter.
+    try {
+      const orphansRes = await fetch('/api/orphans');
+      if (orphansRes.ok) orphans = await orphansRes.json();
+    } catch (_) { /* non-fatal */ }
 
     $('edit-heading').textContent = fm.title ?? activeWork.filename;
     if (fm.image) { $('edit-thumb').src = fm.image; $('edit-thumb').style.display = ''; }
@@ -2314,6 +2430,105 @@ const resetStudioDelete = setupTypedDelete({
   },
 });
 
+// ── Pages ─────────────────────────────────────────────────────────────────────
+// Edits the body copy of the main pages of the site (home, contact, section
+// indices, etc.). The list of editable pages is whitelisted in admin_server.py.
+
+let pages       = [];
+let activePage  = null;
+
+async function initPages() {
+  show('view-loading');
+  try {
+    const res = await fetch('/api/pages');
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    pages = await res.json();
+    renderPagesList();
+    show('view-pages');
+  } catch (err) {
+    $('error-msg').textContent =
+      `Could not load pages: ${err.message}. Make sure admin_server.py is running.`;
+    show('view-error');
+  }
+}
+
+function renderPagesList() {
+  const list = $('pages-list');
+  list.innerHTML = '';
+  $('pages-count').textContent = `${pages.length} editable page${pages.length !== 1 ? 's' : ''}`;
+  for (const p of pages) {
+    const row = document.createElement('div');
+    row.className = 'article-row';
+    const title  = p.fm.title || p.label;
+    const excerpt = (p.body || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+    row.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div class="article-title">${esc(p.label)}</div>
+        <div class="article-meta">${esc(p.path)} — ${esc(title)}${excerpt ? ' · ' + esc(excerpt) + (excerpt.length === 140 ? '…' : '') : ''}</div>
+      </div>
+    `;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-ghost';
+    btn.textContent = 'Edit';
+    btn.style.fontSize = '12px';
+    btn.addEventListener('click', () => openPageEdit(p));
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
+}
+
+function openPageEdit(page) {
+  activePage = page;
+  $('page-edit-heading').textContent = page.label;
+  $('pf-title').value       = page.fm.title       ?? '';
+  $('pf-description').value = page.fm.description ?? '';
+  $('pf-body').value        = page.body           ?? '';
+  $('page-save-msg').textContent = '';
+  $('page-save-msg').className   = '';
+  show('view-page-edit');
+  window.scrollTo(0, 0);
+}
+
+async function savePage() {
+  if (!activePage) return;
+  const msg = $('page-save-msg');
+  msg.textContent = 'Saving…';
+  msg.className   = '';
+  $('btn-page-save').disabled = true;
+  if ($('btn-page-save-top')) $('btn-page-save-top').disabled = true;
+
+  // Merge edits onto the existing fm so other keys (type, sitemap, etc.)
+  // survive. The server also re-merges, but doing it here lets the local
+  // copy stay coherent without a refetch.
+  const fm = { ...activePage.fm };
+  const title = $('pf-title').value.trim();
+  const desc  = $('pf-description').value.trim();
+  if (title) fm.title = title; else delete fm.title;
+  if (desc)  fm.description = desc; else delete fm.description;
+  const body  = $('pf-body').value;
+
+  try {
+    const res = await fetch(`/api/pages/${activePage.id}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ fm, body }),
+    });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    activePage.fm   = fm;
+    activePage.body = body.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(l => l.replace(/\s+$/, '')).join('\n').replace(/^\n+|\n+$/g, '');
+    msg.textContent = 'Saved';
+    msg.className   = 'ok';
+    toast(`Saved: ${activePage.label}`);
+  } catch (err) {
+    msg.textContent = `Error: ${err.message}`;
+    msg.className   = 'err';
+  } finally {
+    $('btn-page-save').disabled = false;
+    if ($('btn-page-save-top')) $('btn-page-save-top').disabled = false;
+  }
+}
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
 
 let toastTimer;
@@ -2354,6 +2569,7 @@ document.querySelectorAll('.filter-btn').forEach(b => {
 document.querySelectorAll('.sort-btn').forEach(b => {
   b.addEventListener('click', () => {
     activeSort = b.dataset.sort;
+    saveUiState({ portfolioSort: activeSort });
     document.querySelectorAll('.sort-btn').forEach(x => x.classList.toggle('active', x === b));
     renderGrid();
   });
@@ -2395,6 +2611,7 @@ $('btn-price-keep').addEventListener('click', () => {
 document.querySelectorAll('#studio-filter-bar .filter-btn').forEach(b => {
   b.addEventListener('click', () => {
     studioFilter = b.dataset.studioFilter;
+    saveUiState({ studioFilter });
     document.querySelectorAll('#studio-filter-bar .filter-btn')
       .forEach(btn => btn.classList.toggle('active', btn === b));
     renderStudioList();
@@ -2405,6 +2622,24 @@ $('btn-studio-back').addEventListener('click',   () => { renderStudioList(); sho
 $('btn-studio-save-top').addEventListener('click', () => { saveArticle(); });
 $('btn-studio-cancel').addEventListener('click',     () => { renderStudioList(); show('view-studio'); });
 $('btn-studio-cancel-top').addEventListener('click', () => { renderStudioList(); show('view-studio'); });
+
+$('btn-page-back').addEventListener('click',        () => { renderPagesList(); show('view-pages'); });
+$('btn-page-cancel').addEventListener('click',      () => { renderPagesList(); show('view-pages'); });
+$('btn-page-cancel-top').addEventListener('click',  () => { renderPagesList(); show('view-pages'); });
+$('btn-page-save').addEventListener('click',        () => { savePage(); });
+$('btn-page-save-top').addEventListener('click',    () => { savePage(); });
+$('page-edit-form').addEventListener('submit', e => { e.preventDefault(); savePage(); });
+
+(function mirrorPageSaveMsg() {
+  const src = $('page-save-msg');
+  const dst = $('page-save-msg-top');
+  if (!src || !dst) return;
+  const sync = () => { dst.textContent = src.textContent; dst.className = src.className; };
+  new MutationObserver(sync).observe(src, {
+    childList: true, characterData: true, subtree: true,
+    attributes: true, attributeFilter: ['class'],
+  });
+})();
 
 // Mirror the bottom save-status message to the top copy so users don't need to
 // scroll to confirm a save succeeded.

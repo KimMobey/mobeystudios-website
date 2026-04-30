@@ -31,6 +31,22 @@ STUDIO_SECTIONS = {
 }
 SECTION_RE = '|'.join(STUDIO_SECTIONS.keys())
 
+# Whitelist of "page-level" markdown files exposed in the admin Pages tab.
+# Adding a new entry here is the only way to make a file editable as a page —
+# everything else 404s, so the admin can never overwrite layouts or config.
+PAGES = [
+    {'id': 'home',      'label': 'Home',                  'path': 'content/_index.md'},
+    {'id': 'contact',   'label': 'Contact',               'path': 'content/contact.md'},
+    {'id': 'pricelist', 'label': 'Pricelist (private)',   'path': 'content/good-things-happen.md'},
+    {'id': 'portfolio', 'label': 'Portfolio (intro)',     'path': 'content/portfolio/_index.md'},
+    {'id': 'studio',    'label': 'Studio (intro)',        'path': 'content/studio/_index.md'},
+    {'id': 'essays',    'label': 'Studio: Essays index',    'path': 'content/studio/essays/_index.md'},
+    {'id': 'articles',  'label': 'Studio: Articles index',  'path': 'content/studio/articles/_index.md'},
+    {'id': 'documents', 'label': 'Studio: Documents index', 'path': 'content/studio/documents/_index.md'},
+    {'id': 'media',     'label': 'Studio: Media index',     'path': 'content/studio/media/_index.md'},
+]
+PAGES_BY_ID = {p['id']: p for p in PAGES}
+
 IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
 
 # Directories under static/images/ that the admin image picker can access.
@@ -67,6 +83,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif path == '/api/articles':
             self._json(self._list_articles())
+
+        elif path == '/api/pages':
+            self._json(self._list_pages())
 
         elif path == '/api/images':
             qs = parse_qs(urlparse(self.path).query)
@@ -131,6 +150,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._upload_image(directory)
             return
 
+        elif path.startswith('/api/pages/'):
+            page_id = unquote(path[len('/api/pages/'):]).strip('/')
+            if page_id not in PAGES_BY_ID:
+                self.send_error(404, f'Unknown page: {page_id}')
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            data   = json.loads(self.rfile.read(length))
+            self._save_page(page_id, data)
+
         elif path.startswith('/api/articles/'):
             rest = unquote(path[len('/api/articles/'):])
             parts = rest.split('/', 1)
@@ -170,6 +198,40 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return (0, order, title) if order else (1, title, '')
         works.sort(key=_key)
         return works
+
+    def _list_pages(self):
+        pages = []
+        for entry in PAGES:
+            f = ROOT / entry['path']
+            if not f.is_file():
+                continue
+            parsed = parse_front_matter(f.read_text('utf-8'))
+            pages.append({
+                'id':    entry['id'],
+                'label': entry['label'],
+                'path':  entry['path'],
+                'fm':    parsed['fm'],
+                'body':  parsed['body'],
+            })
+        return pages
+
+    def _save_page(self, page_id, data):
+        entry = PAGES_BY_ID[page_id]
+        f = ROOT / entry['path']
+        if not f.is_file():
+            self.send_error(404, f"{entry['path']} not found")
+            return
+        # Preserve any existing front-matter keys not sent by the editor
+        # (e.g. type, sitemap.disable) by merging client fm onto the
+        # current on-disk fm.
+        current = parse_front_matter(f.read_text('utf-8'))['fm']
+        client_fm = data.get('fm') or {}
+        merged = {**current, **client_fm}
+        body = data.get('body', '')
+        body = body.replace('\r\n', '\n').replace('\r', '\n')
+        body = '\n'.join(ln.rstrip() for ln in body.split('\n')).strip('\n')
+        f.write_text(serialize(merged, body), 'utf-8')
+        self._json({'ok': True, 'id': page_id})
 
     def _list_articles(self):
         articles = []
@@ -255,8 +317,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self._json({'ok': True, 'slug': slug, 'section': section})
 
     def _save_work(self, slug, data):
-        path    = PORTFOLIO / f'{slug}.md'
-        content = serialize(data['fm'], data.get('body', ''))
+        path = PORTFOLIO / f'{slug}.md'
+        fm   = data.get('fm', {})
+        # A stub stops being a stub once every required field is populated —
+        # auto-clear so completed works don't linger under the Stubs filter.
+        if fm.get('stub') and _is_complete_work(fm):
+            fm.pop('stub', None)
+        content = serialize(fm, data.get('body', ''))
         path.write_text(content, 'utf-8')
         self._json({'ok': True, 'slug': slug})
 
@@ -429,6 +496,17 @@ def parse_front_matter(text):
             i += 1
 
     return {'fm': fm, 'body': body}
+
+
+REQUIRED_WORK_FIELDS = ('title', 'image', 'media', 'forms', 'dimensions', 'category', 'statuses')
+
+def _is_complete_work(fm):
+    """Mirror the admin's REQUIRED_FIELDS check (static/admin/index.html)."""
+    for k in REQUIRED_WORK_FIELDS:
+        v = fm.get(k)
+        if v is None or v == '' or (isinstance(v, list) and not v):
+            return False
+    return True
 
 
 def parse_scalar(s):
