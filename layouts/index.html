@@ -19,45 +19,17 @@
         {{ end }}
 
         <div class="pathways">
-            <div class="pathway pathway--left">
-                <a href="/portfolio/?status=available" class="pathway-image" aria-hidden="true" tabindex="-1">
-                    <img src="/images/home/pathways/artworks.webp" alt="">
+            {{ range $i, $p := .Site.Data.pathways.items }}
+            <div class="pathway pathway--{{ if eq (mod $i 2) 0 }}left{{ else }}right{{ end }}">
+                <a href="{{ $p.href }}" class="pathway-image" aria-hidden="true" tabindex="-1">
+                    <img src="{{ $p.image }}" alt="">
                 </a>
                 <div class="pathway-text">
-                    <h3><a href="/portfolio/?status=available">Artworks</a></h3>
-                    <p>Available works, editions, and enquiries</p>
+                    <h3><a href="{{ $p.href }}">{{ $p.title }}</a></h3>
+                    <p>{{ $p.description }}</p>
                 </div>
             </div>
-
-            <div class="pathway pathway--right">
-                <a href="/studio/essays/" class="pathway-image" aria-hidden="true" tabindex="-1">
-                    <img src="/images/home/pathways/essays.webp" alt="">
-                </a>
-                <div class="pathway-text">
-                    <h3><a href="/studio/essays/">Essays</a></h3>
-                    <p>Writing and research</p>
-                </div>
-            </div>
-
-            <div class="pathway pathway--left">
-                <a href="/studio/articles/" class="pathway-image" aria-hidden="true" tabindex="-1">
-                    <img src="/images/home/pathways/articles.webp" alt="">
-                </a>
-                <div class="pathway-text">
-                    <h3><a href="/studio/articles/">Process &amp; Articles</a></h3>
-                    <p>Process, making, and reference</p>
-                </div>
-            </div>
-
-            <div class="pathway pathway--right">
-                <a href="/studio/documents/" class="pathway-image" aria-hidden="true" tabindex="-1">
-                    <img src="/images/home/pathways/documents.webp" alt="">
-                </a>
-                <div class="pathway-text">
-                    <h3><a href="/studio/documents/">Documents</a></h3>
-                    <p>CV and other documents</p>
-                </div>
-            </div>
+            {{ end }}
         </div>
     </div>
 </main>

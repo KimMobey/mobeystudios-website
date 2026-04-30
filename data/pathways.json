@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "title": "Artworks",
+      "description": "Available works, editions, and enquiries",
+      "href": "/portfolio/?status=available",
+      "image": "/images/home/pathways/artworks.webp"
+    },
+    {
+      "title": "Essays",
+      "description": "Writing and research",
+      "href": "/studio/essays/",
+      "image": "/images/home/pathways/essays.webp"
+    },
+    {
+      "title": "Process & Articles",
+      "description": "Process, making, and reference",
+      "href": "/studio/articles/",
+      "image": "/images/home/pathways/articles.webp"
+    },
+    {
+      "title": "Documents",
+      "description": "CV and other documents",
+      "href": "/studio/documents/",
+      "image": "/images/home/pathways/documents.webp"
+    }
+  ]
+}

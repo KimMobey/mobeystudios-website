@@ -1094,6 +1094,14 @@
     <span class="hint">Body copy for the main pages of the site. Section indices, contact, and the home page intro live here.</span>
   </div>
   <div id="pages-list"></div>
+
+  <h2 class="article-section-header" style="margin-top:32px">Home pathways</h2>
+  <p class="hint" style="margin:6px 0 12px">The four cards shown on the home page. Edit titles and descriptions here; image and link target are read-only — change those by editing <code>data/pathways.json</code> directly.</p>
+  <div id="pathways-list"></div>
+  <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+    <button type="button" class="btn-primary" id="btn-pathways-save">Save pathways</button>
+    <span id="pathways-save-msg" class="hint"></span>
+  </div>
 </div>
 
 <!-- Page edit -->
@@ -2437,18 +2445,85 @@ const resetStudioDelete = setupTypedDelete({
 let pages       = [];
 let activePage  = null;
 
+let pathways = { items: [] };
+
 async function initPages() {
   show('view-loading');
   try {
-    const res = await fetch('/api/pages');
-    if (!res.ok) throw new Error(`Server returned ${res.status}`);
-    pages = await res.json();
+    const [pagesRes, pathwaysRes] = await Promise.all([
+      fetch('/api/pages'),
+      fetch('/api/pathways'),
+    ]);
+    if (!pagesRes.ok) throw new Error(`Server returned ${pagesRes.status}`);
+    pages = await pagesRes.json();
+    pathways = pathwaysRes.ok ? await pathwaysRes.json() : { items: [] };
     renderPagesList();
+    renderPathwaysList();
     show('view-pages');
   } catch (err) {
     $('error-msg').textContent =
       `Could not load pages: ${err.message}. Make sure admin_server.py is running.`;
     show('view-error');
+  }
+}
+
+function renderPathwaysList() {
+  const list = $('pathways-list');
+  list.innerHTML = '';
+  (pathways.items || []).forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'article-row';
+    row.style.flexDirection = 'column';
+    row.style.alignItems = 'stretch';
+    row.style.gap = '6px';
+    row.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="article-meta mono" style="min-width:80px">card ${i + 1}</span>
+        <input type="text" data-pw-field="title" data-pw-index="${i}"
+               style="flex:1" value="${esc(p.title || '')}" placeholder="Title">
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span class="article-meta" style="min-width:80px">desc</span>
+        <input type="text" data-pw-field="description" data-pw-index="${i}"
+               style="flex:1" value="${esc(p.description || '')}" placeholder="Short description">
+      </div>
+      <div class="article-meta" style="padding-left:90px">
+        <span class="mono">${esc(p.href || '')}</span> · <span class="mono">${esc(p.image || '')}</span>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function savePathways() {
+  const msg = $('pathways-save-msg');
+  msg.textContent = 'Saving…';
+  msg.className   = 'hint';
+  // Pull the latest values out of the inputs, preserving href/image.
+  const items = (pathways.items || []).map((orig, i) => {
+    const titleEl = document.querySelector(`[data-pw-field="title"][data-pw-index="${i}"]`);
+    const descEl  = document.querySelector(`[data-pw-field="description"][data-pw-index="${i}"]`);
+    return {
+      title:       titleEl ? titleEl.value.trim() : (orig.title || ''),
+      description: descEl  ? descEl.value.trim()  : (orig.description || ''),
+      href:        orig.href  || '',
+      image:       orig.image || '',
+    };
+  });
+  try {
+    const res = await fetch('/api/pathways', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ items }),
+    });
+    if (!res.ok) throw new Error(`Server error ${res.status}`);
+    pathways.items = items;
+    msg.textContent = 'Saved';
+    msg.className   = 'ok';
+    toast('Pathways saved');
+  } catch (err) {
+    msg.textContent = `Error: ${err.message}`;
+    msg.className   = 'err';
   }
 }
 
@@ -2623,6 +2698,7 @@ $('btn-studio-save-top').addEventListener('click', () => { saveArticle(); });
 $('btn-studio-cancel').addEventListener('click',     () => { renderStudioList(); show('view-studio'); });
 $('btn-studio-cancel-top').addEventListener('click', () => { renderStudioList(); show('view-studio'); });
 
+$('btn-pathways-save').addEventListener('click',    () => { savePathways(); });
 $('btn-page-back').addEventListener('click',        () => { renderPagesList(); show('view-pages'); });
 $('btn-page-cancel').addEventListener('click',      () => { renderPagesList(); show('view-pages'); });
 $('btn-page-cancel-top').addEventListener('click',  () => { renderPagesList(); show('view-pages'); });

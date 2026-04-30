@@ -47,6 +47,9 @@ PAGES = [
 ]
 PAGES_BY_ID = {p['id']: p for p in PAGES}
 
+PATHWAYS_PATH = ROOT / 'data' / 'pathways.json'
+PATHWAY_KEYS  = ('title', 'description', 'href', 'image')
+
 IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
 
 # Directories under static/images/ that the admin image picker can access.
@@ -86,6 +89,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif path == '/api/pages':
             self._json(self._list_pages())
+
+        elif path == '/api/pathways':
+            self._json(self._list_pathways())
 
         elif path == '/api/images':
             qs = parse_qs(urlparse(self.path).query)
@@ -159,6 +165,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
             data   = json.loads(self.rfile.read(length))
             self._save_page(page_id, data)
 
+        elif path == '/api/pathways':
+            length = int(self.headers.get('Content-Length', 0))
+            data   = json.loads(self.rfile.read(length))
+            self._save_pathways(data)
+
         elif path.startswith('/api/articles/'):
             rest = unquote(path[len('/api/articles/'):])
             parts = rest.split('/', 1)
@@ -214,6 +225,38 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 'body':  parsed['body'],
             })
         return pages
+
+    def _list_pathways(self):
+        if not PATHWAYS_PATH.is_file():
+            return {'items': []}
+        return json.loads(PATHWAYS_PATH.read_text('utf-8'))
+
+    def _save_pathways(self, data):
+        items = data.get('items')
+        if not isinstance(items, list) or not items:
+            self.send_error(400, 'items must be a non-empty list')
+            return
+        # Reject anything that doesn't match the known schema. The four
+        # known keys are required; nothing else is written so the editor
+        # can't smuggle in extra YAML/JSON keys.
+        cleaned = []
+        for it in items:
+            if not isinstance(it, dict):
+                self.send_error(400, 'each item must be an object')
+                return
+            entry = {}
+            for k in PATHWAY_KEYS:
+                v = it.get(k, '')
+                if not isinstance(v, str):
+                    self.send_error(400, f'{k} must be a string')
+                    return
+                entry[k] = v.strip()
+            cleaned.append(entry)
+        PATHWAYS_PATH.write_text(
+            json.dumps({'items': cleaned}, indent=2, ensure_ascii=False) + '\n',
+            'utf-8',
+        )
+        self._json({'ok': True, 'count': len(cleaned)})
 
     def _save_page(self, page_id, data):
         entry = PAGES_BY_ID[page_id]
