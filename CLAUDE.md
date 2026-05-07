@@ -55,6 +55,8 @@ This is a Hugo static site with **no theme** — all layouts are hand-built unde
 
 The About section has been decommissioned. `layouts/about/single.html` remains in the repo as dormant code; there is no `content/about.md` and nothing renders at `/about/`. Do not add About back without explicit instruction.
 
+**Studio image directories (articles, essays, documents):** all three sections use per-slug subdirectories under `static/images/<section>/<slug>/`. Source files (jpg/png/raw) are archived under `<slug>/_src/`, which is excluded from the S3 sync. The admin form's body-image grid uploads into the per-slug dir; uploads to the parent `articles/`, `essays/`, or `documents/` are rejected (reserved-parent rule in `admin_server.py`).
+
 ### Taxonomies
 
 Defined in `hugo.toml`. Values are controlled — see `PricingAndVocabulary.md` for the full list.

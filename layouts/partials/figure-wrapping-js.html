@@ -1,0 +1,61 @@
+{{/*
+  Figure-wrapping client script for studio body content.
+  Wraps each image-led paragraph in a <figure class="article-figure">.
+  Caption can be (a) the following italic-only <p>, or (b) an <em> sibling
+  inside the same <p>. Multiple img+em pairs in one <p> split into separate
+  figures. Pass the body wrapper selector as the partial's context, e.g.
+    {{ partial "figure-wrapping-js.html" ".article-content" }}
+*/ -}}
+<script>
+(function () {
+    var content = document.querySelector('{{ . }}');
+    if (!content) return;
+
+    var imgParas = Array.from(content.querySelectorAll('p')).filter(function (p) {
+        return p.firstElementChild && p.firstElementChild.tagName === 'IMG';
+    });
+
+    imgParas.forEach(function (p) {
+        var fragments = [];
+        var current = null;
+        Array.from(p.childNodes).forEach(function (node) {
+            if (node.nodeType === 1 && node.tagName === 'IMG') {
+                current = { img: node, caption: null };
+                fragments.push(current);
+            } else if (current && !current.caption && node.nodeType === 1 && node.tagName === 'EM') {
+                current.caption = node;
+            }
+        });
+
+        if (fragments.length === 0) return;
+
+        var anchor = p;
+        fragments.forEach(function (frag) {
+            var fig = document.createElement('figure');
+            fig.className = 'article-figure';
+            var imgPara = document.createElement('p');
+            imgPara.appendChild(frag.img);
+            fig.appendChild(imgPara);
+            if (frag.caption) {
+                var cap = document.createElement('figcaption');
+                cap.innerHTML = frag.caption.innerHTML;
+                fig.appendChild(cap);
+            }
+            p.parentNode.insertBefore(fig, anchor);
+        });
+
+        if (fragments.length === 1 && !fragments[0].caption) {
+            var next = p.nextElementSibling;
+            if (next && next.tagName === 'P' && next.children.length === 1 && next.firstElementChild.tagName === 'EM') {
+                var lastFig = anchor.previousElementSibling;
+                var cap2 = document.createElement('figcaption');
+                cap2.innerHTML = next.firstElementChild.innerHTML;
+                lastFig.appendChild(cap2);
+                next.remove();
+            }
+        }
+
+        p.remove();
+    });
+}());
+</script>

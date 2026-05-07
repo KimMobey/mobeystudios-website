@@ -380,9 +380,138 @@
     #edit-heading { font-size: 22px; font-weight: 400; }
 
     /* ── Form ── */
-    #edit-form { display: flex; flex-direction: column; gap: 20px; }
+    #edit-form { display: flex; flex-direction: column; gap: 14px; }
+    #studio-edit-form { display: flex; flex-direction: column; gap: 14px; }
+    /* Reserve a fixed slot for the thumbnail preview so picking/clearing
+       a thumbnail never reflows the form. The dashed empty state matches
+       the 120×120 footprint of the live preview image. */
+    .thumb-slot {
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px dashed var(--color-border, var(--border));
+      border-radius: 4px;
+      color: var(--text-2);
+      font-size: 11px;
+      text-align: center;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .thumb-slot.has-image { border-style: solid; padding: 0; }
+    .thumb-slot img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; display: block; }
 
-    fieldset { border: 1px solid var(--border); padding: 14px 18px 18px; }
+    /* Article-edit form: constrain short inputs so they don't sprawl. */
+    #sf-section     { max-width: 16ch; }
+    #sf-weight      { max-width: 7ch; }
+    /* Inline meta row: controls flow inline at content width; one designated
+       child can grow via .meta-row__grow to absorb leftover horizontal space. */
+    .meta-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+    .meta-row .field { flex: 0 0 auto; }
+    .meta-row .meta-row__grow { flex: 1 1 280px; min-width: 0; }
+    /* When the row contains a thumbnail preview the row aligns to the top so
+       the 120×120 slot extends downward without distorting the inputs. */
+    .meta-row--with-thumb { align-items: flex-start; }
+    .meta-row--with-thumb .field > label { margin-top: 0; }
+    /* Thumbnail-controls row: a single horizontal strip. */
+    .thumb-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    /* Image picker grid: one component reused by the body-image fieldset
+       (always-visible, click-to-insert) and the thumbnail modal (click-to-set).
+       Tiles are square; widths flow naturally on a CSS grid so there's no
+       horizontal-strip vs vertical-stack alignment ambiguity. */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+    }
+    /* Small inline-button styled like a text link, used in <legend> for
+       refresh affordances — keeps the visual weight of the fieldset header
+       low while still being clickable. */
+    .link-btn {
+      background: none;
+      border: 0;
+      padding: 0 6px;
+      margin-left: 6px;
+      font: inherit;
+      font-size: 0.85em;
+      color: var(--admin-link, #06c);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .link-btn:hover, .link-btn:focus-visible {
+      color: var(--admin-link-hover, #048);
+    }
+    .image-grid__tile {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      background: var(--bg-2, #fafafa);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      padding: 0;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease;
+      font: inherit;
+      color: inherit;
+    }
+    .image-grid__tile img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .image-grid__tile:hover,
+    .image-grid__tile:focus-visible {
+      border-color: var(--accent, #555);
+      box-shadow: 0 0 0 2px var(--accent, #555);
+      outline: none;
+    }
+    .image-grid__tile.is-selected {
+      border-color: var(--accent, #555);
+      box-shadow: 0 0 0 2px var(--accent, #555);
+    }
+    .image-grid__tile .image-grid__caption {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.2;
+      padding: 3px 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .image-grid__upload {
+      border: 2px dashed var(--border);
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--text-2);
+      text-align: center;
+      padding: 8px;
+    }
+    .image-grid__upload:hover,
+    .image-grid__upload:focus-visible {
+      border-style: solid;
+    }
+    .image-grid__upload .image-grid__upload-glyph {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .image-grid__empty {
+      grid-column: 1 / -1;
+      padding: 18px;
+      color: var(--text-2);
+      font-size: 13px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+
+    fieldset { border: 1px solid var(--border); padding: 10px 14px 12px; }
     legend {
       font-size: 10px;
       font-weight: 700;
@@ -956,48 +1085,55 @@
 
     <fieldset>
       <legend>Identity</legend>
-      <div class="fg">
-        <div class="field span2">
-          <label for="sf-title">Title</label>
-          <input type="text" id="sf-title" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="sf-section">Section</label>
-          <select id="sf-section">
-            <option value="essays">Essays</option>
-            <option value="articles">Articles</option>
-            <option value="documents">Documents</option>
-            <option value="media">Media</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="sf-weight">Order weight</label>
-          <input type="number" id="sf-weight" min="1" step="1" placeholder="1, 2, 3…">
-        </div>
-        <div class="field span2" data-required="slug">
-          <label for="sf-slug">Slug<span class="req-star">*</span> <span class="opt">(set once, used as filename — auto-filled from title)</span></label>
-          <input type="text" id="sf-slug" placeholder="my-article-title" autocomplete="off">
-          <span id="sf-slug-hint" class="hint"></span>
-        </div>
-        <div class="field span2">
-          <label for="sf-description">Description <span class="opt">(optional)</span></label>
-          <input type="text" id="sf-description" placeholder="Short description for listings" autocomplete="off">
-        </div>
-        <div class="field span2">
-          <label for="sf-thumbnail">Thumbnail <span class="opt">(optional — shown in listings)</span></label>
-          <div style="display:flex;gap:8px;align-items:stretch">
-            <input type="text" id="sf-thumbnail" placeholder="/images/articles/filename.webp" autocomplete="off" style="flex:1">
-            <button type="button" class="btn-ghost" id="btn-thumb-picker" style="font-size:13px;white-space:nowrap">Choose thumbnail…</button>
+      <div class="fg fg-1">
+        <div class="meta-row">
+          <div class="field meta-row__grow">
+            <label for="sf-title">Title</label>
+            <input type="text" id="sf-title" autocomplete="off">
           </div>
+          <div class="field">
+            <label for="sf-section">Section</label>
+            <select id="sf-section">
+              <option value="essays">Essays</option>
+              <option value="articles">Articles</option>
+              <option value="documents">Documents</option>
+              <option value="media">Media</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sf-weight">Order</label>
+            <input type="number" id="sf-weight" min="1" step="1" placeholder="1, 2, 3…">
+          </div>
+          <label class="toggle-item" style="padding-bottom:6px">
+            <input type="checkbox" id="sf-visible">
+            <span>Publish (visible on site)</span>
+          </label>
         </div>
-        <div class="field span3">
-          <label>Visibility</label>
-          <div class="toggle-row toggle-row--inline">
-            <label class="toggle-item">
-              <input type="checkbox" id="sf-visible">
-              <span>Publish (visible on site)</span>
-            </label>
-            <span class="hint" style="font-size:12px">Off = draft. Drafts stay hidden from the site; you can always return to finish them.</span>
+        <div class="meta-row meta-row--with-thumb">
+          <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px">
+            <div class="meta-row" style="margin:0">
+              <div class="field" data-required="slug" style="min-width:240px">
+                <label for="sf-slug">Slug<span class="req-star">*</span> <span class="opt">(URL · filename · image folder)</span></label>
+                <input type="text" id="sf-slug" placeholder="e.g. wabele-2" autocomplete="off">
+                <span id="sf-slug-hint" class="hint"></span>
+              </div>
+              <div class="field meta-row__grow">
+                <label for="sf-description">Description</label>
+                <input type="text" id="sf-description" placeholder="Short description for listings" autocomplete="off">
+              </div>
+            </div>
+            <div class="field">
+              <label for="sf-thumbnail">Thumbnail <span class="opt">(shown in listings)</span></label>
+              <div class="thumb-row">
+                <button type="button" class="btn-ghost" id="btn-thumb-picker" style="font-size:13px;white-space:nowrap">Choose thumbnail…</button>
+                <input type="text" id="sf-thumbnail" placeholder="…or paste path" autocomplete="off" style="flex:1;min-width:160px;max-width:360px">
+                <button type="button" class="btn-ghost" id="btn-thumb-clear" style="font-size:13px" title="Clear thumbnail">Clear</button>
+              </div>
+            </div>
+          </div>
+          <div id="sf-thumb-preview" class="thumb-slot" title="Thumbnail preview">
+            <span id="sf-thumb-preview-empty">no thumbnail</span>
+            <img id="sf-thumb-preview-img" alt="" style="display:none">
           </div>
         </div>
       </div>
@@ -1008,46 +1144,28 @@
       <div class="fg fg-1">
         <div class="field">
           <label for="sf-body">Content <span class="opt">(markdown)</span></label>
-          <div id="sf-image-controls" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
-            <button type="button" class="btn-ghost" id="btn-insert-image" style="font-size:13px">Insert image…</button>
-            <span class="hint" style="font-size:12px">Images render as small thumbnails alongside text; clicking opens a larger view.</span>
-          </div>
           <textarea id="sf-body" style="min-height:360px" spellcheck="true"></textarea>
         </div>
       </div>
     </fieldset>
 
+    <fieldset id="sf-body-images-fieldset">
+      <legend>Body images <button type="button" id="sf-body-img-refresh" class="link-btn" title="Reload the list from disk — useful after dropping files into the folder via GIMP or your file manager.">↻ Refresh</button></legend>
+      <p class="hint" style="margin:0 0 10px">Click a tile to append an image reference (with caption stub) to the end of the body. New uploads are converted to <code>.webp</code> automatically; the original is archived under <code>_src/</code>. Files placed directly in the folder (e.g. exported from GIMP) appear here too — refresh to pick them up.</p>
+      <div id="sf-body-img-grid" class="image-grid"></div>
+      <input type="file" id="sf-body-img-upload" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,.webp" hidden>
+      <span id="sf-body-img-msg" class="hint" style="display:block;margin-top:8px;min-height:1em"></span>
+    </fieldset>
+
     <div id="image-picker" class="modal" style="display:none" aria-hidden="true">
       <div class="modal__panel" role="dialog" aria-labelledby="image-picker-title">
-        <h3 id="image-picker-title" style="margin:0 0 12px">Insert image</h3>
-        <div class="fg fg-1">
-          <div class="field">
-            <label for="img-picker-select">Choose from existing images</label>
-            <select id="img-picker-select">
-              <option value="">— pick a file —</option>
-            </select>
-            <span class="hint" style="font-size:12px">All files in <code id="img-picker-dir-hint">static/images/articles/</code></span>
-          </div>
-          <div class="field">
-            <label for="img-picker-upload">…or upload a new one</label>
-            <input type="file" id="img-picker-upload" accept=".webp">
-            <span id="img-picker-upload-msg" class="hint" style="font-size:12px"></span>
-          </div>
-          <div class="field">
-            <label for="img-picker-alt">Alt text <span class="opt">(describe the image for screen readers)</span></label>
-            <input type="text" id="img-picker-alt" autocomplete="off" placeholder="e.g. Cast cement head with gold leaf">
-          </div>
-          <div class="field">
-            <label for="img-picker-caption">Caption <span class="opt">(optional, italic beneath image)</span></label>
-            <input type="text" id="img-picker-caption" autocomplete="off">
-          </div>
-          <div id="img-picker-preview-wrap" style="display:none">
-            <img id="img-picker-preview" alt="" style="max-width:100%;max-height:200px;display:block;margin-top:4px;border:1px solid var(--color-border)">
-          </div>
-        </div>
+        <h3 id="image-picker-title" style="margin:0 0 12px">Choose thumbnail</h3>
+        <p class="hint" style="margin:0 0 10px">Click a tile to set the thumbnail. New uploads are converted to <code>.webp</code> and stored in <code id="img-picker-dir-hint">static/images/articles/</code>.</p>
+        <div id="img-picker-grid" class="image-grid"></div>
+        <input type="file" id="img-picker-upload" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,.webp" hidden>
+        <span id="img-picker-upload-msg" class="hint" style="display:block;margin-top:8px;min-height:1em"></span>
         <div class="form-actions" style="margin-top:16px">
-          <button type="button" class="btn-primary" id="btn-img-picker-insert" disabled>Insert</button>
-          <button type="button" class="btn-ghost"   id="btn-img-picker-cancel">Cancel</button>
+          <button type="button" class="btn-ghost" id="btn-img-picker-cancel">Close</button>
         </div>
       </div>
     </div>
@@ -1057,6 +1175,7 @@
     <div class="form-actions">
       <button type="submit" class="btn-primary" id="btn-studio-save">Save</button>
       <button type="button" class="btn-ghost"   id="btn-studio-cancel">Cancel</button>
+      <button type="button" class="btn-ghost"   id="btn-studio-back-bottom">← Back</button>
       <span id="studio-save-msg"></span>
     </div>
 
@@ -2095,12 +2214,15 @@ function openArticleEdit(article, isNew) {
   $('sf-weight').value      = article.fm.weight      ?? '';
   $('sf-description').value = article.fm.description ?? '';
   $('sf-thumbnail').value   = article.fm.thumbnail   ?? '';
+  updateThumbPreview();
   $('sf-slug').value        = isNew ? '' : article.slug;
   $('sf-slug').readOnly     = !isNew;
   delete $('sf-slug').dataset.userEdited;
   // Visible = not-draft. New articles default to draft (off) so interrupted edits stay hidden.
   $('sf-visible').checked   = isNew ? false : (article.fm.draft !== true);
   $('sf-body').value        = article.body           ?? '';
+  bodyEverFocused = false;
+  loadBodyImageGrid();
   $('studio-save-msg').textContent = '';
   $('studio-save-msg').className   = '';
   const warn = $('studio-save-warn');
@@ -2693,7 +2815,8 @@ document.querySelectorAll('#studio-filter-bar .filter-btn').forEach(b => {
   });
 });
 
-$('btn-studio-back').addEventListener('click',   () => { renderStudioList(); show('view-studio'); });
+$('btn-studio-back').addEventListener('click',        () => { renderStudioList(); show('view-studio'); });
+$('btn-studio-back-bottom').addEventListener('click', () => { renderStudioList(); show('view-studio'); });
 $('btn-studio-save-top').addEventListener('click', () => { saveArticle(); });
 $('btn-studio-cancel').addEventListener('click',     () => { renderStudioList(); show('view-studio'); });
 $('btn-studio-cancel-top').addEventListener('click', () => { renderStudioList(); show('view-studio'); });
@@ -2734,13 +2857,17 @@ $('page-edit-form').addEventListener('submit', e => { e.preventDefault(); savePa
 })();
 
 // Auto-fill slug from title while creating a new article.
-// Once saved (or manually edited), the slug field is readonly and won't be overwritten.
+// Cap the auto-derived slug at 3 words — long titles like
+// "Our Gods Go with Us, Part 2 - The Casting of Wabele" produce unwieldy
+// slugs that also become folder names. The first 3 words are a starting
+// point; the user is expected to refine to something short and memorable
+// (e.g. "wabele-2"). Once saved or manually edited, the field is locked.
 $('sf-title').addEventListener('input', () => {
   if (!isNewArticle) return;
   const slugEl = $('sf-slug');
   if (slugEl.readOnly) return;
   if (slugEl.dataset.userEdited === '1') return;
-  slugEl.value = slugify($('sf-title').value);
+  slugEl.value = slugify($('sf-title').value).split('-').slice(0, 3).join('-');
 });
 $('sf-slug').addEventListener('input', () => {
   $('sf-slug').dataset.userEdited = '1';
@@ -2751,6 +2878,8 @@ $('studio-edit-form').addEventListener('submit', e  => { e.preventDefault(); sav
 
 // Section → image directory mapping. New writing types add a row here and a
 // matching directory under static/images/.
+// Articles use a per-slug subdirectory (`articles/<slug>/`) so each article's
+// images stay grouped as the catalogue grows. Other sections remain flat for now.
 const SECTION_IMAGE_DIR = {
   essays:    'essays',
   articles:  'articles',
@@ -2758,60 +2887,286 @@ const SECTION_IMAGE_DIR = {
   media:     'media',
 };
 
-let pickedImagePath = '';
-let pickerMode      = 'body';     // 'body' or 'thumbnail'
-let pickerDir       = 'articles';
+function currentArticleSlug() {
+  if (typeof activeArticle !== 'undefined' && activeArticle && activeArticle.slug) {
+    return activeArticle.slug;
+  }
+  // New article: read the live slug field.
+  const slugField = $('sf-slug');
+  return slugField ? slugField.value.trim() : '';
+}
+
+// Sections that use per-slug image subdirectories. Adding a section here
+// also requires matching it in admin_server.py's RESERVED_IMAGE_DIRS and
+// the per-section _src/ pre-create block in _save_article.
+const PER_SLUG_SECTIONS = new Set(['articles', 'essays', 'documents']);
 
 function currentSectionDir() {
   const section = (typeof activeArticle !== 'undefined' && activeArticle)
     ? activeArticle.section
     : ($('sf-section') && $('sf-section').value);
+  if (PER_SLUG_SECTIONS.has(section)) {
+    const slug = currentArticleSlug();
+    return slug ? `${section}/${slug}` : '';   // empty signals "needs slug first"
+  }
   return SECTION_IMAGE_DIR[section] || 'articles';
 }
 
-async function openImagePicker(mode) {
-  pickerMode      = mode || 'body';
-  pickerDir       = currentSectionDir();
-  pickedImagePath = '';
-  $('img-picker-alt').value = '';
-  $('img-picker-caption').value = '';
-  $('img-picker-upload').value = '';
-  $('img-picker-upload-msg').textContent = '';
-  $('img-picker-preview-wrap').style.display = 'none';
-  $('btn-img-picker-insert').disabled = true;
+// ── Image grid renderer (shared) ─────────────────────────────────────────────
+// Renders an "Upload new" tile followed by one tile per file. Tile clicks
+// invoke onPick(file). Used by both the inline body-images grid and the
+// thumbnail modal so layout/behaviour stay consistent.
+function renderImageGrid(container, files, onPick, opts) {
+  opts = opts || {};
+  container.innerHTML = '';
 
-  // Show/hide alt + caption (only meaningful for body inserts).
-  const altField     = $('img-picker-alt').closest('.field');
-  const captionField = $('img-picker-caption').closest('.field');
-  const isThumb      = (pickerMode === 'thumbnail');
-  if (altField)     altField.style.display     = isThumb ? 'none' : '';
-  if (captionField) captionField.style.display = isThumb ? 'none' : '';
-  $('image-picker-title').textContent = isThumb ? 'Choose thumbnail' : 'Insert image';
-  $('btn-img-picker-insert').textContent = isThumb ? 'Use as thumbnail' : 'Insert';
-
-  // Reflect the active directory in the hint line.
-  const hintEl = $('img-picker-dir-hint');
-  if (hintEl) hintEl.textContent = `static/images/${pickerDir}/`;
-
-  // Load the latest file list for this directory.
-  const sel = $('img-picker-select');
-  sel.innerHTML = '<option value="">— pick a file —</option>';
-  try {
-    const res = await fetch(`/api/images?dir=${encodeURIComponent(pickerDir)}`);
-    const files = await res.json();
-    files.forEach(f => {
-      const opt = document.createElement('option');
-      opt.value = f.path;
-      opt.textContent = f.filename;
-      sel.appendChild(opt);
-    });
-  } catch (err) {
-    console.error('Could not load images', err);
+  if (opts.uploadFn) {
+    const up = document.createElement('button');
+    up.type = 'button';
+    up.className = 'image-grid__tile image-grid__upload';
+    up.title = 'Upload a new image';
+    up.innerHTML = '<span class="image-grid__upload-glyph" aria-hidden="true">+</span><span>Upload new…</span>';
+    up.addEventListener('click', opts.uploadFn);
+    container.appendChild(up);
   }
 
+  if (opts.refreshFn) {
+    const rf = document.createElement('button');
+    rf.type = 'button';
+    rf.className = 'image-grid__tile image-grid__upload';
+    rf.title = 'Reload the list from disk — useful after dropping files into the folder via GIMP or your file manager.';
+    rf.innerHTML = '<span class="image-grid__upload-glyph" aria-hidden="true">↻</span><span>Refresh</span>';
+    rf.addEventListener('click', opts.refreshFn);
+    container.appendChild(rf);
+  }
+
+  if (!files || files.length === 0) {
+    if (!opts.uploadFn) {
+      const empty = document.createElement('div');
+      empty.className = 'image-grid__empty';
+      empty.textContent = opts.emptyText || 'No images yet.';
+      container.appendChild(empty);
+    }
+    return;
+  }
+
+  const selected = opts.selectedPath || '';
+  files.forEach(f => {
+    const tile = document.createElement('button');
+    tile.type = 'button';
+    tile.className = 'image-grid__tile';
+    if (f.path === selected) tile.classList.add('is-selected');
+    tile.title = f.filename;
+    tile.innerHTML =
+      `<img src="${f.path}" alt="">` +
+      `<span class="image-grid__caption">${f.filename}</span>`;
+    tile.addEventListener('click', () => onPick(f));
+    container.appendChild(tile);
+  });
+}
+
+async function fetchImageList(dir) {
+  if (!dir) return [];
+  try {
+    const res = await fetch(`/api/images?dir=${encodeURIComponent(dir)}`);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    console.error('Could not load images', err);
+    return [];
+  }
+}
+
+async function uploadImage(dir, file) {
+  const res = await fetch(`/api/images?dir=${encodeURIComponent(dir)}`, {
+    method:  'POST',
+    headers: {
+      'Content-Type': 'application/octet-stream',
+      'X-Filename':   file.name,
+    },
+    body: file,
+  });
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return await res.json();
+}
+
+// ── Body image grid (always-visible, click-to-insert) ────────────────────────
+async function loadBodyImageGrid() {
+  const grid = $('sf-body-img-grid');
+  const msg  = $('sf-body-img-msg');
+  if (!grid) return;
+  msg.textContent = '';
+
+  const dir = currentSectionDir();
+  if (!dir) {
+    grid.innerHTML = '';
+    const empty = document.createElement('div');
+    empty.className = 'image-grid__empty';
+    const section = $('sf-section').value;
+    empty.textContent = `Set the slug first — body images live in static/images/${section}/<slug>/.`;
+    grid.appendChild(empty);
+    return;
+  }
+
+  const files = await fetchImageList(dir);
+  renderImageGrid(grid, files, insertBodyImageRef, {
+    uploadFn:  () => $('sf-body-img-upload').click(),
+    refreshFn: () => loadBodyImageGrid(),
+    emptyText: 'No images uploaded yet — use “Upload new…”.',
+  });
+}
+
+// Tracks whether the user has interacted with the body textarea since the
+// article was opened. Used by insertBodyImageRef to decide between
+// "insert at cursor" (user has placed a cursor — respect it) and
+// "append at end" (no cursor placed yet — keep the body tidy by default).
+let bodyEverFocused = false;
+
+// Insert an image reference + caption stub into the body.
+// Caption stub is `**` (paired asterisks with cursor between) so the user
+// types into a valid italic span. Critically: NO spaces inside the asterisks
+// — markdown only recognises italic when the opening `*` is followed
+// directly by text and the closing `*` is preceded directly by text.
+// `* text *` is parsed as a bullet list, not italic.
+//
+// Placement:
+//   - If the user has focused the textarea (i.e. placed a cursor), insert at
+//     that position via setRangeText, replacing any current selection.
+//     Surrounding chars are inspected and minimal `\n` padding is added so
+//     the image always lands on its own line with blank-line boundaries —
+//     otherwise markdown would render it inline mid-paragraph.
+//   - If the user hasn't focused yet (just opened the article and clicked a
+//     tile), append at the end. Keeps interrupted/forgotten inserts neat.
+function insertBodyImageRef(file) {
+  const path = file.path || file;
+  const ta   = $('sf-body');
+  const stubBefore = '*';
+  const stubAfter  = '*';
+  const imgRef = `![](${path})\n\n`;
+
+  if (!bodyEverFocused) {
+    const trail = ta.value.replace(/\s+$/, '');
+    const padBefore = trail.length === 0 ? '' : '\n\n';
+    const head = trail + padBefore + imgRef + stubBefore;
+    const tail = stubAfter + '\n';
+    ta.value = head + tail;
+    const cursorPos = head.length;
+    ta.setSelectionRange(cursorPos, cursorPos);
+    ta.focus();
+    ta.scrollTop = ta.scrollHeight;
+    bodyEverFocused = true;
+    return;
+  }
+
+  // Insert at cursor (or replace selection). Pad to clean blank-line
+  // boundary on each side so the image is a block, not inline.
+  const start  = ta.selectionStart;
+  const end    = ta.selectionEnd;
+  const before = ta.value.slice(0, start);
+  const after  = ta.value.slice(end);
+  const trailingNewlines = (before.match(/\n*$/) || [''])[0].length;
+  const leadingNewlines  = (after .match(/^\n*/) || [''])[0].length;
+  const padBefore = before.length === 0 ? '' : '\n'.repeat(Math.max(0, 2 - trailingNewlines));
+  const padAfter  = after.length  === 0 ? '' : '\n'.repeat(Math.max(0, 2 - leadingNewlines));
+
+  const insertText = padBefore + imgRef + stubBefore + stubAfter + padAfter;
+  // setRangeText preserves undo history (unlike direct value mutation) and
+  // is the spec-blessed API for textarea inserts.
+  ta.setRangeText(insertText, start, end, 'end');
+  // Place cursor between the stub asterisks so the user can type the caption.
+  const cursorPos = start + padBefore.length + imgRef.length + stubBefore.length;
+  ta.setSelectionRange(cursorPos, cursorPos);
+  ta.focus();
+}
+
+$('sf-body-img-upload').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const msg = $('sf-body-img-msg');
+  const dir = currentSectionDir();
+  if (!dir) {
+    msg.textContent = 'Set the slug first.';
+    msg.className   = 'err';
+    e.target.value = '';
+    return;
+  }
+  msg.textContent = `Uploading ${file.name}…`;
+  msg.className   = '';
+  try {
+    const data = await uploadImage(dir, file);
+    msg.textContent = `Uploaded as ${data.filename}.`;
+    msg.className   = 'ok';
+    await loadBodyImageGrid();
+  } catch (err) {
+    const text = err.message || String(err);
+    // 409 = file already exists. Refresh the grid so the existing tile
+    // is visible and tell the user to click it instead of re-uploading.
+    if (/already exists/i.test(text)) {
+      await loadBodyImageGrid();
+      msg.textContent = `${file.name} is already in this folder — click its tile above to insert it.`;
+      msg.className   = 'hint';
+    } else {
+      msg.textContent = text;
+      msg.className   = 'err';
+    }
+  }
+  e.target.value = '';
+});
+
+// Manual refresh — for when files have been placed via filesystem (e.g.
+// GIMP export, bulk move) while the admin is open.
+$('sf-body-img-refresh').addEventListener('click', () => {
+  if (PER_SLUG_SECTIONS.has($('sf-section').value)) loadBodyImageGrid();
+});
+
+// Auto-refresh when the user returns to the body editor — the natural
+// moment they'd want fresh inventory after dropping files via filesystem.
+// Also marks the body as "user-positioned" so subsequent tile clicks
+// insert at the cursor instead of appending at the end.
+$('sf-body').addEventListener('focus', () => {
+  bodyEverFocused = true;
+  if (PER_SLUG_SECTIONS.has($('sf-section').value)) loadBodyImageGrid();
+});
+
+// Refresh the grid when the slug field changes (relevant for new pieces
+// where the slug is editable). Live updates so the user sees the right
+// directory context as they type.
+$('sf-slug').addEventListener('input', () => {
+  if (PER_SLUG_SECTIONS.has($('sf-section').value)) loadBodyImageGrid();
+});
+
+// ── Thumbnail picker modal ───────────────────────────────────────────────────
+let thumbPickerDir = '';
+
+async function openThumbnailPicker() {
+  thumbPickerDir = currentSectionDir();
+  if (!thumbPickerDir) {
+    alert('Set the article title (and slug) before picking a thumbnail. The slug determines the image folder.');
+    return;
+  }
+  const hintEl = $('img-picker-dir-hint');
+  if (hintEl) hintEl.textContent = `static/images/${thumbPickerDir}/`;
+  $('img-picker-upload-msg').textContent = '';
+  $('img-picker-upload-msg').className   = '';
+  await refreshThumbnailGrid();
   $('image-picker').style.display = 'flex';
   $('image-picker').setAttribute('aria-hidden', 'false');
-  setTimeout(() => $('img-picker-select').focus(), 0);
+}
+
+async function refreshThumbnailGrid() {
+  const grid = $('img-picker-grid');
+  const files = await fetchImageList(thumbPickerDir);
+  renderImageGrid(grid, files, file => {
+    $('sf-thumbnail').value = file.path;
+    updateThumbPreview();
+    closeImagePicker();
+  }, {
+    uploadFn:     () => $('img-picker-upload').click(),
+    selectedPath: $('sf-thumbnail').value.trim(),
+    emptyText:    'No images uploaded yet — use “Upload new…”.',
+  });
 }
 
 function closeImagePicker() {
@@ -2819,109 +3174,66 @@ function closeImagePicker() {
   $('image-picker').setAttribute('aria-hidden', 'true');
 }
 
-function pickerPreview(path) {
-  pickedImagePath = path;
-  const wrap = $('img-picker-preview-wrap');
-  if (path) {
-    $('img-picker-preview').src = path;
-    wrap.style.display = '';
-    $('btn-img-picker-insert').disabled = false;
-  } else {
-    wrap.style.display = 'none';
-    $('btn-img-picker-insert').disabled = true;
-  }
-}
-
-$('btn-insert-image').addEventListener('click', () => openImagePicker('body'));
-$('btn-thumb-picker').addEventListener('click', () => openImagePicker('thumbnail'));
+$('btn-thumb-picker').addEventListener('click', openThumbnailPicker);
 $('btn-img-picker-cancel').addEventListener('click', closeImagePicker);
-
-// Update heading + image-controls visibility when the section dropdown changes.
-function syncSectionUI() {
-  const section = $('sf-section').value;
-  $('sf-image-controls').style.display = (section === 'essays') ? 'none' : '';
-  if (isNewArticle) {
-    $('studio-edit-heading').textContent = (section === 'essays') ? 'New Essay' : 'New Article';
-  }
-}
-$('sf-section').addEventListener('change', syncSectionUI);
-
-$('img-picker-select').addEventListener('change', e => {
-  pickerPreview(e.target.value);
-});
 
 $('img-picker-upload').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   const msg = $('img-picker-upload-msg');
-  msg.textContent = 'Uploading…';
+  msg.textContent = `Uploading ${file.name}…`;
+  msg.className   = '';
   try {
-    const res = await fetch(`/api/images?dir=${encodeURIComponent(pickerDir)}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'X-Filename': file.name,
-      },
-      body: file,
-    });
-    if (!res.ok) {
-      const errText = await res.text();
-      msg.textContent = 'Upload failed: ' + errText;
-      return;
-    }
-    const data = await res.json();
-    msg.textContent = 'Uploaded: ' + data.filename;
-    // Refresh dropdown and select the new file
-    const sel = $('img-picker-select');
-    const existing = Array.from(sel.options).find(o => o.value === data.path);
-    if (!existing) {
-      const opt = document.createElement('option');
-      opt.value = data.path;
-      opt.textContent = data.filename;
-      sel.appendChild(opt);
-    }
-    sel.value = data.path;
-    pickerPreview(data.path);
+    const data = await uploadImage(thumbPickerDir, file);
+    msg.textContent = `Uploaded as ${data.filename}.`;
+    msg.className   = 'ok';
+    await refreshThumbnailGrid();
   } catch (err) {
-    msg.textContent = 'Upload failed: ' + err.message;
+    msg.textContent = err.message || String(err);
+    msg.className   = 'err';
   }
-});
-
-$('btn-img-picker-insert').addEventListener('click', () => {
-  if (!pickedImagePath) return;
-
-  if (pickerMode === 'thumbnail') {
-    $('sf-thumbnail').value = pickedImagePath;
-    closeImagePicker();
-    return;
-  }
-
-  const alt     = $('img-picker-alt').value.trim();
-  const caption = $('img-picker-caption').value.trim();
-  const lines = [`![${alt}](${pickedImagePath})`];
-  if (caption) lines.push('', `*${caption}*`);
-  const snippet = lines.join('\n');
-
-  const ta = $('sf-body');
-  const start = ta.selectionStart ?? ta.value.length;
-  const end   = ta.selectionEnd   ?? ta.value.length;
-  const before = ta.value.slice(0, start);
-  const after  = ta.value.slice(end);
-  // Pad with blank lines so the image becomes its own paragraph in markdown.
-  const padBefore = (before.length === 0 || before.endsWith('\n\n')) ? '' :
-                    (before.endsWith('\n') ? '\n' : '\n\n');
-  const padAfter  = (after.length === 0  || after.startsWith('\n\n')) ? '' :
-                    (after.startsWith('\n')  ? '\n' : '\n\n');
-  const insert = padBefore + snippet + padAfter;
-  ta.value = before + insert + after;
-  const newPos = before.length + insert.length;
-  ta.setSelectionRange(newPos, newPos);
-  ta.focus();
-  closeImagePicker();
+  e.target.value = '';
 });
 
 $('image-picker').addEventListener('click', e => {
   if (e.target.id === 'image-picker') closeImagePicker();
+});
+
+// Update heading + body-images visibility when the section dropdown changes.
+function syncSectionUI() {
+  const section = $('sf-section').value;
+  const fs      = $('sf-body-images-fieldset');
+  if (fs) fs.style.display = '';
+  if (isNewArticle) {
+    $('studio-edit-heading').textContent = (section === 'essays') ? 'New Essay' : 'New Article';
+  }
+  if (PER_SLUG_SECTIONS.has(section)) loadBodyImageGrid();
+}
+$('sf-section').addEventListener('change', syncSectionUI);
+
+// ── Thumbnail preview slot ───────────────────────────────────────────────────
+function updateThumbPreview() {
+  const slot  = $('sf-thumb-preview');
+  const img   = $('sf-thumb-preview-img');
+  const empty = $('sf-thumb-preview-empty');
+  if (!slot || !img || !empty) return;
+  const path = $('sf-thumbnail').value.trim();
+  if (path) {
+    img.src = path;
+    img.style.display = '';
+    empty.style.display = 'none';
+    slot.classList.add('has-image');
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+    empty.style.display = '';
+    slot.classList.remove('has-image');
+  }
+}
+$('sf-thumbnail').addEventListener('input', updateThumbPreview);
+$('btn-thumb-clear').addEventListener('click', () => {
+  $('sf-thumbnail').value = '';
+  updateThumbPreview();
 });
 
 // Auto-load on startup

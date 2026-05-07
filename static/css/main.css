@@ -328,12 +328,20 @@ footer {
     direction: ltr;
 }
 
+.pathway--left .pathway-text {
+    text-align: left;
+}
+
 .pathway--right {
     direction: rtl;
 }
 
 .pathway--right > * {
     direction: ltr;
+}
+
+.pathway--right .pathway-text {
+    text-align: right;
 }
 
 .pathway-image {
@@ -1051,7 +1059,11 @@ body:has(.contact-page) #selection-strip {
     margin: 40px 0 16px;
 }
 
-/* Blockquotes in all prose containers */
+/* Blockquotes in all prose containers.
+   Width hugs the content (fit-content) and caps at the figure breakout
+   width (900px). Short quotes stay tight; long quotes earn the breakout
+   and wrap naturally — no "wide box, narrow text" asymmetry. Centered
+   in the column via margin-inline: auto. */
 .essay-content blockquote,
 .article-content blockquote,
 .work-body blockquote,
@@ -1059,7 +1071,9 @@ body:has(.contact-page) #selection-strip {
     font-family: var(--font-serif);
     font-size: var(--text-md);
     line-height: var(--leading-loose);
-    margin: 40px 0;
+    width: fit-content;
+    max-width: 900px;
+    margin: 40px auto;
     color: var(--color-text-secondary);
 }
 
@@ -1072,6 +1086,22 @@ body:has(.contact-page) #selection-strip {
     line-height: 1.4;
     display: block;
     margin-top: 12px;
+}
+
+/* Poem-style blockquotes (hard line breaks) inherit fit-content + breakout
+   from the base rule above. Only the poem title styling is poem-specific. */
+
+/* Poem title — bolded line at the top of a poem blockquote */
+.essay-content blockquote:has(br) p:first-child > strong:only-child,
+.article-content blockquote:has(br) p:first-child > strong:only-child,
+.work-body blockquote:has(br) p:first-child > strong:only-child,
+.collated-block__prose blockquote:has(br) p:first-child > strong:only-child {
+    display: inline-block;
+    font-size: var(--text-lg);
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-border, currentColor);
+    padding-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 /* Article inline images — full column width with spacing */
@@ -1094,72 +1124,41 @@ body:has(.contact-page) #selection-strip {
     color: var(--color-text-secondary);
     margin-top: 10px;
     margin-bottom: 40px;
+    text-align: center;
 }
 
-/* Article images: small editorial thumbnails.
-   On desktop, JS rearranges images into an .article-grid__images column;
-   on mobile (no JS rearrangement), the float keeps thumbnails next to text. */
+/* Text column constrained for reading; figures break out wider.
+   Direct children of the prose container sit at 680px centred. */
+.article-page > article > nav,
+.article-page > article > header,
+.essay-page > article > nav,
+.essay-page > article > header,
+.article-content > *,
+.essay-content > * {
+    max-width: 680px;
+    margin-inline: auto;
+}
+
+/* Figures break out beyond the text column. */
+.article-content > .article-figure,
+.essay-content > .article-figure {
+    max-width: 900px;
+}
+
+/* Article images: editorial breakouts, centred above/below the text column. */
 .article-figure {
-    float: left;
-    clear: left;
-    max-width: 220px;
-    margin: 8px 32px 24px 0;
-}
-
-/* Two-column independent flow (desktop only).
-   Images and prose flow in separate columns; neither column wraps under the other. */
-@media (min-width: 768px) {
-    .article-grid {
-        display: grid;
-        grid-template-columns: 220px 1fr;
-        column-gap: 40px;
-        align-items: start;
-    }
-
-    .article-grid__images > .article-figure {
-        float: none;
-        clear: none;
-        max-width: 100%;
-        margin: 0 0 32px 0;
-    }
-
-    .article-grid__text > * {
-        min-width: 0;
-    }
+    margin: 48px auto;
 }
 
 .article-figure img {
     width: 100%;
     height: auto;
     display: block;
-    cursor: zoom-in;
-    transition: opacity 0.15s ease, box-shadow 0.15s ease;
-}
-
-.article-figure img:hover,
-.article-figure img:focus-visible {
-    opacity: 0.88;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
-    outline: none;
-}
-
-/* Archival images (low-resolution masters): keep clickable but no hover affordance,
-   since clicking won't reveal additional detail. */
-.article-figure img[data-archival="true"] {
-    cursor: default;
-}
-
-.article-figure img[data-archival="true"]:hover,
-.article-figure img[data-archival="true"]:focus-visible {
-    opacity: 1;
-    box-shadow: none;
 }
 
 @media (max-width: 768px) {
     .article-figure {
-        float: none;
-        max-width: 100%;
-        margin: 32px 0;
+        margin: 32px auto;
     }
 }
 
@@ -1173,6 +1172,7 @@ body:has(.contact-page) #selection-strip {
     font-style: italic;
     color: var(--color-text-secondary);
     line-height: var(--leading-body);
+    text-align: center;
 }
 
 
@@ -1182,91 +1182,6 @@ body:has(.contact-page) #selection-strip {
     content: '';
     display: table;
     clear: both;
-}
-
-/* Image lightbox: opens on click of any .article-figure img.
-   Sized to ~85% of viewport with absolute caps so 4K monitors don't upscale. */
-.lightbox {
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 20, 20, 0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 32px;
-}
-
-.lightbox[hidden] {
-    display: none;
-}
-
-.lightbox__figure {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    max-width: min(90vw, 1400px);
-}
-
-.lightbox__image {
-    max-width: 100%;
-    max-height: min(80vh, 1400px);
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-}
-
-.lightbox__caption {
-    color: rgba(255, 255, 255, 0.92);
-    font-style: italic;
-    font-size: var(--text-sm);
-    text-align: center;
-    max-width: 600px;
-    line-height: var(--leading-body);
-    margin: 0;
-}
-
-.lightbox__caption[hidden] {
-    display: none;
-}
-
-.lightbox__archival {
-    color: rgba(255, 255, 255, 0.65);
-    font-size: var(--text-xs, 0.8rem);
-    text-align: center;
-    margin: 0;
-}
-
-.lightbox__archival[hidden] {
-    display: none;
-}
-
-.lightbox__close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 44px;
-    height: 44px;
-    background: transparent;
-    border: 0;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 32px;
-    line-height: 1;
-    cursor: pointer;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.lightbox__close:hover,
-.lightbox__close:focus-visible {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    outline: none;
 }
 
 /* Callout / pull-quote block */

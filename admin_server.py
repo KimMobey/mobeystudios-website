@@ -6,11 +6,14 @@ Then visit:           http://localhost:8080
 """
 
 import http.server
+import io
 import json
 import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse, unquote, parse_qs
+
+from PIL import Image, UnidentifiedImageError
 
 PORT = 8080
 ROOT             = Path(__file__).parent
@@ -52,11 +55,28 @@ PATHWAY_KEYS  = ('title', 'description', 'href', 'image')
 
 IMAGE_EXTS = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
 
+# Inputs the upload endpoint will accept and convert to .webp. RAW formats
+# (.cr2/.nef/.arw/.dng) and HEIC are deliberately excluded — supporting them
+# would mean pulling in rawpy/pillow-heif and dealing with vendor-specific
+# quirks. The upload handler rejects anything outside this set with a clear
+# message instead of failing silently.
+UPLOAD_INPUT_EXTS = {'.jpg', '.jpeg', '.png', '.tif', '.tiff', '.webp', '.bmp'}
+
+# Resize cap on upload: longest edge in pixels. Photos larger than this are
+# downscaled before encoding to .webp (lossless), so worst-case file size
+# stays bounded. Smaller images pass through untouched.
+MAX_LONG_EDGE = 1500
+
 # Directories under static/images/ that the admin image picker can access.
 # `portfolio` has its own matching system; `home` holds hero images that
-# shouldn't be writable from article editing.
-RESERVED_IMAGE_DIRS = {'portfolio', 'home'}
-IMAGE_DIR_PATTERN   = re.compile(r'^[a-z0-9-]+$')
+# shouldn't be writable from article editing. `articles`, `essays`, and
+# `documents` are reserved as *parents* — uploads must target a per-slug
+# subdir (e.g. `essays/<slug>`), never the parent itself. This keeps each
+# piece's images grouped as the catalogue grows.
+RESERVED_IMAGE_DIRS = {'portfolio', 'home', 'articles', 'essays', 'documents'}
+# Allow either a single segment (e.g. `shared`, `media`) or one level of
+# subdir (e.g. `articles/<slug>`). Both segments use the same character set.
+IMAGE_DIR_PATTERN   = re.compile(r'^[a-z0-9-]+(/[a-z0-9-]+)?$')
 
 
 # ── Request handler ───────────────────────────────────────────────────────────
@@ -331,18 +351,73 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not filename or not re.match(r'^[\w.-]+$', filename):
             self.send_error(400, 'Missing or invalid X-Filename header')
             return
-        ext = Path(filename).suffix.lower()
-        if ext not in IMAGE_EXTS:
-            self.send_error(400, f'Unsupported extension {ext}')
+        src = Path(filename)
+        ext = src.suffix.lower()
+        if ext not in UPLOAD_INPUT_EXTS:
+            self.send_error(
+                400,
+                f"Unsupported format '{ext}'. Supported: jpg, jpeg, png, tif, tiff, "
+                "bmp, webp. RAW (.cr2/.nef/.arw/.dng) and HEIC are not supported — "
+                "please export to JPEG or PNG first."
+            )
             return
         length = int(self.headers.get('Content-Length', 0))
         if length <= 0:
             self.send_error(400, 'Empty body')
             return
+        raw = self.rfile.read(length)
+
+        # Open & validate the bytes before touching the filesystem.
+        try:
+            im = Image.open(io.BytesIO(raw))
+            im.load()
+        except (UnidentifiedImageError, OSError):
+            self.send_error(400, 'File is not a valid image, or is corrupt.')
+            return
+
+        # Site convention is .webp — output filename is always <stem>.webp.
+        out_name = src.stem + '.webp'
+        dest     = target / out_name
+        if dest.exists():
+            self.send_error(
+                409,
+                f"'{out_name}' already exists in this folder. "
+                "Pick a different filename or remove the existing file first."
+            )
+            return
+
+        # Downscale if needed (longest edge to MAX_LONG_EDGE). Never upscale.
+        longest = max(im.size)
+        if longest > MAX_LONG_EDGE:
+            ratio    = MAX_LONG_EDGE / longest
+            new_size = (round(im.size[0] * ratio), round(im.size[1] * ratio))
+            im       = im.resize(new_size, Image.LANCZOS)
+
+        # Lossless webp preserves quality (the user prefers higher quality for
+        # an art site). Mode normalisation: webp encoder accepts RGB/RGBA only.
+        if im.mode not in ('RGB', 'RGBA'):
+            im = im.convert('RGBA' if 'A' in im.getbands() else 'RGB')
+
         target.mkdir(parents=True, exist_ok=True)
-        dest = target / filename
-        dest.write_bytes(self.rfile.read(length))
-        self._json({'ok': True, 'filename': filename, 'path': f'/images/{dir_name}/{filename}'})
+        (target / '_src').mkdir(parents=True, exist_ok=True)
+
+        # Archive the original alongside the converted .webp. _src/ is excluded
+        # from the S3 sync, so this stays out of the deployed site.
+        src_archive = target / '_src' / filename
+        if not src_archive.exists():
+            src_archive.write_bytes(raw)
+
+        try:
+            im.save(dest, 'WEBP', lossless=True, quality=100, method=6)
+        except Exception as e:
+            self.send_error(500, f'WebP encode failed: {e}')
+            return
+
+        self._json({
+            'ok':       True,
+            'filename': out_name,
+            'path':     f'/images/{dir_name}/{out_name}',
+        })
 
     def _save_article(self, section, slug, data):
         base = STUDIO_SECTIONS[section]
@@ -357,6 +432,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         body = '\n'.join(ln.rstrip() for ln in body.split('\n')).strip('\n')
         content = serialize(fm, body)
         path.write_text(content, 'utf-8')
+        # Articles, essays, and documents all use per-slug image directories.
+        # Create the folder + _src/ on save (idempotent) so the destination
+        # exists when the user goes looking for it via file manager — they
+        # shouldn't have to guess whether it'll be created on first upload.
+        if section in ('articles', 'essays', 'documents'):
+            (IMAGES_ROOT / section / slug / '_src').mkdir(parents=True, exist_ok=True)
         self._json({'ok': True, 'slug': slug, 'section': section})
 
     def _save_work(self, slug, data):
@@ -488,6 +569,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', ct)
         self.send_header('Content-Length', len(data))
+        # Local-only dev tool: never cache. Editing admin/index.html or
+        # static images and reloading should always show the new bytes
+        # without a hard-refresh dance.
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        self.send_header('Pragma', 'no-cache')
         self.end_headers()
         self.wfile.write(data)
 

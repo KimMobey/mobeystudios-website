@@ -2,7 +2,7 @@
 title: "Sanity as Practice"
 description: "Sanity is a practice of engagement with the world and with your own mind, even when you disagree with what you find there."
 weight: 1001
-thumbnail: "/images/essays/sanity-as-practice.webp"
+thumbnail: "/images/essays/sanity-as-practice/sanity-as-practice.webp"
 ---
 
 When I was six, we lived in a rented townhouse in Kenilworth that had huge, overgrown ficus creepers and Lilly Pilly hedges almost 2 stories high.

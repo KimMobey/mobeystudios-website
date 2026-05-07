@@ -1,11 +1,11 @@
 ---
 title: "The Reason for the Work"
 description: "The unlikely background to how I think about my life's work, how and why it started and manages to continue"
-thumbnail: "/images/essays/ashes-in-my-hands.webp"
+thumbnail: "/images/essays/the-reason-for-the-work/ashes-in-my-hands.webp"
 weight: 1002
 ---
 
-A few days ago, I was asked for the eternally annoying question "So, what drives you to paint?". After briefly bristling that I also sculpt, etch, and build, I actually did have a sudden insight.
+A few days ago, I was asked the eternally annoying question "So, what drives you to paint?". After briefly bristling that I also sculpt, etch, and build, I actually did have a sudden insight.
 
 Despite most days in the studio feeling like I skipped school to play without adult supervision, it turns out that I actually do have a raison d'etre for making what I make, even though I never could manage to find any cohesive narrative thread before.  I think the reason is that I only have this way of existing in the world, even if I try to stop. And the times when I have stopped have been the worst in my life. Less compulsion, more simply that other ways of being don't fit
 
