@@ -8,18 +8,17 @@ statuses: "reserved"
 media:
   - "mixed-media"
   - "concrete"
-substrate: []
 dimensions: "11 × 16 × 10cm"
 series: ""
-category: ""
+category: "sculpture"
 price: 0
 collection: ""
 edition: ""
 featured: false
 forms:
   - "portrait"
+  - "hybrid"
   - "surreal"
-  - "pattern"
 themes:
   - "mythology"
 ---

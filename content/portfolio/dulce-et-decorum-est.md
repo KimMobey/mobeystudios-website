@@ -3,14 +3,15 @@ image: "/images/portfolio/dulce-et-decorum-est.webp"
 visible: false
 title: "Dulce et Decorum est"
 order: ""
-statuses: "available"
+statuses: "reserved"
 media:
+  - "oil"
   - "mixed-media"
 substrate:
   - "canvas"
 dimensions: ""
 series: ""
-category: ""
+category: "original"
 price: 0
 collection: ""
 edition: ""
@@ -19,5 +20,7 @@ forms:
   - "landscape"
   - "surreal"
 themes:
+  - "identity"
   - "political"
+  - "biography"
 ---

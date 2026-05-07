@@ -7,11 +7,11 @@ statuses: "available"
 media:
   - "oil"
 substrate:
-  - "canvas panel"
+  - "board"
 dimensions: "25 × 35cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

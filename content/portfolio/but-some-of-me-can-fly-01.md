@@ -7,10 +7,9 @@ statuses: "available"
 media:
   - "mixed-media"
   - "concrete"
-substrate: []
 dimensions: "20 × 20 × 6cm"
 series: ""
-category: ""
+category: "sculpture"
 price: 0
 collection: ""
 edition: ""

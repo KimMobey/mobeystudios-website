@@ -1,7 +1,7 @@
 ---
 title: "Umber, Pthalo, Cadmium"
 image: "/images/portfolio/umber-pthalo-cadmium.webp"
-visible: false
+visible: true
 statuses: "available"
 media:
   - "acrylic"
@@ -9,11 +9,13 @@ substrate:
   - "canvas"
 dimensions: "30 × 30cm"
 order: ""
-forms: []
-themes: []
+forms:
+  - "abstract"
+themes:
+  - "biography"
 series: ""
 category: "original"
-price: 0
+price: 1800
 collection: ""
 edition: ""
 featured: false

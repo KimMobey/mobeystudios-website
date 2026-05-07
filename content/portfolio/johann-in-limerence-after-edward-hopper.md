@@ -17,7 +17,6 @@ statuses: "sold"
 category: "original"
 price: 3680
 visible: true
-stub: true
 series: ""
 collection: "private collection"
 edition: ""

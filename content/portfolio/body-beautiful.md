@@ -6,12 +6,10 @@ order: ""
 statuses: "available"
 media:
   - "oil"
-substrate:
-  - "canvas panel"
 dimensions: "61 × 81cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3266
 collection: ""
 edition: ""
 featured: true
@@ -19,7 +17,6 @@ forms:
   - "figure"
   - "hybrid"
   - "surreal"
-  - "pattern"
 themes:
   - "identity"
   - "political"

@@ -10,8 +10,8 @@ substrate:
   - "canvas"
 dimensions: "40 × 70cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 2530
 collection: ""
 edition: ""
 featured: false

@@ -4,12 +4,14 @@ visible: true
 title: "The Light was Strange that Day I"
 order: ""
 statuses: "sold"
-media: "oil"
-substrate: "canvas"
-dimensions: ""
+media:
+  - "oil"
+substrate:
+  - "canvas"
+dimensions: "35 × 25cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false
@@ -17,4 +19,5 @@ forms:
   - "landscape"
 themes:
   - "ecology"
+  - "biography"
 ---

@@ -1,7 +1,7 @@
 ---
-image: "/images/portfolio/atilla-misdirected.webp"
+image: "/images/portfolio/atilla-pathways.webp"
 visible: true
-title: "Atilla, Misdirected"
+title: "Atilla - Pathways"
 order: ""
 year: 2020
 statuses: "available"
@@ -11,8 +11,8 @@ substrate:
   - "canvas"
 dimensions: "25 × 25cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

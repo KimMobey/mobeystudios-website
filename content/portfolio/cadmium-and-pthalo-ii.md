@@ -11,8 +11,8 @@ substrate:
   - "canvas"
 dimensions: "30 × 30cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

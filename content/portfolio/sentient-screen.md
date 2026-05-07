@@ -1,15 +1,17 @@
 ---
 image: "/images/portfolio/sentient-screen.webp"
-visible: false
+visible: true
 title: "Sentient Screen"
 order: ""
 statuses: "available"
-media: "oil"
-substrate: "canvas"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "20 × 20cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

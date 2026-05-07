@@ -1,18 +1,26 @@
 ---
 image: "/images/portfolio/the-female-gaze.webp"
-visible: false
+visible: true
 title: "The Female Gaze"
 order: ""
-statuses: "available"
-media: ""
-substrate: ""
+statuses: "sold"
+media:
+  - "oil"
+  - "mixed-media"
+substrate:
+  - "canvas"
 dimensions: "35 × 25cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false
-forms: []
-themes: []
+forms:
+  - "portrait"
+  - "hybrid"
+themes:
+  - "identity"
+  - "political"
+  - "biography"
 ---

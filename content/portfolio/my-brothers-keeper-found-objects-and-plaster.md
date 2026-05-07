@@ -16,7 +16,6 @@ statuses: "sold"
 category: "sculpture"
 price: 0
 visible: true
-stub: true
 series: ""
 collection: "private collection"
 edition: ""

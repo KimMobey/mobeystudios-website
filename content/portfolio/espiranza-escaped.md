@@ -10,8 +10,8 @@ substrate:
   - "linen"
 dimensions: "40 × 40cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1840
 collection: ""
 edition: ""
 featured: false

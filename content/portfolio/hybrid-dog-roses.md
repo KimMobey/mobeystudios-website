@@ -18,7 +18,6 @@ statuses: "available"
 category: "original"
 price: 4830
 visible: true
-stub: true
 series: ""
 collection: ""
 edition: ""

@@ -7,12 +7,10 @@ year: 2014
 statuses: "reserved"
 media:
   - "oil"
-substrate:
-  - "canvas panel"
 dimensions: "13 × 18cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

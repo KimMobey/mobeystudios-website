@@ -10,7 +10,7 @@ media: "mixed-media"
 substrate: "canvas"
 dimensions: "50 × 60cm"
 category: "original"
-price: 0
+price: 2530
 order: ""
 series: "Thelma"
 collection: ""

@@ -1,20 +1,23 @@
 ---
 image: "/images/portfolio/azo-cadmium.webp"
-visible: false
+visible: true
 title: "Azo-Cadmium"
 order: ""
 year: 2019
 statuses: "available"
-media: []
-substrate: []
+media:
+  - "oil"
 dimensions: "25 × 25cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false
 forms:
   - "abstract"
-themes: []
+themes:
+  - "biography"
+substrate:
+  - "canvas"
 ---

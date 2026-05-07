@@ -7,11 +7,12 @@ statuses: "available"
 media:
   - "oil"
 substrate:
-  - "canvas panel"
+  - "canvas"
+  - "board"
 dimensions: "15 × 15cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

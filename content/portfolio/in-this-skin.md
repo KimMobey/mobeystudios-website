@@ -1,13 +1,24 @@
 ---
 title: "In This Skin"
 image: "/images/portfolio/in-this-skin.webp"
-visible: false
+visible: true
 statuses: "available"
-forms: []
-media: "concrete"
-substrate: ""
+forms:
+  - "hybrid"
+  - "surreal"
+media:
+  - "concrete"
 dimensions: "18 × 12 × 31cm"
-category: "original"
-price: 0
+category: "sculpture"
+price: 1800
 order: ""
+year: 2017
+series: ""
+collection: ""
+edition: ""
+featured: false
+themes:
+  - "migration"
+  - "mythology"
+  - "political"
 ---

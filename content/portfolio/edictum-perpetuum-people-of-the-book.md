@@ -10,13 +10,14 @@ substrate:
   - "canvas"
 dimensions: "71 × 91cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3726
 collection: ""
 edition: ""
 featured: false
 forms:
   - "portrait"
+  - "surreal"
 themes:
   - "migration"
   - "identity"

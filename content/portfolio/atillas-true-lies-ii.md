@@ -10,8 +10,8 @@ substrate:
   - "canvas"
 dimensions: "25 × 25cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 1800
 collection: ""
 edition: ""
 featured: false

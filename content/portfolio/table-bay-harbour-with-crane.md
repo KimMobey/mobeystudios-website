@@ -3,18 +3,24 @@ image: "/images/portfolio/table-bay-harbour-with-crane.webp"
 visible: true
 title: "Table Bay Harbour"
 order: ""
-statuses: "reserved"
-media: "oil"
-substrate: "canvas"
+statuses: "available"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "61 × 76cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3151
 collection: ""
 edition: ""
 featured: false
 forms:
   - "landscape"
   - "abstract"
-themes: []
+  - "hybrid"
+  - "surreal"
+themes:
+  - "migration"
+  - "biography"
 ---

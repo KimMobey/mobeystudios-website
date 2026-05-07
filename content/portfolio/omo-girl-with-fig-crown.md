@@ -10,8 +10,8 @@ substrate:
   - "canvas"
 dimensions: "70 × 90cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3680
 collection: ""
 edition: ""
 featured: false

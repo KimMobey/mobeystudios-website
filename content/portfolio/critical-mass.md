@@ -11,14 +11,13 @@ substrate:
   - "canvas"
 dimensions: "90 × 76cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3818
 collection: ""
 edition: ""
 featured: false
 forms:
   - "abstract"
-  - "pattern"
 themes:
   - "identity"
   - "biography"

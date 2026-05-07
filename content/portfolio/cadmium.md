@@ -10,14 +10,13 @@ substrate:
   - "canvas"
 dimensions: "60 × 75cm"
 series: ""
-category: ""
-price: 0
+category: "original"
+price: 3105
 collection: ""
 edition: ""
 featured: false
 forms:
   - "portrait"
-  - "abstract"
   - "hybrid"
   - "surreal"
 themes:
