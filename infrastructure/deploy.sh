@@ -44,8 +44,11 @@ echo "    bucket:       $BUCKET_NAME"
 echo "    distribution: ${DISTRIBUTION_ID:-<none>}"
 
 echo "==> Syncing $SOURCE_DIR/ to s3://$BUCKET_NAME/"
+# Exclude any `_src/` directory: source files (jpg/png/raw captures) live
+# alongside published .webp images for findability but must never be deployed.
 aws s3 sync "$SOURCE_DIR/" "s3://$BUCKET_NAME/" \
   --delete \
+  --exclude '*/_src/*' \
   --region "$REGION"
 
 if [[ -n "$DISTRIBUTION_ID" && "$DISTRIBUTION_ID" != "None" ]]; then
