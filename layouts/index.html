@@ -19,7 +19,7 @@
         {{ end }}
 
         <div class="pathways">
-            {{ range $i, $p := .Site.Data.pathways.items }}
+            {{ range $i, $p := hugo.Data.pathways.items }}
             <div class="pathway pathway--{{ if eq (mod $i 2) 0 }}left{{ else }}right{{ end }}">
                 <a href="{{ $p.href }}" class="pathway-image" aria-hidden="true" tabindex="-1">
                     <img src="{{ $p.image }}" alt="">
