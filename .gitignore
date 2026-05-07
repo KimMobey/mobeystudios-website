@@ -7,6 +7,11 @@ public/
 # Dev scratch — screenshots, references, temporary files (never committed)
 _dev/
 
+# Source files for site images (RAW, GIMP, layered originals). The admin
+# upload pipeline archives these alongside the converted .webp; they're
+# kept locally for re-encoding but never deployed and never committed.
+static/images/**/_src/
+
 # OS
 .DS_Store
 
