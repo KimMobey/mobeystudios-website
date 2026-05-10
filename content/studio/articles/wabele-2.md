@@ -19,7 +19,10 @@ So the cure to the cure is priming. Any acrylic or curing, water-based binder do
 
 I carefully dis-assembled the protrusions, to be moulded and cast separately. Concave surfaces are notoriously hard to mould and cast, so the best-practice for thousands of years has been to cast complex artworks and machinery in pieces, and assemble them all at the end. De-horned and de-eared, the forest spirit looked less spirited, but ready for the next step.
 
-[latex painting picture]
+![](/images/articles/wabele-2/wabele2-001.webp)
+
+*Natural latex and the cast-stone mother mould*
+
 I love using natural latex, especially for small sculptures because it is non toxic and also incredibly flexible and strong. This piece was bigger than could practically be held upright in an entirely rubber mould though, so definitely needed the support of a mother mould. Otherwise I would have still been painting latex layers well into my 90's.
 
 I originally made the mother mould with polyester resin and fibreglass. It’s cheap enough to experiment with and I’d used it on smaller pieces many times. I forged ahead boldly with a 3-piece mother mould and almost instantly realised it was a horrible, horrible mistake. As I tried to remove the first piece of the polyester, I realised that the lumpy sculpture had been made lumpier by the latex in a few critical places. Everything was wedged in and I had to painfully bend the rubber-covered sculpture to free it. Worse, the polyester, now freed from the constraints of its contents, proceeded to warp. Feeling defeated, I spent about a week staring blankly off into space and busying myself with commissions while I tried to think my way out of physics.
@@ -31,6 +34,10 @@ Smooth sailing was still many headaches away though.  I’d  left hollow sockets
 The simple problem throughout the whole first and second attempt is that latex gets annoyingly thin when it dries, but not evenly thin: it is eminently lumpy and gets ever more so with subsequent coats. so that even with 20 coats it hadn't filled the detailed undercuts on the chin and inside the stupid horn holes. The fix, I discovered later, is to stick small pieces of latex-dampened cotton-wool or gauze in strategic places. on small moulds, this gives you a freestanding mould that captures exquisite detail and pulls neatly off even the most improbable shapes. After the debacle with the polyester I made some improvements using latex-soaked cotton-wool but: it takes an age to dry through, and latex also doesn't stick well to itself after a few days of curing so not much could be amended on this try without delamination.
 
 This meant I had to make the mother mould in 6 pieces. Unbelievably,  everything fitted beautifully, but: The next disaster came when I had to remove the mould after the first casting in hard resin and pulling it off took hours because the rigid mother-mould, even divided as it was into six segments,  was still almost completely wedged into the undercuts, making release impossible without judicious use of the chisel. Also, in the process of slush-casting the thin wall of the latex pulled away from the mother mould and warped the neck a little. I was very proud of myself for not smashing everything up to use as calcium for the vegetable garden.
+
+![](/images/articles/wabele-2/wabele-silicone-horn.webp)
+
+*Surrendering to silicone*
 
 By the time I had the good sense to just use silicone I had already damaged the original sculpture trying to remove the first polyester support, so I foolishly, and not for the first time, decided to “fix it in post”.
 

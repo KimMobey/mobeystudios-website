@@ -3,6 +3,19 @@ title: "The Making of \"In This Skin\""
 weight: 1
 description: "Process notes on casting a cement sculpture for the PPC Imaginarium competition, from failed moulds to a gold-leafed finalist."
 thumbnail: "/images/articles/in-this-skin/in-this-skin-1.webp"
+grid:
+  - image: "/images/articles/in-this-skin/grid/20200718_092716.webp"
+    caption: ""
+  - image: "/images/articles/in-this-skin/grid/20250324_1145-small.webp"
+    caption: ""
+  - image: "/images/articles/in-this-skin/grid/Screenshot_20260422_091501.webp"
+    caption: ""
+  - image: "/images/articles/in-this-skin/grid/Screenshot_20260422_091545.webp"
+    caption: ""
+  - image: "/images/articles/in-this-skin/grid/exhibition-finalist-ppc.webp"
+    caption: ""
+  - image: "/images/articles/in-this-skin/grid/import-773.webp"
+    caption: ""
 ---
 
 ![Cast cement head sculpture with gold leaf detail](/images/articles/in-this-skin/in-this-skin-1.webp)
@@ -11,7 +24,7 @@ thumbnail: "/images/articles/in-this-skin/in-this-skin-1.webp"
 
 I missed the entry deadline for the PPC Imaginarium awards every year. Mostly because I never found the time to really learn to work with cement or concrete. 2016 would be different. I had a beautiful wax-clay sculpture just begging for permanence. Surely I had already done the hard part.
 
-It was a delightful and maddening process. I spent happy days, listening to audiobooks and singing along to music my voice was never built for, building the sculpture in wax clay (the wrong type of wax clay, but I would only learn that later) then going from blasé to panicked as I hunted for a mould maker and the first deadline drew in. When I finally found one I placed all my confidence, and the original sculpture, in his very confident hands. Then I deflated. There were endless delays, calls ignored and finally delivery of a huge, heavy, useless mould full of bubbles and distortions because he poured instead of brushing the silicone, then didn't degas it and cut into my clay original so I couldn't use that either. All this too late for the 2016 competition deadline.
+It was a delightful and maddening process. I spent happy days, listening to audiobooks and singing along to music my voice was never built for, building the sculpture in wax clay (the wrong type of wax clay, but I would only learn that later) then going from blasé to panicked as I hunted for a mould maker and the first deadline drew in. When I finally found one I placed all my confidence, and the original sculpture, in his very confident hands. Then I deflated. There were endless delays, calls ignored and finally delivery of a huge, heavy, useless mould full of bubbles and distortions because he poured instead of brushing the silicone, then didn't degas it and cut into my clay original so I couldn't use that either. All this too late for the 2016 competition deadline. Even the name I settled on was a reminder to myself to keep going in the face of banal setbacks, outright ineptitude and profound frustration.
 
 ![Process photo of applying gold leaf to the sculpture in the studio.](/images/articles/in-this-skin/in-this-skin-2.webp)
 
