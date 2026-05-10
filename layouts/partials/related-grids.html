@@ -1,0 +1,43 @@
+{{- $grid := .Params.grid -}}
+{{- $series := .Params.series -}}
+
+{{- with $grid -}}
+{{- /* Heading: explicit `grid_title` wins; absent → default; empty string → no heading. */ -}}
+{{- $heading := "More from this article" -}}
+{{- if isset $.Params "grid_title" }}{{ $heading = $.Params.grid_title }}{{ end -}}
+<section class="related-grid related-grid--contextual"{{ with $heading }} aria-labelledby="contextual-grid-heading"{{ else }} aria-label="More images"{{ end }}>
+    {{- with $heading }}
+    <h2 id="contextual-grid-heading" class="related-grid__heading">{{ . }}</h2>
+    {{- end }}
+    <div class="related-grid__items">
+        {{- range . }}
+        <figure class="related-grid__item">
+            <img src="{{ .image }}" alt="{{ with .caption }}{{ . }}{{ else }}{{ end }}" loading="lazy">
+            {{- with .caption }}
+            <figcaption>{{ . }}</figcaption>
+            {{- end }}
+        </figure>
+        {{- end }}
+    </div>
+</section>
+{{- end -}}
+
+{{- with $series -}}
+{{- $matches := where (where site.RegularPages "Section" "portfolio") "Params.series" . -}}
+{{- with $matches -}}
+<section class="related-grid related-grid--portfolio" aria-labelledby="portfolio-grid-heading">
+    <h2 id="portfolio-grid-heading" class="related-grid__heading">Related works</h2>
+    <div class="related-grid__items">
+        {{- range . }}
+        {{- $title := .Title -}}
+        <a class="related-grid__item related-grid__item--linked" href="{{ .RelPermalink }}">
+            {{- with .Params.image }}
+            <img src="{{ . }}" alt="{{ $title }}" loading="lazy">
+            {{- end }}
+            <figcaption>{{ $title }}</figcaption>
+        </a>
+        {{- end }}
+    </div>
+</section>
+{{- end -}}
+{{- end -}}

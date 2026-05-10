@@ -40,6 +40,8 @@
         {{ end }}
     {{ end }}
 
+    {{ partial "related-grids.html" . }}
+
     <nav class="essay-nav page-end-nav">
         <a href="/studio/essays/">← Back</a>
     </nav>
@@ -66,6 +68,8 @@
         <div class="essay-content">
             {{ .Content }}
         </div>
+
+        {{ partial "related-grids.html" . }}
 
         <nav class="essay-nav page-end-nav">
             <a href="/studio/essays/">← Back</a>

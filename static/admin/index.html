@@ -511,6 +511,41 @@
       border-radius: 4px;
     }
 
+    /* Article-end grid editor: stacked rows of {thumb, caption, ↑↓×}. */
+    .sf-grid-summary {
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-2);
+      user-select: none;
+    }
+    .sf-grid-summary:hover { color: var(--text-1); }
+    .sf-grid-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .sf-grid-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    .sf-grid-row__thumb {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: 2px;
+    }
+    .sf-grid-row__caption {
+      flex: 1;
+      min-width: 0;
+    }
+
     fieldset { border: 1px solid var(--border); padding: 10px 14px 12px; }
     legend {
       font-size: 10px;
@@ -1121,6 +1156,10 @@
                 <label for="sf-description">Description</label>
                 <input type="text" id="sf-description" placeholder="Short description for listings" autocomplete="off">
               </div>
+              <div class="field" style="min-width:160px;max-width:220px">
+                <label for="sf-series">Series <span class="opt">(matches portfolio)</span></label>
+                <input type="text" id="sf-series" placeholder="e.g. Thelma" autocomplete="off">
+              </div>
             </div>
             <div class="field">
               <label for="sf-thumbnail">Thumbnail <span class="opt">(shown in listings)</span></label>
@@ -1155,6 +1194,23 @@
       <div id="sf-body-img-grid" class="image-grid"></div>
       <input type="file" id="sf-body-img-upload" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,.webp" hidden>
       <span id="sf-body-img-msg" class="hint" style="display:block;margin-top:8px;min-height:1em"></span>
+    </fieldset>
+
+    <fieldset id="sf-grid-fieldset">
+      <legend>Article-end grid <span class="opt">(rendered as “More from this article”)</span></legend>
+      <details id="sf-grid-details">
+        <summary class="sf-grid-summary">Show / hide grid editor</summary>
+        <p class="hint" style="margin:10px 0">Photos shown in a grid below the article body, each with an optional caption. Click an image in the pool below to add it to the grid; reorder with ↑↓, edit the caption inline. Images live in <code>static/images/&lt;section&gt;/&lt;slug&gt;/grid/</code>.</p>
+        <div class="field" style="margin-bottom:14px">
+          <label for="sf-grid-title">Grid heading <span class="opt">(blank to hide)</span></label>
+          <input type="text" id="sf-grid-title" placeholder="More from this article" autocomplete="off" style="max-width:420px">
+        </div>
+        <div id="sf-grid-items" class="sf-grid-items"></div>
+        <p class="hint" style="margin:18px 0 8px">Available images — click to add to the grid:</p>
+        <div id="sf-grid-pool" class="image-grid"></div>
+        <input type="file" id="sf-grid-upload" accept=".jpg,.jpeg,.png,.tif,.tiff,.bmp,.webp" hidden>
+        <span id="sf-grid-msg" class="hint" style="display:block;margin-top:8px;min-height:1em"></span>
+      </details>
     </fieldset>
 
     <div id="image-picker" class="modal" style="display:none" aria-hidden="true">
@@ -2214,6 +2270,7 @@ function openArticleEdit(article, isNew) {
   $('sf-weight').value      = article.fm.weight      ?? '';
   $('sf-description').value = article.fm.description ?? '';
   $('sf-thumbnail').value   = article.fm.thumbnail   ?? '';
+  $('sf-series').value      = article.fm.series      ?? '';
   updateThumbPreview();
   $('sf-slug').value        = isNew ? '' : article.slug;
   $('sf-slug').readOnly     = !isNew;
@@ -2223,6 +2280,21 @@ function openArticleEdit(article, isNew) {
   $('sf-body').value        = article.body           ?? '';
   bodyEverFocused = false;
   loadBodyImageGrid();
+  // Article-end grid: copy items into local state (defensive — never alias the
+  // saved fm). Open the details panel if there are existing items so the user
+  // sees them; otherwise leave collapsed to reduce visual clutter on empty pieces.
+  gridItems = (Array.isArray(article.fm.grid) ? article.fm.grid : [])
+    .map(x => ({ image: x.image || '', caption: x.caption || '' }))
+    .filter(x => x.image);
+  // Heading: load explicit value if present (including empty string), else
+  // leave the input blank — placeholder will show the default. The frontmatter
+  // round-trip distinguishes "field absent → default" from "field empty → no heading".
+  $('sf-grid-title').value = (typeof article.fm.grid_title === 'string') ? article.fm.grid_title : '';
+  delete $('sf-grid-title').dataset.touched;
+  renderGridItems();
+  loadGridPool();
+  const gridDetails = $('sf-grid-details');
+  if (gridDetails) gridDetails.open = gridItems.length > 0;
   $('studio-save-msg').textContent = '';
   $('studio-save-msg').className   = '';
   const warn = $('studio-save-warn');
@@ -2292,8 +2364,29 @@ async function saveArticle() {
     title:       $('sf-title').value.trim()       || undefined,
     description: $('sf-description').value.trim() || undefined,
     thumbnail:   $('sf-thumbnail').value.trim()   || undefined,
+    series:      $('sf-series').value.trim()      || undefined,
     weight,
   };
+  // Article-end grid: write only when populated; absent frontmatter keeps the
+  // related-grids partial silent (no spurious empty section on the page).
+  const cleanedGrid = gridItems
+    .map(x => ({ image: (x.image || '').trim(), caption: (x.caption || '').trim() }))
+    .filter(x => x.image);
+  if (cleanedGrid.length) {
+    fm.grid = cleanedGrid;
+    // Heading: persist only if user has touched the field. Untouched + empty
+    // means "use the default" — the partial falls back to "More from this
+    // article" when grid_title is absent. Touched + empty means "no heading".
+    const titleInput = $('sf-grid-title');
+    if (titleInput.dataset.touched === '1') {
+      fm.grid_title = titleInput.value.trim();
+    } else if (typeof activeArticle.fm.grid_title !== 'string') {
+      delete fm.grid_title;
+    }
+  } else {
+    delete fm.grid;
+    delete fm.grid_title;
+  }
   // Studio content is not a blog — strip any date if present.
   delete fm.date;
   for (const k of Object.keys(fm)) if (fm[k] === undefined) delete fm[k];
@@ -3134,7 +3227,137 @@ $('sf-body').addEventListener('focus', () => {
 // where the slug is editable). Live updates so the user sees the right
 // directory context as they type.
 $('sf-slug').addEventListener('input', () => {
-  if (PER_SLUG_SECTIONS.has($('sf-section').value)) loadBodyImageGrid();
+  if (PER_SLUG_SECTIONS.has($('sf-section').value)) {
+    loadBodyImageGrid();
+    loadGridPool();
+  }
+});
+
+// ── Article-end grid editor ──────────────────────────────────────────────────
+// Mirrors the body-images pattern but writes to .Params.grid (a list of
+// {image, caption} objects) instead of the body. Images live one folder
+// deeper than body images, in `<section>/<slug>/grid/`, so the two pools
+// stay separate.
+let gridItems = [];
+
+function gridSubdir() {
+  const base = currentSectionDir();
+  return base ? `${base}/grid` : '';
+}
+
+function escAttr(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function renderGridItems() {
+  const container = $('sf-grid-items');
+  if (!container) return;
+  container.innerHTML = '';
+  if (gridItems.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'hint';
+    empty.style.margin = '0';
+    empty.textContent = 'No grid images added yet — click an image in the pool below.';
+    container.appendChild(empty);
+    return;
+  }
+  gridItems.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'sf-grid-row';
+    row.innerHTML =
+      `<img src="${escAttr(item.image)}" alt="" class="sf-grid-row__thumb">` +
+      `<input type="text" class="sf-grid-row__caption" value="${escAttr(item.caption || '')}" placeholder="Caption (optional)">` +
+      `<button type="button" class="btn-icon" data-act="up"     title="Move up"   ${idx === 0 ? 'disabled' : ''}>↑</button>` +
+      `<button type="button" class="btn-icon" data-act="down"   title="Move down" ${idx === gridItems.length - 1 ? 'disabled' : ''}>↓</button>` +
+      `<button type="button" class="btn-icon" data-act="remove" title="Remove">×</button>`;
+    row.querySelector('.sf-grid-row__caption').addEventListener('input', e => {
+      gridItems[idx].caption = e.target.value;
+    });
+    row.querySelector('[data-act="up"]').addEventListener('click', () => {
+      if (idx === 0) return;
+      [gridItems[idx - 1], gridItems[idx]] = [gridItems[idx], gridItems[idx - 1]];
+      renderGridItems();
+    });
+    row.querySelector('[data-act="down"]').addEventListener('click', () => {
+      if (idx === gridItems.length - 1) return;
+      [gridItems[idx + 1], gridItems[idx]] = [gridItems[idx], gridItems[idx + 1]];
+      renderGridItems();
+    });
+    row.querySelector('[data-act="remove"]').addEventListener('click', () => {
+      gridItems.splice(idx, 1);
+      renderGridItems();
+    });
+    container.appendChild(row);
+  });
+}
+
+async function loadGridPool() {
+  const pool = $('sf-grid-pool');
+  const msg  = $('sf-grid-msg');
+  if (!pool) return;
+  if (msg) msg.textContent = '';
+
+  const dir = gridSubdir();
+  if (!dir) {
+    pool.innerHTML = '';
+    const empty = document.createElement('div');
+    empty.className = 'image-grid__empty';
+    const section = $('sf-section').value;
+    empty.textContent = `Set the slug first — grid images live in static/images/${section}/<slug>/grid/.`;
+    pool.appendChild(empty);
+    return;
+  }
+
+  const files = await fetchImageList(dir);
+  renderImageGrid(pool, files, addGridItem, {
+    uploadFn:  () => $('sf-grid-upload').click(),
+    refreshFn: () => loadGridPool(),
+    emptyText: 'No grid images yet — use “Upload new…”.',
+  });
+}
+
+function addGridItem(file) {
+  gridItems.push({ image: file.path, caption: '' });
+  renderGridItems();
+  // Auto-open the details panel if the user adds while collapsed.
+  const det = $('sf-grid-details');
+  if (det) det.open = true;
+}
+
+$('sf-grid-title').addEventListener('input', () => {
+  $('sf-grid-title').dataset.touched = '1';
+});
+
+$('sf-grid-upload').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const msg = $('sf-grid-msg');
+  const dir = gridSubdir();
+  if (!dir) {
+    msg.textContent = 'Set the slug first.';
+    msg.className   = 'err';
+    e.target.value  = '';
+    return;
+  }
+  msg.textContent = `Uploading ${file.name}…`;
+  msg.className   = '';
+  try {
+    const data = await uploadImage(dir, file);
+    msg.textContent = `Uploaded as ${data.filename}.`;
+    msg.className   = 'ok';
+    await loadGridPool();
+  } catch (err) {
+    const text = err.message || String(err);
+    if (/already exists/i.test(text)) {
+      await loadGridPool();
+      msg.textContent = `${file.name} is already in this folder — click its tile above to add it.`;
+      msg.className   = 'hint';
+    } else {
+      msg.textContent = text;
+      msg.className   = 'err';
+    }
+  }
+  e.target.value = '';
 });
 
 // ── Thumbnail picker modal ───────────────────────────────────────────────────
@@ -3204,10 +3427,16 @@ function syncSectionUI() {
   const section = $('sf-section').value;
   const fs      = $('sf-body-images-fieldset');
   if (fs) fs.style.display = '';
+  // Article-end grid: only meaningful for sections with per-slug image dirs.
+  const gfs = $('sf-grid-fieldset');
+  if (gfs) gfs.style.display = PER_SLUG_SECTIONS.has(section) ? '' : 'none';
   if (isNewArticle) {
     $('studio-edit-heading').textContent = (section === 'essays') ? 'New Essay' : 'New Article';
   }
-  if (PER_SLUG_SECTIONS.has(section)) loadBodyImageGrid();
+  if (PER_SLUG_SECTIONS.has(section)) {
+    loadBodyImageGrid();
+    loadGridPool();
+  }
 }
 $('sf-section').addEventListener('change', syncSectionUI);
 

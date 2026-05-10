@@ -74,9 +74,11 @@ MAX_LONG_EDGE = 1500
 # subdir (e.g. `essays/<slug>`), never the parent itself. This keeps each
 # piece's images grouped as the catalogue grows.
 RESERVED_IMAGE_DIRS = {'portfolio', 'home', 'articles', 'essays', 'documents'}
-# Allow either a single segment (e.g. `shared`, `media`) or one level of
-# subdir (e.g. `articles/<slug>`). Both segments use the same character set.
-IMAGE_DIR_PATTERN   = re.compile(r'^[a-z0-9-]+(/[a-z0-9-]+)?$')
+# Allow a single segment (e.g. `shared`), a per-slug subdir
+# (e.g. `articles/<slug>`), or a per-slug bucket subdir
+# (e.g. `articles/<slug>/grid`). The leading `[a-z0-9-]+` rules out anything
+# starting with `_` (e.g. `_src`), keeping originals out of the API surface.
+IMAGE_DIR_PATTERN   = re.compile(r'^[a-z0-9-]+(/[a-z0-9-]+){0,2}$')
 
 
 # ── Request handler ───────────────────────────────────────────────────────────
@@ -438,6 +440,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
         # shouldn't have to guess whether it'll be created on first upload.
         if section in ('articles', 'essays', 'documents'):
             (IMAGES_ROOT / section / slug / '_src').mkdir(parents=True, exist_ok=True)
+            # `grid/` holds images that appear in the article-end "More from
+            # this article" grid (see related-grids.html). Pre-created so the
+            # admin's image picker has a target directory the moment a new
+            # piece is saved.
+            (IMAGES_ROOT / section / slug / 'grid').mkdir(parents=True, exist_ok=True)
         self._json({'ok': True, 'slug': slug, 'section': section})
 
     def _save_work(self, slug, data):
@@ -617,8 +624,24 @@ def parse_front_matter(text):
             items = []
             i += 1
             while i < len(lines) and lines[i].startswith('  - '):
-                items.append(parse_scalar(lines[i][4:].strip()))
-                i += 1
+                line_rest = lines[i][4:]
+                # A dict item starts with `  - key: value`; a scalar item is
+                # just `  - value`. Continuation lines for a dict item use a
+                # 4-space indent (`    key: value`).
+                dm = re.match(r'^([a-zA-Z][\w-]*)\s*:\s*(.*)$', line_rest)
+                if dm:
+                    obj = {dm.group(1): parse_scalar(dm.group(2).strip())}
+                    i += 1
+                    while i < len(lines):
+                        cm = re.match(r'^    ([a-zA-Z][\w-]*)\s*:\s*(.*)$', lines[i])
+                        if not cm:
+                            break
+                        obj[cm.group(1)] = parse_scalar(cm.group(2).strip())
+                        i += 1
+                    items.append(obj)
+                else:
+                    items.append(parse_scalar(line_rest.strip()))
+                    i += 1
             fm[key] = items
         else:
             fm[key] = parse_scalar(rest)
@@ -682,7 +705,13 @@ def serialize(fm, body):
             else:
                 lines.append(f'{k}:')
                 for item in v:
-                    lines.append(f'  - {scalar_out(item)}')
+                    if isinstance(item, dict):
+                        keys = list(item.keys())
+                        for j, ik in enumerate(keys):
+                            prefix = '  - ' if j == 0 else '    '
+                            lines.append(f'{prefix}{ik}: {scalar_out(item[ik])}')
+                    else:
+                        lines.append(f'  - {scalar_out(item)}')
         else:
             lines.append(f'{k}: {scalar_out(v)}')
     lines.append('---')
