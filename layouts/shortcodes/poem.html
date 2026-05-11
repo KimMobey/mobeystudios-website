@@ -1,0 +1,40 @@
+{{- /*
+  Poem shortcode — verse with hard line breaks inside a <blockquote>, so the
+  existing poem-blockquote styling (serif, fit-content, optional bolded title)
+  applies without extra CSS.
+
+  Usage:
+    {{< poem title="But Will You Be Ready" >}}
+    The drought has been coming for a long time.
+    Time enough is never enough time.
+
+    Stanza two starts here.
+    {{< /poem >}}
+
+  - `title` is optional. When set it renders as a bolded heading line above
+    the verse and picks up the poem-title styling.
+  - Blank lines become paragraph (stanza) breaks; single newlines become <br>.
+  - Inline markdown inside a line (**bold**, *italic*, [links](...)) is honoured.
+
+  The HTML shape intentionally matches what a hand-rolled `> line\` blockquote
+  produces, so existing CSS (.essay-content/.article-content/.work-body
+  blockquote rules in static/css/main.css) works as-is.
+*/ -}}
+{{- $page  := .Page -}}
+{{- $title := .Get "title" -}}
+{{- $body  := strings.TrimSpace .Inner -}}
+{{- $paragraphs := split $body "\n\n" -}}
+<blockquote>
+{{- with $title }}
+  <p><strong>{{ . }}</strong></p>
+{{- end }}
+{{- range $p := $paragraphs }}
+  {{- $lines := split (strings.TrimSpace $p) "\n" -}}
+  <p>
+  {{- range $i, $line := $lines -}}
+    {{- if $i }}<br>{{ end -}}
+    {{- $page.RenderString (dict "display" "inline") $line -}}
+  {{- end -}}
+  </p>
+{{- end }}
+</blockquote>

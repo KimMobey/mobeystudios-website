@@ -440,6 +440,18 @@
     .link-btn:hover, .link-btn:focus-visible {
       color: var(--admin-link-hover, #048);
     }
+
+    /* Toolbar above prose textareas — small inserter buttons for shortcodes.
+       Sits between the field label and the textarea so it reads as "tools
+       for this field" rather than free-floating controls. */
+    .prose-toolbar {
+      display: flex;
+      gap: 4px;
+      margin: 4px 0 6px;
+    }
+    .prose-toolbar .link-btn {
+      margin-left: 0;
+    }
     .image-grid__tile {
       position: relative;
       aspect-ratio: 1 / 1;
@@ -1046,6 +1058,10 @@
       <div class="fg fg-1">
         <div class="field">
           <label for="f-body">Artist statement / prose <span class="opt">(optional — markdown supported)</span></label>
+          <div class="prose-toolbar">
+            <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="f-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
+            <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="f-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+          </div>
           <textarea id="f-body" spellcheck="true"></textarea>
         </div>
       </div>
@@ -1183,6 +1199,10 @@
       <div class="fg fg-1">
         <div class="field">
           <label for="sf-body">Content <span class="opt">(markdown)</span></label>
+          <div class="prose-toolbar">
+            <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="sf-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
+            <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="sf-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+          </div>
           <textarea id="sf-body" style="min-height:360px" spellcheck="true"></textarea>
         </div>
       </div>
@@ -1311,6 +1331,10 @@
       <div class="fg fg-1">
         <div class="field">
           <label for="pf-body">Body copy <span class="opt">(markdown supported — leave blank for index-only pages)</span></label>
+          <div class="prose-toolbar">
+            <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="pf-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
+            <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="pf-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+          </div>
           <textarea id="pf-body" spellcheck="true"></textarea>
         </div>
       </div>
@@ -2455,9 +2479,100 @@ async function saveArticle() {
   }
 }
 
+// ── Prose toolbar: shortcode + line-prefix inserters ────────────────────────
+// "Poem" wraps the selection in a Hugo shortcode (no per-line markdown
+// formatting needed). "Blockquote" prefixes every line of the selection with
+// `> ` — plain markdown, no shortcode. Either path pads blank-line boundaries
+// so the block always renders cleanly.
+function insertProsePoem(ta) {
+  ta.focus();
+  const start  = ta.selectionStart;
+  const end    = ta.selectionEnd;
+  const before = ta.value.slice(0, start);
+  const sel    = ta.value.slice(start, end);
+  const after  = ta.value.slice(end);
+
+  const trailingNL = (before.match(/\n*$/) || [''])[0].length;
+  const leadingNL  = (after .match(/^\n*/) || [''])[0].length;
+  const padBefore  = before.length === 0 ? '' : '\n'.repeat(Math.max(0, 2 - trailingNL));
+  const padAfter   = after.length  === 0 ? '' : '\n'.repeat(Math.max(0, 2 - leadingNL));
+
+  const open  = '{{< poem title="" >}}\n';
+  const close = '\n{{< /poem >}}';
+  // Caret inside title="" so the user can type a title (or delete the
+  // attribute) immediately. The title is optional — empty title="" just
+  // renders no title row.
+  const caretInsideOpen = '{{< poem title="'.length;
+
+  const insertText = padBefore + open + sel + close + padAfter;
+  ta.setRangeText(insertText, start, end, 'end');
+
+  const cursorPos = sel
+    ? start + insertText.length
+    : start + padBefore.length + caretInsideOpen;
+  ta.setSelectionRange(cursorPos, cursorPos);
+  ta.focus();
+}
+
+function insertProseBlockquote(ta) {
+  ta.focus();
+  const start  = ta.selectionStart;
+  const end    = ta.selectionEnd;
+  const value  = ta.value;
+
+  // Expand the selection to whole lines (so partial-line selections become
+  // line-based — the natural blockquote unit).
+  let lineStart = value.lastIndexOf('\n', start - 1) + 1;
+  let lineEnd   = value.indexOf('\n', end);
+  if (lineEnd === -1) lineEnd = value.length;
+
+  const before  = value.slice(0, lineStart);
+  const target  = value.slice(lineStart, lineEnd);
+  const after   = value.slice(lineEnd);
+
+  // Pad blank-line boundaries — markdown needs a blank line above and below
+  // for the blockquote to be a standalone block.
+  const trailingNL = (before.match(/\n*$/) || [''])[0].length;
+  const leadingNL  = (after .match(/^\n*/) || [''])[0].length;
+  const padBefore  = before.length === 0 ? '' : '\n'.repeat(Math.max(0, 2 - trailingNL));
+  const padAfter   = after.length  === 0 ? '' : '\n'.repeat(Math.max(0, 2 - leadingNL));
+
+  // Prefix every non-empty line with `> `; blank lines get bare `>` so the
+  // blockquote stays contiguous across stanzas.
+  let prefixed;
+  let caretOffset;
+  if (target.length === 0) {
+    // Nothing on the current line — drop in a scaffold and place the caret
+    // after `> ` so the user can start typing.
+    prefixed = '> ';
+    caretOffset = padBefore.length + 2;
+  } else {
+    prefixed = target.split('\n').map(line => line === '' ? '>' : '> ' + line).join('\n');
+    caretOffset = padBefore.length + prefixed.length;
+  }
+
+  const insertText = padBefore + prefixed + padAfter;
+  ta.setRangeText(insertText, lineStart, lineEnd, 'end');
+
+  const cursorPos = lineStart + caretOffset;
+  ta.setSelectionRange(cursorPos, cursorPos);
+  ta.focus();
+}
+
+document.querySelectorAll('[data-prose-insert]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const kind = btn.dataset.proseInsert;
+    const ta   = document.getElementById(btn.dataset.proseTarget);
+    if (!ta) return;
+    if (kind === 'poem')       insertProsePoem(ta);
+    if (kind === 'blockquote') insertProseBlockquote(ta);
+  });
+});
+
 // ── Markdown lint (client-side, non-blocking) ─────────────────────────────────
 
-const KNOWN_SHORTCODES = ['caption', 'callout'];
+const KNOWN_SHORTCODES = ['caption', 'callout', 'poem', 'youtube'];
 
 function lintMarkdown(body) {
   const issues = [];
