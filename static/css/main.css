@@ -1154,6 +1154,65 @@ body:has(.contact-page) #selection-strip {
     margin-inline: auto;
 }
 
+/* Footnotes — Goldmark emits <sup><a class="footnote-ref"> inline and a
+   <div class="footnotes"> with an <ol> at the end of the body. Default
+   browser styling is functional but looks accidental; this gives the
+   section an intentional, secondary visual weight. */
+.essay-content .footnote-ref,
+.article-content .footnote-ref,
+.work-body .footnote-ref {
+    color: var(--color-accent, currentColor);
+    text-decoration: none;
+}
+.essay-content .footnote-ref:hover,
+.article-content .footnote-ref:hover,
+.work-body .footnote-ref:hover {
+    text-decoration: underline;
+}
+.essay-content .footnotes,
+.article-content .footnotes,
+.work-body .footnotes {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-body);
+}
+.essay-content .footnotes hr,
+.article-content .footnotes hr,
+.work-body .footnotes hr {
+    display: none;
+}
+.essay-content .footnotes ol,
+.article-content .footnotes ol,
+.work-body .footnotes ol {
+    padding-left: 1.4em;
+    margin: 0;
+}
+.essay-content .footnotes li + li,
+.article-content .footnotes li + li,
+.work-body .footnotes li + li {
+    margin-top: 10px;
+}
+.essay-content .footnotes p,
+.article-content .footnotes p,
+.work-body .footnotes p {
+    margin: 0;
+}
+.essay-content .footnote-backref,
+.article-content .footnote-backref,
+.work-body .footnote-backref {
+    text-decoration: none;
+    opacity: 0.6;
+    margin-left: 4px;
+}
+.essay-content .footnote-backref:hover,
+.article-content .footnote-backref:hover,
+.work-body .footnote-backref:hover {
+    opacity: 1;
+}
+
 /* Figures break out beyond the text column. */
 .article-content > .article-figure,
 .essay-content > .article-figure {

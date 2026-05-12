@@ -1061,6 +1061,7 @@
           <div class="prose-toolbar">
             <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="f-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
             <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="f-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+            <button type="button" class="link-btn" data-prose-insert="footnote" data-prose-target="f-body" title="Insert a numbered footnote — adds a placeholder at the bottom of the body for the citation.">+ Footnote</button>
           </div>
           <textarea id="f-body" spellcheck="true"></textarea>
         </div>
@@ -1202,6 +1203,7 @@
           <div class="prose-toolbar">
             <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="sf-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
             <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="sf-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+            <button type="button" class="link-btn" data-prose-insert="footnote" data-prose-target="sf-body" title="Insert a numbered footnote — adds a placeholder at the bottom of the body for the citation.">+ Footnote</button>
           </div>
           <textarea id="sf-body" style="min-height:360px" spellcheck="true"></textarea>
         </div>
@@ -1334,6 +1336,7 @@
           <div class="prose-toolbar">
             <button type="button" class="link-btn" data-prose-insert="poem" data-prose-target="pf-body" title="Insert a poem block — verse with hard line breaks and an optional title.">+ Poem…</button>
             <button type="button" class="link-btn" data-prose-insert="blockquote" data-prose-target="pf-body" title="Wrap the selected lines (or the current line) in a blockquote.">+ Blockquote</button>
+            <button type="button" class="link-btn" data-prose-insert="footnote" data-prose-target="pf-body" title="Insert a numbered footnote — adds a placeholder at the bottom of the body for the citation.">+ Footnote</button>
           </div>
           <textarea id="pf-body" spellcheck="true"></textarea>
         </div>
@@ -2559,6 +2562,44 @@ function insertProseBlockquote(ta) {
   ta.focus();
 }
 
+function insertProseFootnote(ta) {
+  ta.focus();
+  const start  = ta.selectionStart;
+  const value  = ta.value;
+
+  // Pick the next number — max of existing `[^N]` refs + 1, or 1 if none.
+  // Only numeric labels are scanned; named refs like `[^source-a]` are left
+  // for the user to manage by hand if they prefer them.
+  const usedNums = (value.match(/\[\^(\d+)\]/g) || [])
+    .map(s => parseInt(s.slice(2, -1), 10))
+    .filter(n => !isNaN(n));
+  const next = usedNums.length ? Math.max(...usedNums) + 1 : 1;
+  const inlineRef = `[^${next}]`;
+  const tail      = `[^${next}]: `;
+
+  // Insert inline marker at the cursor.
+  ta.setRangeText(inlineRef, start, start, 'end');
+
+  // After the inline insert, the textarea value has grown by inlineRef.length.
+  // Append the tail placeholder at the end of the body, preceded by enough
+  // blank lines to stand on its own paragraph. If a previous footnote tail
+  // is already present at the end, just newline-separate so they stack.
+  const v2 = ta.value;
+  const trailingNL = (v2.match(/\n*$/) || [''])[0].length;
+  const lastIsFootnote = /\[\^\d+\]:\s.*$/m.test(v2.split('\n').slice(-3).join('\n'));
+  const padBeforeTail = v2.length === 0
+    ? ''
+    : (lastIsFootnote ? '\n'.repeat(Math.max(0, 1 - trailingNL))
+                      : '\n'.repeat(Math.max(0, 2 - trailingNL)));
+
+  ta.setRangeText(padBeforeTail + tail, v2.length, v2.length, 'preserve');
+
+  // Caret stays at the end of the inline ref so the user keeps writing.
+  const cursorPos = start + inlineRef.length;
+  ta.setSelectionRange(cursorPos, cursorPos);
+  ta.focus();
+}
+
 document.querySelectorAll('[data-prose-insert]').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -2567,6 +2608,7 @@ document.querySelectorAll('[data-prose-insert]').forEach(btn => {
     if (!ta) return;
     if (kind === 'poem')       insertProsePoem(ta);
     if (kind === 'blockquote') insertProseBlockquote(ta);
+    if (kind === 'footnote')   insertProseFootnote(ta);
   });
 });
 
