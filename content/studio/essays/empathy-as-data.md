@@ -1,7 +1,7 @@
 ---
 title: "Empathy as Data — a portrait practice defined"
 subtitle: "On basing ideas on real knowledge, and empathy as a source of understanding."
-weight: 1
+weight: 2
 thumbnail: "/images/essays/empathy-as-data/it-looks-like-steve-was-right-thumbnail.webp"
 description: "On basing ideas on real knowledge, and empathy as a source of understanding."
 ---
