@@ -8,4 +8,4 @@ It seems like this is about feeling, but it's about systems, consciousness and t
 
 ---
 
-Kim Mobey is a visual artist with thirty years of professional practice, working in painting, sculpture, mixed media and printmaking. Her work is primarily portraiture, and strongly hypersurrealist. She is self-taught and has exhibited internationally since 2003, with work in collections on all continents. Born in Cape Town, South Africa, she relocated to Montevideo, Uruguay in 2025 and is currently establishing a new studio practice there. This site contains her portfolio, process writing, and essays on art practice and the art world.
+Kim Mobey is a visual artist with thirty years of professional practice in painting, sculpture, printmaking, and mixed media. Her work is strongly hypersurrealist, figurative, and psychologically loaded. She is self-taught and has exhibited internationally since 2003, with work in collections on all continents. Born in Cape Town, South Africa, she relocated to Uruguay in 2025 and is currently establishing a new studio practice there. This site contains her portfolio, process writing, and essays on art practice and the art world.
