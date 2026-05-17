@@ -29,6 +29,8 @@ Kim Mobey is a visual artist with thirty years of professional practice in paint
 
 **2011** — In This Skin (solo), Knysna Gallery — sponsored by Sanlam Private Investments
 
+*Practice from 1996 to 2011 was sustained alongside parallel careers in education and technical writing. Exhibition records from this period are incomplete.*
+
 ## Awards and Competitions
 
 **2019** — Sanlam Portrait Award, Top 40 Shortlist

@@ -28,6 +28,7 @@ grid:
   - image: "/images/articles/about-the-studio/grid/20210716_082528.webp"
     caption: "Works in progress in Salt River"
 grid_title: "Studio Shots"
+description: "The studio is more home than anywhere has ever been."
 ---
 
 ![still-life photographs with close ups of art studio spaces](/images/articles/about-the-studio/pretty-studio-spaces-01.webp)
