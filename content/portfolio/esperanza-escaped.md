@@ -1,7 +1,7 @@
 ---
-image: "/images/portfolio/espiranza-escaped.webp"
+image: "/images/portfolio/esperanza-escaped.webp"
 visible: true
-title: "Espiranza Escaped"
+title: "Esperanza Escaped"
 order: ""
 statuses: "reserved"
 media:
