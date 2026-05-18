@@ -12,6 +12,12 @@ _dev/
 # kept locally for re-encoding but never deployed and never committed.
 static/images/**/_src/
 
+# Editions tracking data — private record-keeping for editioned works
+# (reproductions, sculptures, original prints) and sales against them.
+# Backed up separately by infrastructure/backup-editions.sh; never deployed,
+# never committed. See _dev/editions-system-spec.md.
+editions/
+
 # OS
 .DS_Store
 

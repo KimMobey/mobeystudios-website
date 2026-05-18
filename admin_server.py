@@ -15,6 +15,8 @@ from urllib.parse import urlparse, unquote, parse_qs
 
 from PIL import Image, UnidentifiedImageError
 
+from admin import editions as editions_mod
+
 PORT = 8080
 ROOT             = Path(__file__).parent
 ADMIN_HTML       = ROOT / 'static' / 'admin' / 'index.html'
@@ -127,11 +129,56 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif path == '/api/orphans':
             self._json(self._list_orphans())
 
+        elif path == '/api/editions':
+            self._json(editions_mod.list_summary())
+
         else:
+            m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)$', path)
+            if m:
+                rec = editions_mod.get(m.group(1))
+                if rec is None:
+                    self.send_error(404, 'Edition not found')
+                else:
+                    self._json(rec)
+                return
             self.send_error(404)
 
     def do_POST(self):
         path = urlparse(self.path).path
+
+        # /api/editions/<slug>/delete  (must come before generic save route)
+        m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)/delete$', path)
+        if m:
+            ok, err = editions_mod.delete(m.group(1))
+            if ok:
+                self._json({'ok': True, 'slug': m.group(1)})
+            else:
+                self.send_error(409, err or 'delete failed')
+            return
+
+        # /api/editions/<slug>  → save (create or update)
+        m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)$', path)
+        if m:
+            slug = m.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            try:
+                data = json.loads(self.rfile.read(length))
+            except json.JSONDecodeError as e:
+                self.send_error(400, f'Invalid JSON: {e}')
+                return
+            try:
+                saved = editions_mod.save(slug, data)
+            except editions_mod.ValidationError as e:
+                # 409 with structured error list so the UI can highlight fields.
+                payload = json.dumps({'errors': e.errors}, ensure_ascii=False).encode('utf-8')
+                self.send_response(409)
+                self.send_header('Content-Type', 'application/json; charset=utf-8')
+                self.send_header('Content-Length', len(payload))
+                self.end_headers()
+                self.wfile.write(payload)
+                return
+            self._json({'ok': True, 'slug': slug, 'edition': saved})
+            return
 
         # /api/works/<slug>/delete  (must come before the generic save route)
         m = re.match(r'^/api/works/([\w-]+)/delete$', path)
