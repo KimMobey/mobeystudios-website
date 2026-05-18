@@ -35,6 +35,8 @@ Kim Mobey is a visual artist with thirty years of professional practice in paint
 
 **2019** — Sanlam Portrait Award, Top 40 Shortlist
 
+**2019** — "Returning the Gaze", Cape Gallery
+
 **2017** — PPC Imaginarium Awards, Sculpture Finalist
 
 **2017** — World of Design Competition, Finalist — CTICC, Cape Town
