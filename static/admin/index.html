@@ -897,6 +897,106 @@
     .ed-card__tier--exhausted { color: var(--green); }
     .ed-card__tier--active    { color: var(--text); }
 
+    /* ── Editions detail (read-only) ── */
+    #view-editions-detail { max-width: 1100px; }
+    .ed-detail-header {
+      display: grid; grid-template-columns: 280px 1fr; gap: 24px;
+      margin-bottom: 28px;
+    }
+    .ed-detail-header__img {
+      aspect-ratio: 3 / 4; background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--border); overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ed-detail-header__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ed-detail-header__meta h1 { font-size: 26px; font-weight: 400; margin-bottom: 6px; }
+    .ed-detail-header__slug { font-size: 12px; color: var(--text-2); font-family: ui-monospace, 'SF Mono', Consolas, monospace; }
+    .ed-detail-header__notes { margin-top: 14px; color: var(--text-2); font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+
+    .ed-detail-tier {
+      border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 16px;
+    }
+    .ed-detail-tier__head {
+      display: flex; align-items: baseline; gap: 16px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .ed-detail-tier__label { font-size: 15px; font-weight: 600; }
+    .ed-detail-tier__spec { font-size: 12px; color: var(--text-2); }
+    .ed-detail-tier__counts { margin-left: auto; font-size: 13px; color: var(--text); }
+    .ed-detail-tier__counts strong { color: var(--accent); }
+    .ed-detail-tier__actions {
+      display: flex; gap: 8px; margin: 12px 0 8px;
+    }
+    .ed-detail-tier__prints {
+      list-style: none; padding: 0; font-size: 13px;
+    }
+    .ed-detail-tier__print {
+      display: grid; grid-template-columns: 8ch 12ch 8ch 1fr;
+      padding: 6px 0; border-top: 1px solid var(--border); align-items: center;
+    }
+    .ed-detail-tier__print:first-child { border-top: none; }
+    .ed-detail-tier__print--unsold { color: var(--text-2); }
+    .ed-detail-tier__print--sold .ed-state { color: var(--green); border-color: var(--green); }
+    .ed-detail-tier__empty {
+      color: var(--text-2); font-size: 12px; padding: 8px 0;
+      font-style: italic;
+    }
+    .ed-detail-footer {
+      margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: center;
+    }
+    .ed-detail-footer .link-btn {
+      background: none; border: none; color: var(--text-2); cursor: pointer;
+      font-size: 12px; text-decoration: underline;
+    }
+    .ed-detail-footer .link-btn:hover { color: var(--accent); }
+
+    /* ── Modals (Issue / Record sale) ── */
+    .ed-modal__panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+      width: 100%; max-width: 640px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+    }
+    .ed-modal__panel h2 {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-2); margin-bottom: 4px;
+    }
+    .ed-modal__panel h3 { font-size: 18px; font-weight: 400; margin-bottom: 14px; }
+    .ed-modal__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .ed-modal__fields .span2 { grid-column: 1 / -1; }
+    .ed-modal__fields .field { display: flex; flex-direction: column; gap: 4px; }
+    .ed-modal__fields label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-2);
+    }
+    .ed-modal__fields input, .ed-modal__fields select, .ed-modal__fields textarea {
+      font-family: inherit; font-size: 14px;
+      padding: 7px 9px; border: 1px solid var(--border); background: var(--bg);
+    }
+    .ed-modal__fields input:focus, .ed-modal__fields select:focus, .ed-modal__fields textarea:focus {
+      border-color: var(--accent); outline: none;
+    }
+    .ed-modal__fields textarea { min-height: 60px; resize: vertical; }
+    .ed-modal__fields .field--override input { border-color: var(--amber); }
+    .ed-modal__actions {
+      display: flex; gap: 8px; align-items: center;
+      padding-top: 14px; border-top: 1px solid var(--border);
+    }
+    .ed-modal__msg { margin-left: auto; font-size: 13px; color: var(--text-2); }
+    .ed-modal__msg.err { color: var(--red); }
+    .ed-modal__errors {
+      padding: 8px 12px; margin-bottom: 12px;
+      background: color-mix(in srgb, var(--red) 8%, var(--bg));
+      border-left: 3px solid var(--red);
+      font-size: 13px; line-height: 1.4;
+    }
+    .ed-modal__errors ul { margin: 4px 0 0 20px; }
+
     /* ── Editions bulk-add ── */
     #view-editions-bulk { max-width: 900px; }
     #bulk-drop {
@@ -1559,6 +1659,109 @@
   </form>
 </div>
 
+<!-- Edition detail (read-only) -->
+<div id="view-editions-detail" class="page" style="display:none">
+  <div id="studio-edit-nav">
+    <button type="button" class="btn-ghost" id="btn-detail-back">← Back</button>
+    <h1 id="detail-heading">Edition</h1>
+    <div class="edit-actions">
+      <span id="detail-msg" class="hint"></span>
+    </div>
+  </div>
+
+  <div class="ed-detail-header">
+    <div class="ed-detail-header__img" id="detail-image">○</div>
+    <div class="ed-detail-header__meta">
+      <h1 id="detail-title"></h1>
+      <div class="ed-detail-header__slug" id="detail-slug"></div>
+      <div class="ed-detail-header__notes" id="detail-notes"></div>
+    </div>
+  </div>
+
+  <div id="detail-tiers"></div>
+
+  <div class="ed-detail-footer">
+    <button type="button" class="link-btn" id="btn-detail-raw">Edit raw record</button>
+    <button type="button" class="link-btn" id="btn-detail-delete" disabled title="Only available when no prints are recorded">Delete edition</button>
+  </div>
+</div>
+
+<!-- Modal: Issue print -->
+<div id="modal-issue" class="modal" style="display:none">
+  <div class="ed-modal__panel">
+    <h2>Issue print</h2>
+    <h3 id="modal-issue-title"></h3>
+    <div id="modal-issue-errors" class="ed-modal__errors" style="display:none"></div>
+    <div class="ed-modal__fields">
+      <div class="field">
+        <label for="mi-number">Number <span class="req-star">*</span></label>
+        <input type="text" id="mi-number">
+      </div>
+      <div class="field">
+        <label for="mi-date">Date signed <span class="req-star">*</span></label>
+        <input type="date" id="mi-date">
+      </div>
+      <div class="field span2">
+        <label for="mi-notes">Notes <span class="opt">(optional — e.g. "for exhibition", "retained")</span></label>
+        <textarea id="mi-notes"></textarea>
+      </div>
+    </div>
+    <div class="ed-modal__actions">
+      <button type="button" class="btn-primary" id="btn-issue-save">Issue print</button>
+      <button type="button" class="btn-ghost"   id="btn-issue-cancel">Cancel</button>
+      <span class="ed-modal__msg" id="modal-issue-msg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Record sale -->
+<div id="modal-sale" class="modal" style="display:none">
+  <div class="ed-modal__panel">
+    <h2>Record sale</h2>
+    <h3 id="modal-sale-title"></h3>
+    <div id="modal-sale-errors" class="ed-modal__errors" style="display:none"></div>
+    <div class="ed-modal__fields">
+      <div class="field span2">
+        <label for="ms-print">Which print? <span class="req-star">*</span></label>
+        <select id="ms-print"></select>
+      </div>
+      <div class="field">
+        <label for="ms-date">Date sold</label>
+        <input type="date" id="ms-date">
+      </div>
+      <div class="field">
+        <label for="ms-client">Client name</label>
+        <input type="text" id="ms-client">
+      </div>
+      <div class="field">
+        <label for="ms-country">Country</label>
+        <input type="text" id="ms-country">
+      </div>
+      <div class="field">
+        <label for="ms-price">Price</label>
+        <input type="number" id="ms-price" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label for="ms-currency">Currency</label>
+        <input type="text" id="ms-currency" placeholder="EUR" maxlength="3" style="text-transform:uppercase">
+      </div>
+      <div class="field">
+        <label for="ms-invoice">CFE / invoice ref</label>
+        <input type="text" id="ms-invoice">
+      </div>
+      <div class="field span2">
+        <label for="ms-notes">Notes <span class="opt">(optional)</span></label>
+        <textarea id="ms-notes"></textarea>
+      </div>
+    </div>
+    <div class="ed-modal__actions">
+      <button type="button" class="btn-primary" id="btn-sale-save">Record sale</button>
+      <button type="button" class="btn-ghost"   id="btn-sale-cancel">Cancel</button>
+      <span class="ed-modal__msg" id="modal-sale-msg"></span>
+    </div>
+  </div>
+</div>
+
 <!-- Editions: bulk-add images -->
 <div id="view-editions-bulk" class="page" style="display:none">
   <div id="studio-edit-nav">
@@ -1644,7 +1847,7 @@ function saveUiState(patch) {
 
 const $ = id => document.getElementById(id);
 
-const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit','view-editions','view-editions-edit','view-editions-bulk'];
+const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit','view-editions','view-editions-edit','view-editions-bulk','view-editions-detail'];
 function show(id) {
   for (const v of ALL_VIEWS) $(v).style.display = v === id ? '' : 'none';
 }
@@ -3950,6 +4153,7 @@ function newEdition() {
   show('view-editions-edit');
 }
 
+// Primary entry from the grid — load the record and show the read-only detail.
 async function openEditionEdit(slug) {
   show('view-loading');
   try {
@@ -3958,15 +4162,23 @@ async function openEditionEdit(slug) {
     activeEdition = await res.json();
     activeEdition._slug = slug;
     isNewEdition = false;
-    renderEditionEditForm();
-    $('ed-errors').style.display = 'none';
-    $('ed-save-msg').textContent = '';
-    $('ed-save-msg').className = '';
-    show('view-editions-edit');
+    renderEditionDetail();
+    show('view-editions-detail');
   } catch (err) {
     toast(`Could not load: ${err.message}`);
     show('view-editions');
   }
+}
+
+// Escape hatch — show the inline editable form. Used from the detail view's
+// "Edit raw record" link for advanced corrections (rare).
+function openRawEdit() {
+  if (!activeEdition) return;
+  renderEditionEditForm();
+  $('ed-errors').style.display = 'none';
+  $('ed-save-msg').textContent = '';
+  $('ed-save-msg').className = '';
+  show('view-editions-edit');
 }
 
 function emptyTier() {
@@ -4328,6 +4540,341 @@ document.addEventListener('click', (ev) => {
   }
 });
 
+// ── Editions detail view (read-only) ────────────────────────────────────────
+//
+// Primary post-bulk-add workflow:
+//   grid → click card → detail view → click [Issue print] or [Record sale]
+//                                  → small modal → save → detail re-renders
+//
+// The detail view never mutates state directly. All edits happen in modals
+// (or in the inline form behind the Edit-raw link). State held in
+// `activeEdition` (loaded by openEditionEdit). After a modal save the
+// record is refetched and re-rendered so the displayed counts match disk.
+
+function renderEditionDetail() {
+  const ed = activeEdition;
+  if (!ed) return;
+  $('detail-heading').textContent = ed.title || ed._slug;
+  $('detail-title').textContent   = ed.title || ed._slug;
+  $('detail-slug').textContent    = ed._slug;
+  $('detail-notes').textContent   = ed.notes || '';
+
+  const imgBox = $('detail-image');
+  imgBox.innerHTML = `<img src="/api/edition-images/${esc(ed._slug)}.webp" alt="${esc(ed.title || ed._slug)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'no image'}))">`;
+
+  // Per-tier sections.
+  const container = $('detail-tiers');
+  container.innerHTML = '';
+  (ed.tiers || []).forEach((tier, idx) => container.appendChild(buildDetailTier(tier, idx)));
+
+  // Delete-edition footer button — only enabled when zero prints exist.
+  const totalPrints = (ed.tiers || []).reduce((n, t) =>
+    n + (t.prints || []).length + (t.ap_prints || []).length, 0);
+  $('btn-detail-delete').disabled = totalPrints > 0;
+}
+
+function buildDetailTier(tier, idx) {
+  const wrap = document.createElement('section');
+  wrap.className = 'ed-detail-tier';
+
+  const prints = tier.prints || [];
+  const issued = prints.filter(p => !p.deleted).length;
+  const sold   = prints.filter(isPrintSold).length;
+  const unsold = issued - sold;
+  const tierFull = tier.ceiling > 0 && issued >= tier.ceiling;
+
+  const spec = [tier.dimensions, tier.substrate].filter(Boolean).join(' · ');
+
+  wrap.innerHTML = `
+    <div class="ed-detail-tier__head">
+      <span class="ed-detail-tier__label">${esc(tier.label)}</span>
+      <span class="ed-detail-tier__spec">${esc(spec)}</span>
+      <span class="ed-detail-tier__counts">
+        <strong>${issued}${tier.ceiling ? '/' + tier.ceiling : ''}</strong> issued ·
+        ${sold} sold · ${unsold} unsold
+      </span>
+    </div>
+    <div class="ed-detail-tier__actions">
+      <button type="button" class="btn-primary" data-issue-tier="${idx}"${tierFull ? ' disabled title="Ceiling reached"' : ''}>+ Issue print</button>
+      <button type="button" class="btn-ghost"   data-sale-tier="${idx}"${unsold === 0 ? ' disabled title="No unsold prints in this tier"' : ''}>Record sale</button>
+    </div>
+    <ul class="ed-detail-tier__prints" data-tier-prints="${idx}"></ul>
+  `;
+
+  // Populate print list.
+  const list = wrap.querySelector(`[data-tier-prints="${idx}"]`);
+  if (!prints.length) {
+    list.innerHTML = `<li class="ed-detail-tier__empty">No prints issued yet.</li>`;
+  } else {
+    // Sort by the numeric prefix of the edition number if parseable; falls
+    // back to string sort. Newest-issued doesn't have a date primacy here;
+    // numerical order maps to "what the artist holds in her hand".
+    const sorted = [...prints].sort((a, b) => {
+      const an = parseInt(String(a.number).split('/')[0], 10);
+      const bn = parseInt(String(b.number).split('/')[0], 10);
+      if (!Number.isNaN(an) && !Number.isNaN(bn)) return an - bn;
+      return String(a.number).localeCompare(String(b.number));
+    });
+    for (const p of sorted) {
+      const sold = isPrintSold(p);
+      const li = document.createElement('li');
+      li.className = 'ed-detail-tier__print ' + (sold ? 'ed-detail-tier__print--sold' : 'ed-detail-tier__print--unsold');
+      const stateBadge = sold
+        ? '<span class="ed-state ed-state--sold">sold</span>'
+        : '<span class="ed-state ed-state--signed">signed</span>';
+      const buyer = sold
+        ? esc(p.client_name || p.notes || '—')
+        : esc(p.notes || '');
+      li.innerHTML = `
+        <span>${esc(p.number)}</span>
+        <span>${esc(p.date_signed || '')}</span>
+        <span>${stateBadge}</span>
+        <span style="color:var(--text-2)">${buyer}</span>
+      `;
+      list.appendChild(li);
+    }
+  }
+
+  return wrap;
+}
+
+// ── Modal lifecycle helpers ─────────────────────────────────────────────────
+
+function openModal(id) {
+  const m = $(id);
+  m.style.display = '';
+  // Click-on-backdrop dismissal: only close if the click target IS the
+  // backdrop element itself (not a child).
+  const onBackdrop = (ev) => { if (ev.target === m) closeModal(id); };
+  m.addEventListener('click', onBackdrop, { once: true });
+}
+function closeModal(id) {
+  $(id).style.display = 'none';
+}
+
+// ── Issue-print modal ───────────────────────────────────────────────────────
+
+let issueTierIdx = null;
+
+function openIssueModal(tierIdx) {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tier = ed.tiers[tierIdx];
+  if (!tier) return;
+  issueTierIdx = tierIdx;
+
+  const issued = (tier.prints || []).filter(p => !p.deleted).length;
+  const suggested = (tier.tracking === 'strict' && tier.ceiling)
+    ? `${issued + 1}/${tier.ceiling}`
+    : '';
+
+  $('modal-issue-title').textContent = `${ed.title || ed._slug} — ${tier.label}`;
+  $('mi-number').value = suggested;
+  $('mi-date').value   = new Date().toISOString().slice(0, 10);
+  $('mi-notes').value  = '';
+  $('modal-issue-errors').style.display = 'none';
+  $('modal-issue-msg').textContent = '';
+  $('modal-issue-msg').className = 'ed-modal__msg';
+  openModal('modal-issue');
+  setTimeout(() => $('mi-number').focus(), 30);
+}
+
+async function saveIssuePrint() {
+  const ed = activeEdition;
+  if (!ed || issueTierIdx === null) return;
+  const tier = ed.tiers[issueTierIdx];
+
+  const number  = $('mi-number').value.trim();
+  const dateStr = $('mi-date').value;
+  const notes   = $('mi-notes').value.trim();
+  if (!number)  { $('modal-issue-msg').textContent = 'Number required'; $('modal-issue-msg').className = 'ed-modal__msg err'; return; }
+  if (!dateStr) { $('modal-issue-msg').textContent = 'Date required';   $('modal-issue-msg').className = 'ed-modal__msg err'; return; }
+
+  // Mutate a local copy of activeEdition, save it.
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const tierCopy = payload.tiers[issueTierIdx];
+  tierCopy.prints = tierCopy.prints || [];
+  tierCopy.prints.push({
+    number, date_signed: dateStr, date_sold: '',
+    client_name: '', country: '', price: 0, currency: '',
+    invoice_ref: '', customs_ref: '', notes, photos: [],
+  });
+
+  $('modal-issue-msg').textContent = 'saving…';
+  $('modal-issue-msg').className = 'ed-modal__msg';
+
+  const ok = await postEditionRecord(ed._slug, payload, 'modal-issue');
+  if (!ok) return;
+  closeModal('modal-issue');
+  toast(`Issued ${number} (${tier.label})`);
+}
+
+// ── Record-sale modal ────────────────────────────────────────────────────────
+
+let saleTierIdx = null;
+
+function openSaleModal(tierIdx) {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tier = ed.tiers[tierIdx];
+  if (!tier) return;
+  saleTierIdx = tierIdx;
+
+  const unsold = (tier.prints || [])
+    .map((p, j) => ({ p, j }))
+    .filter(x => !x.p.deleted && !isPrintSold(x.p))
+    .sort((a, b) => {
+      const an = parseInt(String(a.p.number).split('/')[0], 10);
+      const bn = parseInt(String(b.p.number).split('/')[0], 10);
+      if (!Number.isNaN(an) && !Number.isNaN(bn)) return an - bn;
+      return String(a.p.number).localeCompare(String(b.p.number));
+    });
+
+  const sel = $('ms-print');
+  sel.innerHTML = unsold.map(x => `<option value="${x.j}">${esc(x.p.number)} (signed ${esc(x.p.date_signed)})</option>`).join('');
+  if (!unsold.length) {
+    sel.innerHTML = '<option value="">No unsold prints in this tier</option>';
+  }
+
+  $('modal-sale-title').textContent = `${ed.title || ed._slug} — ${tier.label}`;
+  $('ms-date').value     = new Date().toISOString().slice(0, 10);
+  $('ms-client').value   = '';
+  $('ms-country').value  = '';
+  $('ms-price').value    = '';
+  $('ms-currency').value = lastUsedCurrency() || 'EUR';
+  $('ms-invoice').value  = '';
+  $('ms-notes').value    = '';
+  $('modal-sale-errors').style.display = 'none';
+  $('modal-sale-msg').textContent = '';
+  $('modal-sale-msg').className = 'ed-modal__msg';
+  openModal('modal-sale');
+  setTimeout(() => sel.focus(), 30);
+}
+
+// Default the currency field to the last value the artist used.
+function lastUsedCurrency() {
+  const ed = activeEdition;
+  if (!ed) return '';
+  for (let i = (ed.tiers || []).length - 1; i >= 0; i--) {
+    const ps = (ed.tiers[i].prints || []).slice().reverse();
+    for (const p of ps) if ((p.currency || '').trim()) return p.currency.trim();
+  }
+  return '';
+}
+
+async function saveSale() {
+  const ed = activeEdition;
+  if (!ed || saleTierIdx === null) return;
+  const printIdx = parseInt($('ms-print').value, 10);
+  if (Number.isNaN(printIdx)) {
+    $('modal-sale-msg').textContent = 'No print selected';
+    $('modal-sale-msg').className = 'ed-modal__msg err';
+    return;
+  }
+
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const rec = payload.tiers[saleTierIdx].prints[printIdx];
+
+  const dateStr = $('ms-date').value;
+  rec.date_sold   = dateStr;
+  rec.client_name = $('ms-client').value.trim();
+  rec.country     = $('ms-country').value.trim();
+  const priceRaw  = $('ms-price').value.trim();
+  rec.price       = priceRaw === '' ? 0 : parseFloat(priceRaw);
+  rec.currency    = $('ms-currency').value.trim().toUpperCase();
+  rec.invoice_ref = $('ms-invoice').value.trim();
+  rec.notes       = $('ms-notes').value.trim();
+
+  if (!dateStr && (rec.client_name || rec.price > 0)) {
+    // Soft nudge: server will accept this, but flag for the artist.
+    $('modal-sale-msg').textContent = 'date_sold blank — saved with nudge';
+  }
+
+  $('modal-sale-msg').textContent ||= 'saving…';
+  $('modal-sale-msg').className = 'ed-modal__msg';
+
+  const ok = await postEditionRecord(ed._slug, payload, 'modal-sale');
+  if (!ok) return;
+  closeModal('modal-sale');
+  toast(`Recorded sale of ${rec.number}${rec.client_name ? ' to ' + rec.client_name : ''}`);
+}
+
+// ── Shared post-and-refresh ─────────────────────────────────────────────────
+
+async function postEditionRecord(slug, payload, modalId) {
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(slug)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 409) {
+      const body = await res.json();
+      renderModalErrors(modalId, body.errors || []);
+      return false;
+    }
+    if (!res.ok) {
+      throw new Error(`Server returned ${res.status}`);
+    }
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = slug;
+    renderEditionDetail();
+    // Refresh the grid summary in the background so counts update when the
+    // user navigates back.
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+    return true;
+  } catch (err) {
+    const msg = $(`${modalId}-msg`);
+    msg.textContent = err.message;
+    msg.className = 'ed-modal__msg err';
+    return false;
+  }
+}
+
+function renderModalErrors(modalId, errors) {
+  const box = $(`${modalId}-errors`);
+  if (!errors.length) { box.style.display = 'none'; return; }
+  box.innerHTML = '<strong>Could not save:</strong><ul>' +
+    errors.map(([_, msg]) => `<li>${esc(msg)}</li>`).join('') +
+    '</ul>';
+  box.style.display = 'block';
+  const msg = $(`${modalId}-msg`);
+  msg.textContent = '';
+  msg.className = 'ed-modal__msg';
+}
+
+// ── Detail-view wiring ──────────────────────────────────────────────────────
+
+$('btn-detail-back').addEventListener('click', () => initEditions());
+$('btn-detail-raw').addEventListener('click', openRawEdit);
+$('btn-detail-delete').addEventListener('click', async () => {
+  if (!activeEdition) return;
+  if (!confirm(`Delete edition record ${activeEdition._slug}? The image stays on disk.`)) return;
+  const res = await fetch(`/api/editions/${encodeURIComponent(activeEdition._slug)}/delete`, { method: 'POST' });
+  if (res.ok) {
+    toast(`Deleted ${activeEdition._slug}`);
+    initEditions();
+  } else {
+    toast(`Could not delete: ${res.status}`);
+  }
+});
+
+// Delegated handlers for the per-tier Issue / Record-sale buttons.
+document.addEventListener('click', (ev) => {
+  const issueBtn = ev.target.closest('[data-issue-tier]');
+  if (issueBtn) { openIssueModal(parseInt(issueBtn.dataset.issueTier, 10)); return; }
+  const saleBtn = ev.target.closest('[data-sale-tier]');
+  if (saleBtn) { openSaleModal(parseInt(saleBtn.dataset.saleTier, 10)); return; }
+});
+
+$('btn-issue-save').addEventListener('click', saveIssuePrint);
+$('btn-issue-cancel').addEventListener('click', () => closeModal('modal-issue'));
+$('btn-sale-save').addEventListener('click', saveSale);
+$('btn-sale-cancel').addEventListener('click', () => closeModal('modal-sale'));
+
 // ── Editions: bulk-add images ────────────────────────────────────────────────
 //
 // Drop or pick N image files. Each goes through the existing WebP upload
@@ -4434,8 +4981,18 @@ document.addEventListener('click', (ev) => {
 });
 
 $('btn-edition-new').addEventListener('click', newEdition);
-$('btn-edition-back').addEventListener('click', () => initEditions());
-$('btn-edition-cancel').addEventListener('click', () => initEditions());
+// From the inline (raw-edit) form, "Back" / "Cancel" returns to the detail
+// view if we have an active record, otherwise the grid.
+function backFromInlineForm() {
+  if (activeEdition && activeEdition._slug && !isNewEdition) {
+    renderEditionDetail();
+    show('view-editions-detail');
+  } else {
+    initEditions();
+  }
+}
+$('btn-edition-back').addEventListener('click', backFromInlineForm);
+$('btn-edition-cancel').addEventListener('click', backFromInlineForm);
 $('btn-edition-save-top').addEventListener('click', saveEdition);
 $('btn-add-tier').addEventListener('click', () => {
   collectForm();
