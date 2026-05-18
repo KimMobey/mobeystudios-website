@@ -866,6 +866,41 @@
     .ed-error-list ul { margin: 4px 0 0 20px; }
     .ed-empty { padding: 12px 0; color: var(--text-2); font-size: 13px; }
 
+    /* ── Editions bulk-add ── */
+    #view-editions-bulk { max-width: 900px; }
+    #bulk-drop {
+      border: 2px dashed var(--border);
+      padding: 40px 24px; margin: 24px 0; text-align: center;
+      background: var(--bg-2); color: var(--text-2);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    #bulk-drop.is-over { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--bg)); }
+    #bulk-drop input[type="file"] { display: none; }
+    #bulk-drop .bulk-cta {
+      display: inline-block; cursor: pointer;
+      padding: 10px 20px; font-size: 13px;
+      background: var(--accent); color: #fff; border-radius: 1px;
+    }
+    #bulk-drop .bulk-cta:hover { opacity: 0.85; }
+    #bulk-rules { margin-top: 12px; font-size: 12px; color: var(--text-2); }
+    #bulk-rules code { background: var(--bg); padding: 1px 4px; }
+    #bulk-list { margin-top: 16px; }
+    .bulk-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 12px; border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .bulk-row__name { flex: 1; font-family: ui-monospace, 'SF Mono', Consolas, monospace; }
+    .bulk-row__status {
+      padding: 2px 8px; font-size: 11px; letter-spacing: 0.05em;
+      text-transform: uppercase; border: 1px solid var(--border);
+    }
+    .bulk-row__status--pending  { color: var(--text-2); }
+    .bulk-row__status--uploading { color: var(--accent); border-color: var(--accent); }
+    .bulk-row__status--created  { color: var(--green); border-color: var(--green); }
+    .bulk-row__status--failed   { color: var(--red); border-color: var(--red); }
+    .bulk-row__msg { color: var(--red); font-size: 12px; }
+
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 22px; right: 22px;
@@ -1423,7 +1458,8 @@
   <div id="editions-toolbar">
     <h2 id="editions-count"></h2>
     <div style="display:flex;gap:8px">
-      <button type="button" class="btn-primary" id="btn-edition-new">+ New edition</button>
+      <button type="button" class="btn-primary" id="btn-edition-bulk">+ Add images</button>
+      <button type="button" class="btn-ghost"   id="btn-edition-new">+ Blank record</button>
       <button type="button" class="btn-ghost"   onclick="initEditions()">Reload</button>
     </div>
   </div>
@@ -1488,6 +1524,34 @@
   </form>
 </div>
 
+<!-- Editions: bulk-add images -->
+<div id="view-editions-bulk" class="page" style="display:none">
+  <div id="studio-edit-nav">
+    <button type="button" class="btn-ghost" id="btn-bulk-back">← Back</button>
+    <h1>Add edition images</h1>
+    <div class="edit-actions">
+      <span id="bulk-done-msg" class="hint"></span>
+    </div>
+  </div>
+
+  <p class="hint" style="margin:8px 0 0">
+    Drop one or many images here. Each becomes a new edition record with the default tier set
+    (small/medium/large from <code>admin/edition_template.json</code>). Variation tiers
+    (e.g. hand-finished) stay opt-in per record.
+  </p>
+
+  <div id="bulk-drop">
+    <label for="bulk-file" class="bulk-cta">Choose images…</label>
+    <input type="file" id="bulk-file" accept=".webp,.jpg,.jpeg,.png,.tif,.tiff" multiple>
+    <div id="bulk-rules">
+      Filenames must already be slug-shaped: <code>lowercase-with-hyphens.webp</code>.
+      Non-conforming names are rejected before upload.
+    </div>
+  </div>
+
+  <div id="bulk-list"></div>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1545,7 +1609,7 @@ function saveUiState(patch) {
 
 const $ = id => document.getElementById(id);
 
-const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit','view-editions','view-editions-edit'];
+const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit','view-editions','view-editions-edit','view-editions-bulk'];
 function show(id) {
   for (const v of ALL_VIEWS) $(v).style.display = v === id ? '' : 'none';
 }
@@ -4222,6 +4286,111 @@ document.addEventListener('click', (ev) => {
     activeEdition.tiers.splice(idx, 1);
     renderTiers();
     return;
+  }
+});
+
+// ── Editions: bulk-add images ────────────────────────────────────────────────
+//
+// Drop or pick N image files. Each goes through the existing WebP upload
+// pipeline and triggers auto-creation of an edition record with the default
+// tier set. Uploads are sequential (kinder on the local server, simpler to
+// reason about). Filenames must already be slug-shaped — non-conforming
+// names get an immediate rejection without consuming an upload.
+
+const SLUG_FILENAME_RE = /^[a-z0-9][a-z0-9-]*\.(webp|jpg|jpeg|png|tif|tiff)$/i;
+
+function openBulkAdd() {
+  $('bulk-list').innerHTML = '';
+  $('bulk-done-msg').textContent = '';
+  $('bulk-file').value = '';
+  show('view-editions-bulk');
+}
+
+async function bulkAddFiles(files) {
+  const list = $('bulk-list');
+  const fileArr = Array.from(files);
+  if (!fileArr.length) return;
+
+  // Build rows up-front so the user sees the full queue.
+  const rows = fileArr.map(file => {
+    const tr = document.createElement('div');
+    tr.className = 'bulk-row';
+    const valid = SLUG_FILENAME_RE.test(file.name);
+    tr.innerHTML = `
+      <span class="bulk-row__name">${esc(file.name)}</span>
+      <span class="bulk-row__status bulk-row__status--${valid ? 'pending' : 'failed'}">${valid ? 'pending' : 'invalid name'}</span>
+      <span class="bulk-row__msg">${valid ? '' : 'must match <code>lowercase-with-hyphens.ext</code>'}</span>
+    `;
+    list.appendChild(tr);
+    return { file, row: tr, valid };
+  });
+
+  let created = 0, failed = 0;
+  for (const r of rows) {
+    if (!r.valid) { failed++; continue; }
+    const statusEl = r.row.querySelector('.bulk-row__status');
+    const msgEl    = r.row.querySelector('.bulk-row__msg');
+    statusEl.textContent = 'uploading';
+    statusEl.className = 'bulk-row__status bulk-row__status--uploading';
+
+    try {
+      const buf = await r.file.arrayBuffer();
+      const res = await fetch('/api/editions/bulk-add-image', {
+        method: 'POST',
+        headers: { 'X-Filename': r.file.name, 'Content-Type': 'application/octet-stream' },
+        body: buf,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status} ${stripHtml(text).slice(0, 140)}`);
+      }
+      const body = await res.json();
+      statusEl.textContent = 'created';
+      statusEl.className = 'bulk-row__status bulk-row__status--created';
+      msgEl.innerHTML = `<a href="#" data-open-detail="${esc(body.slug)}">${esc(body.edition.title)} →</a>`;
+      created++;
+    } catch (err) {
+      statusEl.textContent = 'failed';
+      statusEl.className = 'bulk-row__status bulk-row__status--failed';
+      msgEl.textContent = err.message;
+      failed++;
+    }
+  }
+
+  $('bulk-done-msg').textContent =
+    `${created} created${failed ? `, ${failed} failed` : ''}`;
+}
+
+// Strip HTML tags from BaseHTTPRequestHandler's default error pages so the
+// status message stays readable.
+function stripHtml(s) {
+  return String(s).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+$('btn-edition-bulk').addEventListener('click', openBulkAdd);
+$('btn-bulk-back').addEventListener('click', () => initEditions());
+$('bulk-file').addEventListener('change', (ev) => {
+  bulkAddFiles(ev.target.files);
+});
+
+// Drag-and-drop on the drop zone.
+const _bulkDrop = $('bulk-drop');
+['dragenter','dragover'].forEach(evt =>
+  _bulkDrop.addEventListener(evt, (e) => { e.preventDefault(); _bulkDrop.classList.add('is-over'); }));
+['dragleave','drop'].forEach(evt =>
+  _bulkDrop.addEventListener(evt, (e) => { e.preventDefault(); _bulkDrop.classList.remove('is-over'); }));
+_bulkDrop.addEventListener('drop', (e) => {
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length) bulkAddFiles(files);
+});
+
+// Link in a successful bulk row opens the detail view (live in Phase 5).
+// For Phase 3 it falls back to the existing inline edit form.
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest('[data-open-detail]');
+  if (a) {
+    ev.preventDefault();
+    openEditionEdit(a.dataset.openDetail);
   }
 });
 
