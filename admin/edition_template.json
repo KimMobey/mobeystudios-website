@@ -1,0 +1,51 @@
+{
+  "comment": "Default tier set instantiated when a new edition image is added. Edit dimensions/substrate/spec to your actual print specs. `default_enabled` tiers are auto-created on image add; variations (false) are opt-in per image via the detail view.",
+  "type": "reproduction",
+  "tiers": [
+    {
+      "label": "small",
+      "ceiling": 50,
+      "ap_ceiling": 3,
+      "dimensions": "30 × 40cm",
+      "substrate": "cotton rag paper",
+      "spec": "",
+      "default_enabled": true
+    },
+    {
+      "label": "medium",
+      "ceiling": 25,
+      "ap_ceiling": 2,
+      "dimensions": "50 × 70cm",
+      "substrate": "cotton rag paper",
+      "spec": "",
+      "default_enabled": true
+    },
+    {
+      "label": "large",
+      "ceiling": 10,
+      "ap_ceiling": 1,
+      "dimensions": "75 × 100cm",
+      "substrate": "cotton rag paper",
+      "spec": "",
+      "default_enabled": true
+    },
+    {
+      "label": "small-hand-finished",
+      "ceiling": 10,
+      "ap_ceiling": 0,
+      "dimensions": "30 × 40cm",
+      "substrate": "cotton rag paper, hand-finished",
+      "spec": "",
+      "default_enabled": false
+    },
+    {
+      "label": "medium-hand-finished",
+      "ceiling": 5,
+      "ap_ceiling": 0,
+      "dimensions": "50 × 70cm",
+      "substrate": "cotton rag paper, hand-finished",
+      "spec": "",
+      "default_enabled": false
+    }
+  ]
+}

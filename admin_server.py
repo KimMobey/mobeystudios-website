@@ -132,6 +132,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif path == '/api/editions':
             self._json(editions_mod.list_summary())
 
+        elif path == '/api/edition-template':
+            self._json(editions_mod.load_template())
+
         else:
             m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)$', path)
             if m:
@@ -141,10 +144,24 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 else:
                     self._json(rec)
                 return
+            # GET /api/edition-images/<slug> → serve editions/_images/<slug>.webp
+            m = re.match(r'^/api/edition-images/([a-z0-9][a-z0-9-]*)\.webp$', path)
+            if m:
+                img = editions_mod.IMAGES / f'{m.group(1)}.webp'
+                if img.is_file():
+                    self._file(img, 'image/webp')
+                else:
+                    self.send_error(404)
+                return
             self.send_error(404)
 
     def do_POST(self):
         path = urlparse(self.path).path
+
+        # /api/editions/bulk-add-image — upload one image, auto-create edition
+        if path == '/api/editions/bulk-add-image':
+            self._upload_edition_image()
+            return
 
         # /api/editions/<slug>/delete  (must come before generic save route)
         m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)/delete$', path)
@@ -466,6 +483,94 @@ class Handler(http.server.BaseHTTPRequestHandler):
             'ok':       True,
             'filename': out_name,
             'path':     f'/images/{dir_name}/{out_name}',
+        })
+
+    def _upload_edition_image(self):
+        """Bulk-add path: one image upload → editions/_images/<slug>.webp +
+        a fresh edition record with default tiers from the template.
+
+        The filename's stem IS the slug — Kim's workflow is to name files in
+        slug form before upload. Mismatched names are rejected so there's no
+        ambiguity later about which image belongs to which record."""
+        filename = self.headers.get('X-Filename', '').strip()
+        if not filename or not re.match(r'^[\w.-]+$', filename):
+            self.send_error(400, 'Missing or invalid X-Filename header')
+            return
+        src = Path(filename)
+        slug = src.stem.lower()
+        if not editions_mod.SLUG_RE.match(slug):
+            self.send_error(
+                400,
+                f"Filename stem must be slug-shaped (lowercase, digits, hyphens). "
+                f"Got: {src.stem!r}. Rename the file before upload."
+            )
+            return
+        ext = src.suffix.lower()
+        if ext not in UPLOAD_INPUT_EXTS:
+            self.send_error(
+                400,
+                f"Unsupported format '{ext}'. Supported: jpg, jpeg, png, tif, tiff, "
+                "bmp, webp. RAW (.cr2/.nef/.arw/.dng) and HEIC are not supported."
+            )
+            return
+
+        # Refuse early if either the edition record OR the image file exists —
+        # bulk-add is a create-only path, not a replace path.
+        if (editions_mod.EDITIONS / f'{slug}.json').is_file():
+            self.send_error(409, f"Edition {slug!r} already exists.")
+            return
+        dest = editions_mod.IMAGES / f'{slug}.webp'
+        if dest.exists():
+            self.send_error(409, f"Image {slug}.webp already exists in editions/_images/.")
+            return
+
+        length = int(self.headers.get('Content-Length', 0))
+        if length <= 0:
+            self.send_error(400, 'Empty body')
+            return
+        raw = self.rfile.read(length)
+        try:
+            im = Image.open(io.BytesIO(raw))
+            im.load()
+        except (UnidentifiedImageError, OSError):
+            self.send_error(400, 'File is not a valid image, or is corrupt.')
+            return
+
+        # Same downscale + lossless-webp pipeline used for site images.
+        longest = max(im.size)
+        if longest > MAX_LONG_EDGE:
+            ratio    = MAX_LONG_EDGE / longest
+            new_size = (round(im.size[0] * ratio), round(im.size[1] * ratio))
+            im       = im.resize(new_size, Image.LANCZOS)
+        if im.mode not in ('RGB', 'RGBA'):
+            im = im.convert('RGBA' if 'A' in im.getbands() else 'RGB')
+
+        editions_mod.IMAGES.mkdir(parents=True, exist_ok=True)
+        (editions_mod.IMAGES / '_src').mkdir(parents=True, exist_ok=True)
+        src_archive = editions_mod.IMAGES / '_src' / filename
+        if not src_archive.exists():
+            src_archive.write_bytes(raw)
+
+        try:
+            im.save(dest, 'WEBP', lossless=True, quality=100, method=6)
+        except Exception as e:
+            self.send_error(500, f'WebP encode failed: {e}')
+            return
+
+        # Create the edition record (default tiers from template).
+        try:
+            rec = editions_mod.bulk_add_create_record(slug)
+        except (FileExistsError, ValueError) as e:
+            # Image saved but record creation failed; surface, leave the image
+            # in place so a retry/manual recovery is possible.
+            self.send_error(500, f'Image saved but record creation failed: {e}')
+            return
+
+        self._json({
+            'ok':         True,
+            'slug':       slug,
+            'image_path': f'/api/edition-images/{slug}.webp',
+            'edition':    rec,
         })
 
     def _save_article(self, section, slug, data):

@@ -21,8 +21,10 @@ import secrets
 from datetime import date
 from pathlib import Path
 
-ROOT     = Path(__file__).parent.parent
-EDITIONS = ROOT / 'editions'
+ROOT          = Path(__file__).parent.parent
+EDITIONS      = ROOT / 'editions'
+IMAGES        = EDITIONS / '_images'
+TEMPLATE_PATH = Path(__file__).parent / 'edition_template.json'
 
 SLUG_RE  = re.compile(r'^[a-z0-9][a-z0-9-]*$')
 LABEL_RE = re.compile(r'^[a-z0-9][a-z0-9-]*$')
@@ -103,8 +105,92 @@ def _ceiling_total(edition):
     return total
 
 
+# ── Tier template ────────────────────────────────────────────────────────────
+
+def load_template():
+    """Read the tier template. Returns the parsed dict — caller decides how
+    to use it (defaults vs variation toggles vs full listing)."""
+    return json.loads(TEMPLATE_PATH.read_text('utf-8'))
+
+
+def _tier_from_template(entry):
+    """Project a template entry into a fresh tier record (no `default_enabled`,
+    no prints yet)."""
+    return {
+        'label':       entry['label'],
+        'dimensions':  entry.get('dimensions', ''),
+        'substrate':   entry.get('substrate', ''),
+        'material':    entry.get('material', ''),
+        'spec':        entry.get('spec', ''),
+        'ceiling':     entry.get('ceiling', 0),
+        'ap_ceiling':  entry.get('ap_ceiling', 0),
+        'tracking':    'strict',
+        'status':      'active',
+        'notes':       '',
+        'prints':      [],
+        'ap_prints':   [],
+    }
+
+
+def build_default_tiers():
+    """Return the list of tier records to instantiate on a brand-new edition.
+    Only template entries with `default_enabled: true` are included; variations
+    are added per-image via the detail view."""
+    tmpl = load_template()
+    return [_tier_from_template(t) for t in tmpl.get('tiers', []) if t.get('default_enabled')]
+
+
+def available_variations():
+    """Return template entries with default_enabled=False — opt-in tiers."""
+    tmpl = load_template()
+    return [t for t in tmpl.get('tiers', []) if not t.get('default_enabled')]
+
+
+# ── Bulk add ─────────────────────────────────────────────────────────────────
+
+def _humanize_slug(slug):
+    """Turn 'atilla-pathways' into 'Atilla Pathways' — first-cut title.
+    Kim will refine in the detail view."""
+    return ' '.join(w.capitalize() for w in slug.replace('_', '-').split('-') if w)
+
+
+def bulk_add_create_record(slug):
+    """Create a fresh edition record for `slug`. Assumes the image already
+    exists at editions/_images/<slug>.webp. Refuses if the edition record
+    already exists. Returns the created record."""
+    if not SLUG_RE.match(slug):
+        raise ValueError(f'Invalid slug: {slug!r}')
+    if _path(slug).is_file():
+        raise FileExistsError(f'Edition {slug!r} already exists')
+    tmpl = load_template()
+    data = {
+        'title':          _humanize_slug(slug),
+        'type':           tmpl.get('type', 'reproduction'),
+        'portfolio_slug': '',
+        'created':        date.today().isoformat(),
+        'notes':          '',
+        'tiers':          build_default_tiers(),
+    }
+    normalise(data, None)
+    _write(slug, data)
+    return data
+
+
+# ── List + summary ───────────────────────────────────────────────────────────
+
+def _tier_summary(tier):
+    prints = tier.get('prints', []) or []
+    active = [p for p in prints if not p.get('deleted')]
+    return {
+        'label':    tier.get('label', ''),
+        'ceiling':  tier.get('ceiling', 0),
+        'issued':   len(active),
+        'sold':     sum(1 for p in active if _is_sold(p)),
+    }
+
+
 def list_summary():
-    """Return one dict per edition with enough info to render the list page."""
+    """Return one dict per edition with enough info to render the grid."""
     EDITIONS.mkdir(exist_ok=True)
     out = []
     for f in sorted(EDITIONS.glob('*.json')):
@@ -112,12 +198,15 @@ def list_summary():
             d = json.loads(f.read_text('utf-8'))
         except json.JSONDecodeError:
             continue
+        tiers = d.get('tiers', []) or []
+        has_image = (IMAGES / f'{f.stem}.webp').is_file()
         out.append({
             'slug':           f.stem,
             'title':          d.get('title', ''),
             'type':           d.get('type', ''),
             'portfolio_slug': d.get('portfolio_slug', ''),
-            'tier_count':     len(d.get('tiers', [])),
+            'has_image':      has_image,
+            'tiers':          [_tier_summary(t) for t in tiers],
             'issued':         _count_issued(d),
             'sold':           _count_sold(d),
             'ceiling_total':  _ceiling_total(d),
