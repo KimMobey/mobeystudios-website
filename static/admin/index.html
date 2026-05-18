@@ -800,6 +800,72 @@
     #studio-save-msg.err,
     #studio-save-msg-top.err { color: var(--red); }
 
+    /* ── Editions ── */
+    #view-editions { max-width: 1100px; }
+    #view-editions-edit { max-width: 1400px; }
+    #editions-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    #editions-toolbar h2 {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-2);
+    }
+    .ed-tier {
+      margin-top: 16px;
+    }
+    .ed-tier legend {
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ed-prints-section { margin-top: 14px; }
+    .ed-prints-section h4 {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--text-2);
+      margin-bottom: 6px;
+    }
+    .ed-prints-section h4 .hint {
+      text-transform: none; letter-spacing: 0; font-weight: 400;
+      color: var(--text-2); margin-left: 8px;
+    }
+    .ed-prints-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .ed-prints-table th {
+      text-align: left; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-2); padding: 4px 6px 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ed-prints-table td { padding: 3px 4px; vertical-align: middle; }
+    .ed-prints-table td input {
+      width: 100%; padding: 5px 7px; font-size: 13px;
+      border: 1px solid var(--border); background: var(--bg);
+    }
+    .ed-prints-table td input:focus { border-color: var(--accent); outline: none; }
+    .ed-prints-table tr.is-deleted td { opacity: 0.4; }
+    .ed-state {
+      display: inline-block; padding: 1px 6px; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid var(--border); border-radius: 1px;
+      color: var(--text-2); background: var(--bg-2);
+    }
+    .ed-state--sold { color: var(--green); border-color: var(--green); background: color-mix(in srgb, var(--green) 8%, var(--bg)); }
+    .ed-state--signed { color: var(--text-2); }
+    .ed-prints-table td.ed-state-cell { width: 1%; white-space: nowrap; padding-right: 8px; }
+    .ed-prints-table input.ed-sale-incomplete { border-color: var(--amber); }
+    .ed-error-list {
+      margin-top: 12px; padding: 10px 14px;
+      background: color-mix(in srgb, var(--red) 8%, var(--bg));
+      border-left: 3px solid var(--red);
+      font-size: 13px; line-height: 1.5;
+    }
+    .ed-error-list ul { margin: 4px 0 0 20px; }
+    .ed-empty { padding: 12px 0; color: var(--text-2); font-size: 13px; }
+
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 22px; right: 22px;
@@ -819,6 +885,7 @@
     <button class="tab-btn active" id="tab-portfolio" onclick="setActiveTab('portfolio')">Portfolio</button>
     <button class="tab-btn"        id="tab-studio"    onclick="setActiveTab('studio')">Studio</button>
     <button class="tab-btn"        id="tab-pages"     onclick="setActiveTab('pages')">Pages</button>
+    <button class="tab-btn"        id="tab-editions"  onclick="setActiveTab('editions')">Editions</button>
   </nav>
   <span id="status"></span>
 </header>
@@ -1351,6 +1418,76 @@
   </form>
 </div>
 
+<!-- Editions list -->
+<div id="view-editions" class="page" style="display:none">
+  <div id="editions-toolbar">
+    <h2 id="editions-count"></h2>
+    <div style="display:flex;gap:8px">
+      <button type="button" class="btn-primary" id="btn-edition-new">+ New edition</button>
+      <button type="button" class="btn-ghost"   onclick="initEditions()">Reload</button>
+    </div>
+  </div>
+  <div id="editions-list"></div>
+</div>
+
+<!-- Edition edit -->
+<div id="view-editions-edit" class="page" style="display:none">
+  <div id="studio-edit-nav">
+    <button type="button" class="btn-ghost" id="btn-edition-back">← Back</button>
+    <h1 id="ed-edit-heading">Edit edition</h1>
+    <div class="edit-actions">
+      <button type="button" class="btn-primary" id="btn-edition-save-top">Save</button>
+      <span id="ed-save-msg-top"></span>
+    </div>
+  </div>
+  <form id="edition-edit-form" novalidate onsubmit="event.preventDefault();saveEdition();">
+    <fieldset>
+      <legend>Identity</legend>
+      <div class="fg fg-3">
+        <div class="field span3">
+          <label for="ed-title">Title <span class="req-star">*</span></label>
+          <input type="text" id="ed-title" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ed-slug">Slug <span class="opt">(immutable after first save)</span></label>
+          <input type="text" id="ed-slug" autocomplete="off">
+          <span class="hint">lowercase-hyphenated</span>
+        </div>
+        <div class="field">
+          <label for="ed-type">Type <span class="req-star">*</span></label>
+          <select id="ed-type">
+            <option value="reproduction">reproduction</option>
+            <option value="sculpture">sculpture</option>
+            <option value="original-print">original-print</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ed-portfolio-slug">Portfolio slug <span class="opt">(optional)</span></label>
+          <input type="text" id="ed-portfolio-slug" autocomplete="off">
+        </div>
+        <div class="field span3">
+          <label for="ed-notes">Work notes <span class="opt">(optional)</span></label>
+          <input type="text" id="ed-notes" autocomplete="off">
+        </div>
+      </div>
+    </fieldset>
+
+    <div id="ed-tiers"></div>
+
+    <div style="margin-top:16px">
+      <button type="button" class="btn-ghost" id="btn-add-tier">+ Add tier</button>
+    </div>
+
+    <div id="ed-errors" class="ed-error-list" style="display:none"></div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Save</button>
+      <button type="button" class="btn-ghost" id="btn-edition-cancel">Cancel</button>
+      <span id="ed-save-msg"></span>
+    </div>
+  </form>
+</div>
+
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1408,7 +1545,7 @@ function saveUiState(patch) {
 
 const $ = id => document.getElementById(id);
 
-const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit'];
+const ALL_VIEWS = ['view-loading','view-error','view-grid','view-edit','view-match','view-studio','view-studio-edit','view-pages','view-page-edit','view-editions','view-editions-edit'];
 function show(id) {
   for (const v of ALL_VIEWS) $(v).style.display = v === id ? '' : 'none';
 }
@@ -1419,12 +1556,15 @@ function setActiveTab(tab) {
   $('tab-portfolio').classList.toggle('active', tab === 'portfolio');
   $('tab-studio').classList.toggle('active',    tab === 'studio');
   $('tab-pages').classList.toggle('active',     tab === 'pages');
+  $('tab-editions').classList.toggle('active',  tab === 'editions');
   saveUiState({ tab });
   if (tab === 'portfolio') {
     renderGrid();
     show('view-grid');
   } else if (tab === 'studio') {
     initStudio();
+  } else if (tab === 'editions') {
+    initEditions();
   } else {
     initPages();
   }
@@ -1473,6 +1613,8 @@ async function init() {
       setActiveTab('studio');
     } else if (ui.tab === 'pages') {
       setActiveTab('pages');
+    } else if (ui.tab === 'editions') {
+      setActiveTab('editions');
     } else {
       show('view-grid');
     }
@@ -3620,6 +3762,487 @@ $('sf-thumbnail').addEventListener('input', updateThumbPreview);
 $('btn-thumb-clear').addEventListener('click', () => {
   $('sf-thumbnail').value = '';
   updateThumbPreview();
+});
+
+// ── Editions ──────────────────────────────────────────────────────────────────
+
+let editionsList    = [];
+let activeEdition   = null;
+let isNewEdition    = false;
+
+async function initEditions() {
+  show('view-loading');
+  try {
+    const res = await fetch('/api/editions');
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    editionsList = await res.json();
+    renderEditionsList();
+    show('view-editions');
+    $('editions-count').textContent = `${editionsList.length} editioned work${editionsList.length === 1 ? '' : 's'}`;
+    $('status').textContent = `${editionsList.length} editions`;
+  } catch (err) {
+    $('error-msg').textContent = `Could not load editions: ${err.message}. Make sure admin_server.py is running.`;
+    show('view-error');
+  }
+}
+
+const EDITION_TYPE_LABELS = {
+  'reproduction':   'Reproduction prints',
+  'sculpture':      'Sculptures',
+  'original-print': 'Original prints',
+};
+
+function renderEditionsList() {
+  const container = $('editions-list');
+  container.innerHTML = '';
+  for (const [key, label] of Object.entries(EDITION_TYPE_LABELS)) {
+    const items = editionsList.filter(e => e.type === key);
+    const block = document.createElement('div');
+    block.className = 'article-section-block';
+    const hdr = document.createElement('div');
+    hdr.className = 'article-section-header';
+    hdr.textContent = label;
+    block.appendChild(hdr);
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'ed-empty';
+      empty.textContent = `No ${label.toLowerCase()} recorded yet.`;
+      block.appendChild(empty);
+    } else {
+      for (const e of items) {
+        const row = document.createElement('div');
+        row.className = 'article-row';
+        row.onclick = () => openEditionEdit(e.slug);
+        const countLine = e.ceiling_total
+          ? `${e.tier_count} tier${e.tier_count === 1 ? '' : 's'} · ${e.issued ?? 0} issued, ${e.sold ?? 0} sold of ${e.ceiling_total}`
+          : `${e.tier_count} tier${e.tier_count === 1 ? '' : 's'} · ${e.issued ?? 0} issued, ${e.sold ?? 0} sold`;
+        row.innerHTML = `
+          <div style="flex:1">
+            <div class="article-title">${esc(e.title || e.slug)}</div>
+            <div class="article-meta">${esc(countLine)}</div>
+          </div>
+        `;
+        block.appendChild(row);
+      }
+    }
+    container.appendChild(block);
+  }
+}
+
+function newEdition() {
+  activeEdition = {
+    title: '',
+    type: 'reproduction',
+    portfolio_slug: '',
+    notes: '',
+    tiers: [emptyTier()],
+    _slug: '',
+  };
+  isNewEdition = true;
+  delete $('ed-slug').dataset.manuallyEdited;
+  renderEditionEditForm();
+  $('ed-errors').style.display = 'none';
+  $('ed-save-msg').textContent = '';
+  $('ed-save-msg').className = '';
+  show('view-editions-edit');
+}
+
+async function openEditionEdit(slug) {
+  show('view-loading');
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    activeEdition = await res.json();
+    activeEdition._slug = slug;
+    isNewEdition = false;
+    renderEditionEditForm();
+    $('ed-errors').style.display = 'none';
+    $('ed-save-msg').textContent = '';
+    $('ed-save-msg').className = '';
+    show('view-editions-edit');
+  } catch (err) {
+    toast(`Could not load: ${err.message}`);
+    show('view-editions');
+  }
+}
+
+function emptyTier() {
+  return {
+    label: '', dimensions: '', substrate: '', material: '', spec: '',
+    ceiling: '', ap_ceiling: 0, tracking: 'strict', status: 'active', notes: '',
+    prints: [], ap_prints: [],
+  };
+}
+
+// A fresh print record. `date_signed` defaults to today (this is the moment
+// the print is being issued); all sale fields are blank, to be filled in
+// later if and when the print is sold.
+function emptyPrint() {
+  return {
+    number: '',
+    date_signed: new Date().toISOString().slice(0, 10),
+    date_sold: '',
+    client_name: '', country: '',
+    price: 0, currency: '',
+    invoice_ref: '', customs_ref: '',
+    notes: '', photos: [],
+  };
+}
+
+// A print is sold when any sale field carries information. `date_sold` is
+// the canonical signal; client_name/price are accepted as fallbacks so a
+// record-in-progress isn't misclassified.
+function isPrintSold(p) {
+  if (!p || p.deleted) return false;
+  if (String(p.date_sold || '').trim()) return true;
+  if (String(p.client_name || '').trim()) return true;
+  const price = parseFloat(p.price);
+  return !Number.isNaN(price) && price > 0;
+}
+
+// `client_name` or `price > 0` set but `date_sold` blank — nudge to add it.
+function isSaleIncomplete(p) {
+  if (!p || p.deleted) return false;
+  if (String(p.date_sold || '').trim()) return false;
+  if (String(p.client_name || '').trim()) return true;
+  const price = parseFloat(p.price);
+  return !Number.isNaN(price) && price > 0;
+}
+
+function renderEditionEditForm() {
+  $('ed-edit-heading').textContent = isNewEdition
+    ? 'New edition'
+    : (activeEdition.title || activeEdition._slug || 'Edit edition');
+  $('ed-title').value          = activeEdition.title || '';
+  $('ed-type').value           = activeEdition.type || 'reproduction';
+  $('ed-portfolio-slug').value = activeEdition.portfolio_slug || '';
+  $('ed-slug').value           = activeEdition._slug || '';
+  $('ed-slug').disabled        = !isNewEdition;
+  $('ed-notes').value          = activeEdition.notes || '';
+  renderTiers();
+}
+
+function renderTiers() {
+  const container = $('ed-tiers');
+  container.innerHTML = '';
+  activeEdition.tiers.forEach((tier, i) => container.appendChild(buildTierEl(tier, i)));
+}
+
+function buildTierEl(tier, idx) {
+  const el = document.createElement('fieldset');
+  el.className = 'ed-tier';
+
+  const prints   = tier.prints    || [];
+  const apPrints = tier.ap_prints || [];
+  const issued = prints.filter(p => !p.deleted).length;
+  const sold   = prints.filter(isPrintSold).length;
+  const suggested = (tier.tracking === 'strict' && tier.ceiling)
+    ? `${issued + 1}/${tier.ceiling}`
+    : '';
+
+  el.innerHTML = `
+    <legend>Tier — ${esc(tier.label || '(unlabelled)')}</legend>
+    <div class="fg fg-3">
+      <div class="field">
+        <label>Label <span class="req-star">*</span></label>
+        <input type="text" data-tier="${idx}" data-field="label" value="${esc(tier.label)}">
+        <span class="hint">lowercase-hyphenated</span>
+      </div>
+      <div class="field">
+        <label>Tracking</label>
+        <select data-tier="${idx}" data-field="tracking">
+          <option value="strict"${tier.tracking === 'strict' ? ' selected' : ''}>strict (validated)</option>
+          <option value="loose"${tier.tracking === 'loose'  ? ' selected' : ''}>loose (backfill)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select data-tier="${idx}" data-field="status">
+          <option value="active"${tier.status === 'active' ? ' selected' : ''}>active</option>
+          <option value="paused"${tier.status === 'paused' ? ' selected' : ''}>paused</option>
+          <option value="closed"${tier.status === 'closed' ? ' selected' : ''}>closed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Dimensions</label>
+        <input type="text" data-tier="${idx}" data-field="dimensions" value="${esc(tier.dimensions)}">
+      </div>
+      <div class="field">
+        <label>Substrate</label>
+        <input type="text" data-tier="${idx}" data-field="substrate" value="${esc(tier.substrate)}">
+      </div>
+      <div class="field">
+        <label>Material <span class="opt">(sculpture)</span></label>
+        <input type="text" data-tier="${idx}" data-field="material" value="${esc(tier.material)}">
+      </div>
+      <div class="field span3">
+        <label>Spec <span class="opt">(paper/ink/foundry — unambiguous physical description)</span></label>
+        <input type="text" data-tier="${idx}" data-field="spec" value="${esc(tier.spec)}">
+      </div>
+      <div class="field">
+        <label>Ceiling</label>
+        <input type="number" data-tier="${idx}" data-field="ceiling" value="${tier.ceiling ?? ''}" min="1">
+      </div>
+      <div class="field">
+        <label>AP ceiling</label>
+        <input type="number" data-tier="${idx}" data-field="ap_ceiling" value="${tier.ap_ceiling ?? 0}" min="0">
+      </div>
+      <div class="field">
+        <label>Issued / sold</label>
+        <input type="text" value="${issued}${tier.ceiling ? ' of ' + tier.ceiling : ''} · ${sold} sold" disabled>
+      </div>
+      <div class="field span3">
+        <label>Tier notes <span class="opt">(optional)</span></label>
+        <input type="text" data-tier="${idx}" data-field="notes" value="${esc(tier.notes)}">
+      </div>
+    </div>
+    <div class="ed-prints-section">
+      <h4>Prints <span class="hint">${suggested ? 'next suggested: ' + esc(suggested) : ''}</span></h4>
+      <table class="ed-prints-table">
+        <thead><tr>
+          <th style="width:8ch">#</th>
+          <th style="width:14ch">Signed</th>
+          <th>State</th>
+          <th style="width:14ch">Sold</th>
+          <th>Client</th>
+          <th style="width:12ch">Country</th>
+          <th style="width:9ch">Price</th>
+          <th style="width:6ch">Cur</th>
+          <th style="width:13ch">CFE/invoice</th>
+          <th>Notes</th>
+        </tr></thead>
+        <tbody data-prints-tier="${idx}" data-prints-key="prints"></tbody>
+      </table>
+      <button type="button" class="btn-ghost" data-add-print="${idx}" data-key="prints" style="margin-top:6px">+ Record print</button>
+
+      <h4 style="margin-top:14px">Artist proofs (AP)</h4>
+      <table class="ed-prints-table">
+        <thead><tr>
+          <th style="width:9ch">#</th>
+          <th style="width:14ch">Signed</th>
+          <th>State</th>
+          <th style="width:14ch">Sold</th>
+          <th>Notes</th>
+        </tr></thead>
+        <tbody data-prints-tier="${idx}" data-prints-key="ap_prints"></tbody>
+      </table>
+      <button type="button" class="btn-ghost" data-add-print="${idx}" data-key="ap_prints" style="margin-top:6px">+ Record AP</button>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+      <button type="button" class="btn-danger-ghost" data-remove-tier="${idx}"${(issued > 0 || apPrints.length > 0) ? ' disabled title="Tier has print records — cannot remove"' : ''}>Remove tier</button>
+    </div>
+  `;
+
+  fillPrintRows(el, idx, 'prints',    prints);
+  fillPrintRows(el, idx, 'ap_prints', apPrints);
+
+  return el;
+}
+
+function fillPrintRows(tierEl, tierIdx, key, prints) {
+  const tbody = tierEl.querySelector(`tbody[data-prints-tier="${tierIdx}"][data-prints-key="${key}"]`);
+  tbody.innerHTML = '';
+  prints.forEach((p, j) => tbody.appendChild(buildPrintRow(tierIdx, j, p, key)));
+}
+
+function buildPrintRow(tierIdx, printIdx, rec, key) {
+  const tr = document.createElement('tr');
+  if (rec.deleted) tr.classList.add('is-deleted');
+
+  const sold       = isPrintSold(rec);
+  const incomplete = isSaleIncomplete(rec);
+  const stateBadge = sold
+    ? '<span class="ed-state ed-state--sold">sold</span>'
+    : '<span class="ed-state ed-state--signed">signed</span>';
+
+  const dataAttrs = (field) =>
+    `data-tier="${tierIdx}" data-prints="${key}" data-print-idx="${printIdx}" data-field="${field}"`;
+  const inp = (field, val, attrs = '') =>
+    `<input type="text" ${dataAttrs(field)} value="${esc(val ?? '')}" ${attrs}>`;
+  const num = (field, val, attrs = '') =>
+    `<input type="number" ${dataAttrs(field)} value="${val ?? 0}" ${attrs}>`;
+  const dateInp = (field, val, extraClass = '') =>
+    `<input type="date" ${dataAttrs(field)} value="${esc(val ?? '')}" class="${extraClass}">`;
+
+  if (key === 'prints') {
+    tr.innerHTML = `
+      <td>${inp('number', rec.number)}</td>
+      <td>${dateInp('date_signed', rec.date_signed)}</td>
+      <td class="ed-state-cell">${stateBadge}</td>
+      <td>${dateInp('date_sold', rec.date_sold, incomplete ? 'ed-sale-incomplete' : '')}</td>
+      <td>${inp('client_name', rec.client_name)}</td>
+      <td>${inp('country', rec.country)}</td>
+      <td>${num('price', rec.price, 'step="0.01" min="0"')}</td>
+      <td>${inp('currency', rec.currency)}</td>
+      <td>${inp('invoice_ref', rec.invoice_ref)}</td>
+      <td>${inp('notes', rec.notes)}</td>
+    `;
+  } else {
+    tr.innerHTML = `
+      <td>${inp('number', rec.number)}</td>
+      <td>${dateInp('date_signed', rec.date_signed)}</td>
+      <td class="ed-state-cell">${stateBadge}</td>
+      <td>${dateInp('date_sold', rec.date_sold)}</td>
+      <td>${inp('notes', rec.notes)}</td>
+    `;
+  }
+  return tr;
+}
+
+function collectForm() {
+  activeEdition.title          = $('ed-title').value.trim();
+  activeEdition.type           = $('ed-type').value;
+  activeEdition.portfolio_slug = $('ed-portfolio-slug').value.trim();
+  activeEdition.notes          = $('ed-notes').value.trim();
+
+  // Tier-level scalar fields.
+  document.querySelectorAll('#ed-tiers [data-tier][data-field]').forEach(el => {
+    if (el.dataset.prints) return; // print-row fields handled below
+    const idx = +el.dataset.tier;
+    const field = el.dataset.field;
+    const tier = activeEdition.tiers[idx];
+    if (!tier) return;
+    let v = el.value;
+    if (field === 'ceiling' || field === 'ap_ceiling') {
+      v = v === '' ? '' : parseInt(v, 10);
+      if (Number.isNaN(v)) v = '';
+    } else if (typeof v === 'string') {
+      v = v.trim();
+    }
+    tier[field] = v;
+  });
+
+  // Print-row fields.
+  document.querySelectorAll('#ed-tiers [data-prints]').forEach(el => {
+    const tierIdx  = +el.dataset.tier;
+    const key      = el.dataset.prints;
+    const printIdx = +el.dataset.printIdx;
+    const field    = el.dataset.field;
+    const tier = activeEdition.tiers[tierIdx];
+    if (!tier) return;
+    const list = tier[key] || (tier[key] = []);
+    const rec  = list[printIdx]; if (!rec) return;
+    let v = el.value;
+    if (field === 'price') {
+      v = v === '' ? 0 : parseFloat(v);
+      if (Number.isNaN(v)) v = 0;
+    } else if (typeof v === 'string') {
+      v = v.trim();
+    }
+    rec[field] = v;
+  });
+}
+
+function slugifyEdition(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+async function saveEdition() {
+  collectForm();
+  let slug = isNewEdition
+    ? slugifyEdition($('ed-slug').value || activeEdition.title)
+    : activeEdition._slug;
+  if (!slug) {
+    toast('Slug required');
+    return;
+  }
+
+  const payload = JSON.parse(JSON.stringify(activeEdition));
+  delete payload._slug;
+
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(slug)}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    if (res.status === 409) {
+      const body = await res.json();
+      renderEditionErrors(body.errors || []);
+      $('ed-save-msg').textContent = 'Validation failed — see errors above';
+      $('ed-save-msg').className = 'err';
+      return;
+    }
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || `${res.status}`);
+    }
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = slug;
+    isNewEdition = false;
+    renderEditionEditForm();
+    $('ed-errors').style.display = 'none';
+    $('ed-save-msg').textContent = 'Saved';
+    $('ed-save-msg').className = 'ok';
+    toast(`Saved ${activeEdition.title || slug}`);
+    // Refresh list in background.
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+  } catch (err) {
+    $('ed-save-msg').textContent = err.message;
+    $('ed-save-msg').className = 'err';
+  }
+}
+
+function renderEditionErrors(errors) {
+  const box = $('ed-errors');
+  if (!errors.length) { box.style.display = 'none'; return; }
+  box.innerHTML = '<strong>Could not save:</strong><ul>' +
+    errors.map(([_, msg]) => `<li>${esc(msg)}</li>`).join('') +
+    '</ul>';
+  box.style.display = 'block';
+}
+
+// Delegated handlers (form is re-rendered, can't rely on direct bindings).
+document.addEventListener('click', (ev) => {
+  const addBtn = ev.target.closest('[data-add-print]');
+  if (addBtn) {
+    collectForm();
+    const idx = +addBtn.dataset.addPrint;
+    const key = addBtn.dataset.key;
+    const tier = activeEdition.tiers[idx];
+    tier[key] = tier[key] || [];
+    const next = emptyPrint();
+    // Suggest the next strict-tier number for the main prints list (not AP).
+    if (key === 'prints' && tier.tracking === 'strict' && tier.ceiling) {
+      const issued = tier.prints.filter(p => !p.deleted).length;
+      next.number = `${issued + 1}/${tier.ceiling}`;
+    }
+    tier[key].push(next);
+    renderTiers();
+    return;
+  }
+  const removeBtn = ev.target.closest('[data-remove-tier]');
+  if (removeBtn) {
+    collectForm();
+    const idx = +removeBtn.dataset.removeTier;
+    activeEdition.tiers.splice(idx, 1);
+    renderTiers();
+    return;
+  }
+});
+
+$('btn-edition-new').addEventListener('click', newEdition);
+$('btn-edition-back').addEventListener('click', () => initEditions());
+$('btn-edition-cancel').addEventListener('click', () => initEditions());
+$('btn-edition-save-top').addEventListener('click', saveEdition);
+$('btn-add-tier').addEventListener('click', () => {
+  collectForm();
+  activeEdition.tiers.push(emptyTier());
+  renderTiers();
+});
+
+// Keep the slug field auto-populated from the title until first save.
+$('ed-title').addEventListener('input', () => {
+  if (isNewEdition && !$('ed-slug').dataset.manuallyEdited) {
+    $('ed-slug').value = slugifyEdition($('ed-title').value);
+  }
+});
+$('ed-slug').addEventListener('input', () => {
+  $('ed-slug').dataset.manuallyEdited = '1';
 });
 
 // Auto-load on startup
