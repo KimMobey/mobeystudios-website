@@ -56,6 +56,17 @@
       "default_price": 0,
       "default_currency": "EUR",
       "default_enabled": false
+    },
+    {
+      "label": "large-hand-finished",
+      "ceiling": 2,
+      "ap_ceiling": 0,
+      "dimensions": "75 × 100cm",
+      "substrate": "cotton rag paper, hand-finished",
+      "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
+      "default_enabled": false
     }
   ]
 }
