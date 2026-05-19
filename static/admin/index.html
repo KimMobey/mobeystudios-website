@@ -939,12 +939,24 @@
     .ed-detail-tier__print:first-child { border-top: none; }
     .ed-detail-tier__print--unsold { color: var(--text-2); }
     .ed-detail-tier__print--sold .ed-state { color: var(--green); border-color: var(--green); }
-    .ed-print-remove {
+    .ed-print-remove,
+    .ed-print-restore {
       background: none; border: 1px solid transparent; cursor: pointer;
       color: var(--text-2); padding: 2px 8px; font-size: 12px;
       line-height: 1; border-radius: 1px;
     }
-    .ed-print-remove:hover { color: var(--red); border-color: var(--red); }
+    .ed-print-remove:hover  { color: var(--red); border-color: var(--red); }
+    .ed-print-restore:hover { color: var(--green); border-color: var(--green); }
+
+    .ed-detail-tier__audit { margin-top: 14px; }
+    .ed-detail-tier__audit summary {
+      cursor: pointer; font-size: 11px; color: var(--text-2);
+      padding: 4px 0; user-select: none;
+      letter-spacing: 0.04em;
+    }
+    .ed-detail-tier__audit summary:hover { color: var(--text); }
+    .ed-detail-tier__audit ul { margin-top: 6px; padding-left: 6px; border-left: 2px solid var(--border); }
+    .ed-detail-tier__print--removed { color: var(--text-2); opacity: 0.85; }
     .ed-detail-tier__empty {
       color: var(--text-2); font-size: 12px; padding: 8px 0;
       font-style: italic;
@@ -4640,10 +4652,37 @@ function buildDetailTier(tier, idx) {
         <span>${esc(p.date_signed || '')}</span>
         <span>${stateBadge}</span>
         <span style="color:var(--text-2)">${buyer}</span>
-        <button type="button" class="ed-print-remove" data-soft-delete="${idx}:${esc(p.id || '')}" title="Remove this print (soft-delete — number stays consumed)">Remove</button>
+        <button type="button" class="ed-print-remove" data-remove-print="${idx}:${esc(p.id || '')}" title="Remove this record (number returns to pool; record kept in audit log)">Remove</button>
       `;
       list.appendChild(li);
     }
+  }
+
+  // Audit log — removed records, preserved verbatim. Collapsed by default;
+  // present only if the tier has any history.
+  const removed = tier.removed_prints || [];
+  if (removed.length) {
+    const audit = document.createElement('details');
+    audit.className = 'ed-detail-tier__audit';
+    audit.innerHTML = `<summary>Audit log — ${removed.length} removed record${removed.length === 1 ? '' : 's'}</summary>`;
+    const ul = document.createElement('ul');
+    ul.className = 'ed-detail-tier__prints';
+    const sortedRem = [...removed].sort((a, b) => String(b.removed_at).localeCompare(String(a.removed_at)));
+    for (const r of sortedRem) {
+      const li = document.createElement('li');
+      li.className = 'ed-detail-tier__print ed-detail-tier__print--removed';
+      const reason = r.removed_reason ? esc(r.removed_reason) : '';
+      li.innerHTML = `
+        <span>${esc(r.number)}</span>
+        <span>${esc(r.date_signed || '')}</span>
+        <span style="color:var(--text-2);font-size:11px">removed ${esc(r.removed_at || '?')}</span>
+        <span style="color:var(--text-2)">${reason}</span>
+        <button type="button" class="ed-print-restore" data-restore-print="${idx}:${esc(r.id || '')}" title="Restore this record to active prints">Restore</button>
+      `;
+      ul.appendChild(li);
+    }
+    audit.appendChild(ul);
+    wrap.appendChild(audit);
   }
 
   return wrap;
@@ -4881,15 +4920,26 @@ document.addEventListener('click', (ev) => {
   if (issueBtn) { openIssueModal(parseInt(issueBtn.dataset.issueTier, 10)); return; }
   const saleBtn = ev.target.closest('[data-sale-tier]');
   if (saleBtn) { openSaleModal(parseInt(saleBtn.dataset.saleTier, 10)); return; }
-  const removeBtn = ev.target.closest('[data-soft-delete]');
+  const removeBtn = ev.target.closest('[data-remove-print]');
   if (removeBtn) {
-    const [tierIdxStr, printId] = removeBtn.dataset.softDelete.split(':');
-    softDeletePrint(parseInt(tierIdxStr, 10), printId);
+    const [tierIdxStr, printId] = removeBtn.dataset.removePrint.split(':');
+    removePrintRecord(parseInt(tierIdxStr, 10), printId);
+    return;
+  }
+  const restoreBtn = ev.target.closest('[data-restore-print]');
+  if (restoreBtn) {
+    const [tierIdxStr, printId] = restoreBtn.dataset.restorePrint.split(':');
+    restorePrintRecord(parseInt(tierIdxStr, 10), printId);
     return;
   }
 });
 
-async function softDeletePrint(tierIdx, printId) {
+// Remove a print record. Moves it from tier.prints[] to tier.removed_prints[]
+// with a removed_at timestamp. The number returns to the active pool — the
+// record only exists in the system, signing the physical print is a separate
+// event only the artist knows about. The audit trail (removed_prints[]) is
+// preserved verbatim so accidental removals can be diagnosed and restored.
+async function removePrintRecord(tierIdx, printId) {
   const ed = activeEdition;
   if (!ed) return;
   const tier = ed.tiers[tierIdx];
@@ -4898,18 +4948,17 @@ async function softDeletePrint(tierIdx, printId) {
   if (!rec) { toast('Print not found'); return; }
 
   const sold = isPrintSold(rec);
-  const label = `${rec.number} (${tier.label})${sold ? ' — sold to ' + (rec.client_name || 'unknown') : ''}`;
-  const msg = sold
-    ? `Remove sold print ${label}?\n\nThe number stays consumed (no re-issue). This soft-deletes the record — it stays in the file for audit, but is hidden from the UI.`
-    : `Remove print ${label}?\n\nThe number stays consumed (no re-issue). Soft-delete only.`;
+  const label = `${rec.number} (${tier.label})`;
+  const buyer = sold ? `\n\nThis record currently shows a sale to "${rec.client_name || 'unknown'}".` : '';
+  const msg = `Remove print ${label}?${buyer}\n\nThe number returns to the active pool (re-issuable). The record is preserved in the tier's audit log and can be restored.`;
   if (!confirm(msg)) return;
 
   const payload = JSON.parse(JSON.stringify(ed));
   delete payload._slug;
-  const target = payload.tiers[tierIdx].prints.find(p => p.id === printId);
-  if (!target) { toast('Print not found in payload'); return; }
-  target.deleted = true;
-  target.deleted_at = new Date().toISOString().slice(0, 10);
+  const tierCopy = payload.tiers[tierIdx];
+  const removedRec = { ...rec, removed_at: new Date().toISOString().slice(0, 10), removed_reason: '' };
+  tierCopy.prints = (tierCopy.prints || []).filter(p => p.id !== printId);
+  tierCopy.removed_prints = (tierCopy.removed_prints || []).concat([removedRec]);
 
   try {
     const res = await fetch(`/api/editions/${encodeURIComponent(ed._slug)}`, {
@@ -4926,9 +4975,59 @@ async function softDeletePrint(tierIdx, printId) {
     activeEdition._slug = ed._slug;
     renderEditionDetail();
     fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
-    toast(`Removed ${rec.number}`);
+    toast(`Removed ${rec.number} — number returned to pool`);
   } catch (err) {
     toast(`Could not remove: ${err.message}`);
+  }
+}
+
+// Restore a record from tier.removed_prints[] back to tier.prints[].
+// Refuses if its number has been re-issued — the artist would have to
+// edit the removed record's number (raw-edit form) before restoring.
+async function restorePrintRecord(tierIdx, printId) {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tier = ed.tiers[tierIdx];
+  if (!tier) return;
+  const rec = (tier.removed_prints || []).find(p => p.id === printId);
+  if (!rec) { toast('Removed print not found'); return; }
+
+  // Number-collision check: is rec.number currently used in active prints?
+  const conflict = (tier.prints || []).find(p => p.number === rec.number);
+  if (conflict) {
+    toast(`Cannot restore: ${rec.number} has been re-issued. Edit the removed record's number via "Edit raw record" first.`);
+    return;
+  }
+
+  if (!confirm(`Restore ${rec.number} to active prints?`)) return;
+
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const tierCopy = payload.tiers[tierIdx];
+  const restored = { ...rec };
+  delete restored.removed_at;
+  delete restored.removed_reason;
+  tierCopy.removed_prints = (tierCopy.removed_prints || []).filter(p => p.id !== printId);
+  tierCopy.prints = (tierCopy.prints || []).concat([restored]);
+
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(ed._slug)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`${res.status} ${stripHtml(text).slice(0, 140)}`);
+    }
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = ed._slug;
+    renderEditionDetail();
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+    toast(`Restored ${rec.number}`);
+  } catch (err) {
+    toast(`Could not restore: ${err.message}`);
   }
 }
 
