@@ -150,6 +150,62 @@ def available_variations():
     return [t for t in tmpl.get('tiers', []) if not t.get('default_enabled')]
 
 
+def update_template_prices(prices):
+    """`prices` = list of {label, price, currency}. Rewrites the template
+    file so default_price / default_currency reflect the passed-in values,
+    keeping everything else (ceiling, dimensions, substrate, …) intact.
+    Tier labels not present in `prices` are left alone."""
+    tmpl = load_template()
+    by_label = {p['label']: p for p in prices}
+    for tier in tmpl.get('tiers', []):
+        if tier['label'] in by_label:
+            p = by_label[tier['label']]
+            tier['default_price']    = p.get('price', 0)
+            tier['default_currency'] = p.get('currency', '')
+    TEMPLATE_PATH.write_text(
+        json.dumps(tmpl, indent=2, ensure_ascii=False) + '\n', 'utf-8'
+    )
+    # Drop the in-memory cache on the next caller (admin_server module-level
+    # cache lives in the frontend, not here, but be defensive anyway).
+    return tmpl
+
+
+def bulk_set_tier_prices(prices):
+    """Walk every editions/*.json and update tier.price + tier.currency on
+    any tier whose label matches an entry in `prices`. Returns
+    {editions_updated, tiers_updated, editions_skipped (parse errors)}."""
+    EDITIONS.mkdir(exist_ok=True)
+    by_label = {p['label']: p for p in prices}
+    editions_updated = 0
+    tiers_updated    = 0
+    editions_skipped = 0
+    for f in sorted(EDITIONS.glob('*.json')):
+        try:
+            d = json.loads(f.read_text('utf-8'))
+        except json.JSONDecodeError:
+            editions_skipped += 1
+            continue
+        changed = False
+        for tier in d.get('tiers', []):
+            if tier.get('label') in by_label:
+                p = by_label[tier['label']]
+                new_price    = p.get('price', 0)
+                new_currency = p.get('currency', '')
+                if tier.get('price') != new_price or tier.get('currency') != new_currency:
+                    tier['price']    = new_price
+                    tier['currency'] = new_currency
+                    tiers_updated += 1
+                    changed = True
+        if changed:
+            f.write_text(json.dumps(d, indent=2, ensure_ascii=False) + '\n', 'utf-8')
+            editions_updated += 1
+    return {
+        'editions_updated': editions_updated,
+        'tiers_updated':    tiers_updated,
+        'editions_skipped': editions_skipped,
+    }
+
+
 # ── Bulk add ─────────────────────────────────────────────────────────────────
 
 def _humanize_slug(slug):

@@ -163,6 +163,46 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._upload_edition_image()
             return
 
+        # /api/editions/bulk-set-prices — propagate tier prices to all records
+        if path == '/api/editions/bulk-set-prices':
+            length = int(self.headers.get('Content-Length', 0))
+            try:
+                data = json.loads(self.rfile.read(length))
+            except json.JSONDecodeError as e:
+                self.send_error(400, f'Invalid JSON: {e}')
+                return
+            prices = data.get('prices') or []
+            if not isinstance(prices, list) or not prices:
+                self.send_error(400, 'prices must be a non-empty list')
+                return
+            # Sanity-check shape — let server-side validation reject bad rows.
+            cleaned = []
+            for p in prices:
+                if not isinstance(p, dict):
+                    self.send_error(400, 'each price entry must be an object')
+                    return
+                lbl = (p.get('label') or '').strip()
+                if not editions_mod.LABEL_RE.match(lbl):
+                    self.send_error(400, f'invalid label: {lbl!r}')
+                    return
+                price = p.get('price', 0)
+                if not isinstance(price, (int, float)) or price < 0:
+                    self.send_error(400, f'invalid price for {lbl!r}')
+                    return
+                currency = (p.get('currency') or '').strip().upper()
+                if price > 0 and not currency:
+                    self.send_error(400, f'currency required when price > 0 ({lbl!r})')
+                    return
+                cleaned.append({'label': lbl, 'price': price, 'currency': currency})
+            summary = editions_mod.bulk_set_tier_prices(cleaned)
+            if data.get('update_template'):
+                editions_mod.update_template_prices(cleaned)
+                summary['template_updated'] = True
+            else:
+                summary['template_updated'] = False
+            self._json(summary)
+            return
+
         # /api/editions/<slug>/delete  (must come before generic save route)
         m = re.match(r'^/api/editions/([a-z0-9][a-z0-9-]*)/delete$', path)
         if m:

@@ -1628,6 +1628,7 @@
     <h2 id="editions-count"></h2>
     <div style="display:flex;gap:8px">
       <button type="button" class="btn-primary" id="btn-edition-bulk">+ Add images</button>
+      <button type="button" class="btn-ghost"   id="btn-edition-bulk-prices">Tier prices…</button>
       <button type="button" class="btn-ghost"   id="btn-edition-reports" disabled title="Coming in Phase 6">Reports</button>
       <button type="button" class="btn-ghost"   id="btn-edition-new" title="Escape hatch — blank record without an image">+ Blank record</button>
       <button type="button" class="btn-ghost"   onclick="initEditions()">Reload</button>
@@ -1797,6 +1798,32 @@
       <button type="button" class="btn-primary" id="btn-sale-save">Record sale</button>
       <button type="button" class="btn-ghost"   id="btn-sale-cancel">Cancel</button>
       <span class="ed-modal__msg" id="modal-sale-msg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: bulk-set tier prices across all editions -->
+<div id="modal-bulk-prices" class="modal" style="display:none">
+  <div class="ed-modal__panel" style="max-width:720px">
+    <h2>Tier prices</h2>
+    <h3>Set defaults across all editions</h3>
+    <p class="hint" style="margin:0 0 12px">
+      Edit a price below; on Apply, every existing edition's matching tier is
+      updated. With "Also update template" ticked, future bulk-adds inherit
+      these prices too.
+    </p>
+    <div id="modal-bulk-prices-errors" class="ed-modal__errors" style="display:none"></div>
+    <div id="modal-bulk-prices-rows"></div>
+    <div style="margin:14px 0;padding:8px 0;border-top:1px solid var(--border)">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="mbp-update-template" checked>
+        <span>Also update <code>admin/edition_template.json</code> so new bulk-adds use these defaults</span>
+      </label>
+    </div>
+    <div class="ed-modal__actions">
+      <button type="button" class="btn-primary" id="btn-bulk-prices-save">Apply to all editions</button>
+      <button type="button" class="btn-ghost"   id="btn-bulk-prices-cancel">Cancel</button>
+      <span class="ed-modal__msg" id="modal-bulk-prices-msg"></span>
     </div>
   </div>
 </div>
@@ -5376,6 +5403,88 @@ async function saveTierEdit() {
 
 $('btn-tier-save').addEventListener('click', saveTierEdit);
 $('btn-tier-cancel').addEventListener('click', () => closeModal('modal-tier'));
+
+// ── Bulk tier-prices modal ──────────────────────────────────────────────────
+//
+// Editing 40+ records by hand for a price update is the failure mode. This
+// modal accepts a price per tier label, then walks every editions/*.json
+// updating tier.price / tier.currency on each matching tier. Optionally
+// rewrites the template so future bulk-adds use the same defaults.
+
+function openBulkPricesModal() {
+  loadEditionTemplate().then(tmpl => {
+    const rowsBox = $('modal-bulk-prices-rows');
+    rowsBox.innerHTML = '';
+    for (const t of (tmpl.tiers || [])) {
+      const row = document.createElement('div');
+      row.className = 'ed-variation-row';
+      row.style.gridTemplateColumns = '1fr 12ch 8ch';
+      row.innerHTML = `
+        <div>
+          <div><strong>${esc(t.label)}</strong>${t.default_enabled ? '' : ' <span class="ed-variation-row__meta">(variation)</span>'}</div>
+          <div class="ed-variation-row__meta">${esc([t.dimensions, t.substrate].filter(Boolean).join(' · '))} · ceiling ${t.ceiling}</div>
+        </div>
+        <input type="number" data-bulk-label="${esc(t.label)}" data-bulk-field="price" value="${t.default_price ?? 0}" step="0.01" min="0">
+        <input type="text"   data-bulk-label="${esc(t.label)}" data-bulk-field="currency" value="${esc(t.default_currency || 'EUR')}" maxlength="3" style="text-transform:uppercase">
+      `;
+      rowsBox.appendChild(row);
+    }
+    $('modal-bulk-prices-errors').style.display = 'none';
+    $('modal-bulk-prices-msg').textContent = '';
+    $('modal-bulk-prices-msg').className = 'ed-modal__msg';
+    openModal('modal-bulk-prices');
+  }).catch(err => toast(`Could not load template: ${err.message}`));
+}
+
+async function saveBulkPrices() {
+  // Collect one entry per tier label currently in the modal.
+  const labels = new Set();
+  document.querySelectorAll('#modal-bulk-prices-rows [data-bulk-label]').forEach(el => labels.add(el.dataset.bulkLabel));
+  const prices = [];
+  for (const lbl of labels) {
+    const priceEl = document.querySelector(`#modal-bulk-prices-rows [data-bulk-label="${CSS.escape(lbl)}"][data-bulk-field="price"]`);
+    const currEl  = document.querySelector(`#modal-bulk-prices-rows [data-bulk-label="${CSS.escape(lbl)}"][data-bulk-field="currency"]`);
+    const raw = priceEl.value.trim();
+    const price = raw === '' ? 0 : parseFloat(raw);
+    if (Number.isNaN(price)) {
+      $('modal-bulk-prices-msg').textContent = `Invalid price for ${lbl}`;
+      $('modal-bulk-prices-msg').className = 'ed-modal__msg err';
+      return;
+    }
+    prices.push({ label: lbl, price, currency: currEl.value.trim().toUpperCase() });
+  }
+
+  $('modal-bulk-prices-msg').textContent = 'applying…';
+  $('modal-bulk-prices-msg').className = 'ed-modal__msg';
+
+  try {
+    const res = await fetch('/api/editions/bulk-set-prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prices, update_template: $('mbp-update-template').checked }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`${res.status} ${stripHtml(text).slice(0, 200)}`);
+    }
+    const summary = await res.json();
+    _editionTemplate = null; // invalidate cache; reload on next access
+    // Refresh the list so counts/prices update visibly.
+    const lr = await fetch('/api/editions');
+    if (lr.ok) editionsList = await lr.json();
+    renderEditionsGrid();
+    closeModal('modal-bulk-prices');
+    const tpl = summary.template_updated ? ', template updated' : '';
+    toast(`${summary.tiers_updated} tier(s) updated across ${summary.editions_updated} record(s)${tpl}`);
+  } catch (err) {
+    $('modal-bulk-prices-msg').textContent = err.message;
+    $('modal-bulk-prices-msg').className = 'ed-modal__msg err';
+  }
+}
+
+$('btn-edition-bulk-prices').addEventListener('click', openBulkPricesModal);
+$('btn-bulk-prices-save').addEventListener('click', saveBulkPrices);
+$('btn-bulk-prices-cancel').addEventListener('click', () => closeModal('modal-bulk-prices'));
 
 // ── Editions: bulk-add images ────────────────────────────────────────────────
 //

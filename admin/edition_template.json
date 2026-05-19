@@ -1,5 +1,5 @@
 {
-  "comment": "Default tier set instantiated when a new edition image is added. Fill in real values before the next bulk-add — every tier carries a snapshot of these at instantiation time. `default_enabled` tiers are auto-created on image add; variations (false) are opt-in per image via the detail view. `default_price` is the sale price pre-filled in the Sale modal; you can override per-sale (visible as a discount). To update prices for inflation, edit the per-tier price via the Edit-tier modal (or raw-edit) on each edition — there's no automatic propagation from template to existing records.",
+  "comment": "Default tier set instantiated when a new edition image is added. `default_enabled` tiers are auto-created on image add; variations (false) are opt-in per image via the detail view. `default_price` is the sale price pre-filled in the Sale modal; per-sale overrides are visible as discounts. To set or update prices across all existing editions at once, use the 'Tier prices…' button in the admin grid toolbar — it walks every record and (optionally) writes the new defaults back here.",
   "type": "reproduction",
   "tiers": [
     {
