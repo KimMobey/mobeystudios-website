@@ -932,12 +932,19 @@
       list-style: none; padding: 0; font-size: 13px;
     }
     .ed-detail-tier__print {
-      display: grid; grid-template-columns: 8ch 12ch 8ch 1fr;
+      display: grid; grid-template-columns: 8ch 12ch 8ch 1fr auto;
+      gap: 8px;
       padding: 6px 0; border-top: 1px solid var(--border); align-items: center;
     }
     .ed-detail-tier__print:first-child { border-top: none; }
     .ed-detail-tier__print--unsold { color: var(--text-2); }
     .ed-detail-tier__print--sold .ed-state { color: var(--green); border-color: var(--green); }
+    .ed-print-remove {
+      background: none; border: 1px solid transparent; cursor: pointer;
+      color: var(--text-2); padding: 2px 8px; font-size: 12px;
+      line-height: 1; border-radius: 1px;
+    }
+    .ed-print-remove:hover { color: var(--red); border-color: var(--red); }
     .ed-detail-tier__empty {
       color: var(--text-2); font-size: 12px; padding: 8px 0;
       font-style: italic;
@@ -4601,15 +4608,18 @@ function buildDetailTier(tier, idx) {
     <ul class="ed-detail-tier__prints" data-tier-prints="${idx}"></ul>
   `;
 
-  // Populate print list.
+  // Populate print list. Soft-deleted records (deleted:true) are hidden by
+  // default per spec §5 — their number stays consumed but they're invisible
+  // to the day-to-day workflow.
   const list = wrap.querySelector(`[data-tier-prints="${idx}"]`);
-  if (!prints.length) {
+  const visible = prints.filter(p => !p.deleted);
+  if (!visible.length) {
     list.innerHTML = `<li class="ed-detail-tier__empty">No prints issued yet.</li>`;
   } else {
     // Sort by the numeric prefix of the edition number if parseable; falls
     // back to string sort. Newest-issued doesn't have a date primacy here;
     // numerical order maps to "what the artist holds in her hand".
-    const sorted = [...prints].sort((a, b) => {
+    const sorted = [...visible].sort((a, b) => {
       const an = parseInt(String(a.number).split('/')[0], 10);
       const bn = parseInt(String(b.number).split('/')[0], 10);
       if (!Number.isNaN(an) && !Number.isNaN(bn)) return an - bn;
@@ -4630,6 +4640,7 @@ function buildDetailTier(tier, idx) {
         <span>${esc(p.date_signed || '')}</span>
         <span>${stateBadge}</span>
         <span style="color:var(--text-2)">${buyer}</span>
+        <button type="button" class="ed-print-remove" data-soft-delete="${idx}:${esc(p.id || '')}" title="Remove this print (soft-delete — number stays consumed)">Remove</button>
       `;
       list.appendChild(li);
     }
@@ -4862,13 +4873,64 @@ $('btn-detail-delete').addEventListener('click', async () => {
   }
 });
 
-// Delegated handlers for the per-tier Issue / Record-sale buttons.
+// Delegated handlers for the per-tier Issue / Record-sale / per-print remove
+// buttons. Detail view re-renders entirely on every state change, so direct
+// bindings on row elements would be stale after the first save.
 document.addEventListener('click', (ev) => {
   const issueBtn = ev.target.closest('[data-issue-tier]');
   if (issueBtn) { openIssueModal(parseInt(issueBtn.dataset.issueTier, 10)); return; }
   const saleBtn = ev.target.closest('[data-sale-tier]');
   if (saleBtn) { openSaleModal(parseInt(saleBtn.dataset.saleTier, 10)); return; }
+  const removeBtn = ev.target.closest('[data-soft-delete]');
+  if (removeBtn) {
+    const [tierIdxStr, printId] = removeBtn.dataset.softDelete.split(':');
+    softDeletePrint(parseInt(tierIdxStr, 10), printId);
+    return;
+  }
 });
+
+async function softDeletePrint(tierIdx, printId) {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tier = ed.tiers[tierIdx];
+  if (!tier) return;
+  const rec = (tier.prints || []).find(p => p.id === printId);
+  if (!rec) { toast('Print not found'); return; }
+
+  const sold = isPrintSold(rec);
+  const label = `${rec.number} (${tier.label})${sold ? ' — sold to ' + (rec.client_name || 'unknown') : ''}`;
+  const msg = sold
+    ? `Remove sold print ${label}?\n\nThe number stays consumed (no re-issue). This soft-deletes the record — it stays in the file for audit, but is hidden from the UI.`
+    : `Remove print ${label}?\n\nThe number stays consumed (no re-issue). Soft-delete only.`;
+  if (!confirm(msg)) return;
+
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const target = payload.tiers[tierIdx].prints.find(p => p.id === printId);
+  if (!target) { toast('Print not found in payload'); return; }
+  target.deleted = true;
+  target.deleted_at = new Date().toISOString().slice(0, 10);
+
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(ed._slug)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`${res.status} ${stripHtml(text).slice(0, 140)}`);
+    }
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = ed._slug;
+    renderEditionDetail();
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+    toast(`Removed ${rec.number}`);
+  } catch (err) {
+    toast(`Could not remove: ${err.message}`);
+  }
+}
 
 $('btn-issue-save').addEventListener('click', saveIssuePrint);
 $('btn-issue-cancel').addEventListener('click', () => closeModal('modal-issue'));
