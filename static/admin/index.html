@@ -1016,6 +1016,19 @@
     }
     .ed-modal__errors ul { margin: 4px 0 0 20px; }
 
+    .ed-variation-row {
+      display: grid; grid-template-columns: auto 1fr auto;
+      gap: 12px; align-items: center;
+      padding: 10px 4px; border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .ed-variation-row:first-child { border-top: none; }
+    .ed-variation-row__meta { color: var(--text-2); font-size: 12px; }
+    .ed-variation-row__count { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+    .ed-variation-row--locked label { color: var(--text-2); }
+    .ed-variation-row--locked .ed-variation-row__count { color: var(--red); }
+    .ed-variation-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
     /* ── Editions bulk-add ── */
     #view-editions-bulk { max-width: 900px; }
     #bulk-drop {
@@ -1700,6 +1713,7 @@
   <div id="detail-tiers"></div>
 
   <div class="ed-detail-footer">
+    <button type="button" class="link-btn" id="btn-detail-variations">Variations…</button>
     <button type="button" class="link-btn" id="btn-detail-raw">Edit raw record</button>
     <button type="button" class="link-btn" id="btn-detail-delete" disabled title="Only available when no prints are recorded">Delete edition</button>
   </div>
@@ -1777,6 +1791,26 @@
       <button type="button" class="btn-primary" id="btn-sale-save">Record sale</button>
       <button type="button" class="btn-ghost"   id="btn-sale-cancel">Cancel</button>
       <span class="ed-modal__msg" id="modal-sale-msg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: variation tiers -->
+<div id="modal-variations" class="modal" style="display:none">
+  <div class="ed-modal__panel">
+    <h2>Variation tiers</h2>
+    <h3 id="modal-variations-title"></h3>
+    <p class="hint" style="margin:0 0 12px">
+      Variations from <code>admin/edition_template.json</code>. Tick to enable
+      a variation on this edition — same dimensions as the matching base tier,
+      different ceiling, and intended to carry a higher price per sale.
+    </p>
+    <div id="modal-variations-errors" class="ed-modal__errors" style="display:none"></div>
+    <div id="modal-variations-list"></div>
+    <div class="ed-modal__actions">
+      <button type="button" class="btn-primary" id="btn-variations-save">Apply</button>
+      <button type="button" class="btn-ghost"   id="btn-variations-cancel">Cancel</button>
+      <span class="ed-modal__msg" id="modal-variations-msg"></span>
     </div>
   </div>
 </div>
@@ -5035,6 +5069,158 @@ $('btn-issue-save').addEventListener('click', saveIssuePrint);
 $('btn-issue-cancel').addEventListener('click', () => closeModal('modal-issue'));
 $('btn-sale-save').addEventListener('click', saveSale);
 $('btn-sale-cancel').addEventListener('click', () => closeModal('modal-sale'));
+
+// ── Variations modal ────────────────────────────────────────────────────────
+//
+// Template-defined variation tiers (default_enabled:false in
+// admin/edition_template.json) are opt-in per edition. The modal renders a
+// checklist of available variations, ticking adds them as tier records,
+// unticking removes them (refused if the tier has any active or removed
+// print records — clean removal only).
+
+let _editionTemplate = null;
+
+async function loadEditionTemplate() {
+  if (_editionTemplate) return _editionTemplate;
+  const res = await fetch('/api/edition-template');
+  if (!res.ok) throw new Error(`template load failed: ${res.status}`);
+  _editionTemplate = await res.json();
+  return _editionTemplate;
+}
+
+function tierFromTemplate(entry) {
+  return {
+    label:       entry.label,
+    dimensions:  entry.dimensions || '',
+    substrate:   entry.substrate  || '',
+    material:    entry.material   || '',
+    spec:        entry.spec       || '',
+    ceiling:     entry.ceiling    || 0,
+    ap_ceiling:  entry.ap_ceiling || 0,
+    tracking:    'strict',
+    status:      'active',
+    notes:       '',
+    prints:      [],
+    ap_prints:   [],
+  };
+}
+
+async function openVariationsModal() {
+  const ed = activeEdition;
+  if (!ed) return;
+  let tmpl;
+  try {
+    tmpl = await loadEditionTemplate();
+  } catch (err) {
+    toast(`Could not load template: ${err.message}`);
+    return;
+  }
+
+  const variations = (tmpl.tiers || []).filter(t => !t.default_enabled);
+  const enabledLabels = new Set((ed.tiers || []).map(t => t.label));
+
+  const list = $('modal-variations-list');
+  list.innerHTML = '';
+
+  if (!variations.length) {
+    list.innerHTML = `<p class="hint" style="padding:12px 0">No variation tiers defined in <code>admin/edition_template.json</code>.</p>`;
+  } else {
+    for (const v of variations) {
+      const isEnabled = enabledLabels.has(v.label);
+      const tier = (ed.tiers || []).find(t => t.label === v.label);
+      const printCount = tier
+        ? (tier.prints || []).length + (tier.removed_prints || []).length
+        : 0;
+      const locked = isEnabled && printCount > 0;
+      const meta = [v.dimensions, v.substrate].filter(Boolean).join(' · ');
+
+      const row = document.createElement('label');
+      row.className = 'ed-variation-row' + (locked ? ' ed-variation-row--locked' : '');
+      row.innerHTML = `
+        <input type="checkbox" data-variation="${esc(v.label)}"${isEnabled ? ' checked' : ''}${locked ? ' disabled' : ''}>
+        <div>
+          <div><strong>${esc(v.label)}</strong> · ceiling ${v.ceiling}</div>
+          <div class="ed-variation-row__meta">${esc(meta)}</div>
+        </div>
+        <span class="ed-variation-row__count">${locked ? `locked: ${printCount} record${printCount === 1 ? '' : 's'}` : (isEnabled ? 'enabled' : 'available')}</span>
+      `;
+      list.appendChild(row);
+    }
+  }
+
+  $('modal-variations-title').textContent = ed.title || ed._slug;
+  $('modal-variations-errors').style.display = 'none';
+  $('modal-variations-msg').textContent = '';
+  $('modal-variations-msg').className = 'ed-modal__msg';
+  openModal('modal-variations');
+}
+
+async function saveVariations() {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tmpl = _editionTemplate;
+  if (!tmpl) return;
+
+  const variations = (tmpl.tiers || []).filter(t => !t.default_enabled);
+  const checkedLabels = new Set(
+    Array.from(document.querySelectorAll('#modal-variations-list input[data-variation]'))
+      .filter(el => el.checked)
+      .map(el => el.dataset.variation)
+  );
+
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const currentTiers = payload.tiers || [];
+  const currentLabels = new Set(currentTiers.map(t => t.label));
+
+  // Add newly-checked variation tiers.
+  for (const v of variations) {
+    if (checkedLabels.has(v.label) && !currentLabels.has(v.label)) {
+      currentTiers.push(tierFromTemplate(v));
+    }
+  }
+  // Remove unchecked variations IF the tier has zero history.
+  payload.tiers = currentTiers.filter(t => {
+    const isVariation = variations.some(v => v.label === t.label);
+    if (!isVariation) return true; // base tiers stay
+    if (checkedLabels.has(t.label)) return true; // still wanted
+    const total = (t.prints || []).length + (t.removed_prints || []).length;
+    return total > 0; // can't remove a tier with history
+  });
+
+  $('modal-variations-msg').textContent = 'saving…';
+  $('modal-variations-msg').className = 'ed-modal__msg';
+
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(ed._slug)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 409) {
+      const body = await res.json();
+      renderModalErrors('modal-variations', body.errors || []);
+      return;
+    }
+    if (!res.ok) {
+      throw new Error(`Server returned ${res.status}`);
+    }
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = ed._slug;
+    renderEditionDetail();
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+    closeModal('modal-variations');
+    toast('Variations updated');
+  } catch (err) {
+    $('modal-variations-msg').textContent = err.message;
+    $('modal-variations-msg').className = 'ed-modal__msg err';
+  }
+}
+
+$('btn-detail-variations').addEventListener('click', openVariationsModal);
+$('btn-variations-save').addEventListener('click', saveVariations);
+$('btn-variations-cancel').addEventListener('click', () => closeModal('modal-variations'));
 
 // ── Editions: bulk-add images ────────────────────────────────────────────────
 //
