@@ -1,5 +1,5 @@
 {
-  "comment": "Default tier set instantiated when a new edition image is added. Edit dimensions/substrate/spec to your actual print specs. `default_enabled` tiers are auto-created on image add; variations (false) are opt-in per image via the detail view.",
+  "comment": "Default tier set instantiated when a new edition image is added. Fill in real values before the next bulk-add — every tier carries a snapshot of these at instantiation time. `default_enabled` tiers are auto-created on image add; variations (false) are opt-in per image via the detail view. `default_price` is the sale price pre-filled in the Sale modal; you can override per-sale (visible as a discount). To update prices for inflation, edit the per-tier price via the Edit-tier modal (or raw-edit) on each edition — there's no automatic propagation from template to existing records.",
   "type": "reproduction",
   "tiers": [
     {
@@ -9,6 +9,8 @@
       "dimensions": "30 × 40cm",
       "substrate": "cotton rag paper",
       "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
       "default_enabled": true
     },
     {
@@ -18,6 +20,8 @@
       "dimensions": "50 × 70cm",
       "substrate": "cotton rag paper",
       "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
       "default_enabled": true
     },
     {
@@ -27,6 +31,8 @@
       "dimensions": "75 × 100cm",
       "substrate": "cotton rag paper",
       "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
       "default_enabled": true
     },
     {
@@ -36,6 +42,8 @@
       "dimensions": "30 × 40cm",
       "substrate": "cotton rag paper, hand-finished",
       "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
       "default_enabled": false
     },
     {
@@ -45,6 +53,8 @@
       "dimensions": "50 × 70cm",
       "substrate": "cotton rag paper, hand-finished",
       "spec": "",
+      "default_price": 0,
+      "default_currency": "EUR",
       "default_enabled": false
     }
   ]

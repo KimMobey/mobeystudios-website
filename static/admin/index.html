@@ -925,6 +925,12 @@
     .ed-detail-tier__spec { font-size: 12px; color: var(--text-2); }
     .ed-detail-tier__counts { margin-left: auto; font-size: 13px; color: var(--text); }
     .ed-detail-tier__counts strong { color: var(--accent); }
+    .ed-detail-tier__price {
+      font-size: 12px; color: var(--text-2); cursor: pointer;
+      padding: 2px 8px; border: 1px solid var(--border); border-radius: 1px;
+      user-select: none;
+    }
+    .ed-detail-tier__price:hover { color: var(--accent); border-color: var(--accent); }
     .ed-detail-tier__actions {
       display: flex; gap: 8px; margin: 12px 0 8px;
     }
@@ -1791,6 +1797,39 @@
       <button type="button" class="btn-primary" id="btn-sale-save">Record sale</button>
       <button type="button" class="btn-ghost"   id="btn-sale-cancel">Cancel</button>
       <span class="ed-modal__msg" id="modal-sale-msg"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: edit tier (price/currency/notes) -->
+<div id="modal-tier" class="modal" style="display:none">
+  <div class="ed-modal__panel">
+    <h2>Edit tier</h2>
+    <h3 id="modal-tier-title"></h3>
+    <p class="hint" style="margin:0 0 12px">
+      Price and currency are the defaults pre-filled into the Sale modal for
+      this tier. Adjust here when inflation hits or when this image carries a
+      different price than the template default.
+    </p>
+    <div id="modal-tier-errors" class="ed-modal__errors" style="display:none"></div>
+    <div class="ed-modal__fields">
+      <div class="field">
+        <label for="mt-price">Default price</label>
+        <input type="number" id="mt-price" step="0.01" min="0">
+      </div>
+      <div class="field">
+        <label for="mt-currency">Currency</label>
+        <input type="text" id="mt-currency" maxlength="3" placeholder="EUR" style="text-transform:uppercase">
+      </div>
+      <div class="field span2">
+        <label for="mt-notes">Tier notes <span class="opt">(optional)</span></label>
+        <input type="text" id="mt-notes">
+      </div>
+    </div>
+    <div class="ed-modal__actions">
+      <button type="button" class="btn-primary" id="btn-tier-save">Save</button>
+      <button type="button" class="btn-ghost"   id="btn-tier-cancel">Cancel</button>
+      <span class="ed-modal__msg" id="modal-tier-msg"></span>
     </div>
   </div>
 </div>
@@ -4638,10 +4677,15 @@ function buildDetailTier(tier, idx) {
 
   const spec = [tier.dimensions, tier.substrate].filter(Boolean).join(' · ');
 
+  const priceLabel = (tier.price && tier.currency)
+    ? `${tier.price} ${esc(tier.currency)}`
+    : (tier.price ? `${tier.price}` : 'no default price');
+
   wrap.innerHTML = `
     <div class="ed-detail-tier__head">
       <span class="ed-detail-tier__label">${esc(tier.label)}</span>
       <span class="ed-detail-tier__spec">${esc(spec)}</span>
+      <span class="ed-detail-tier__price" data-edit-tier="${idx}" title="Edit tier price / currency / notes">${priceLabel}</span>
       <span class="ed-detail-tier__counts">
         <strong>${issued}${tier.ceiling ? '/' + tier.ceiling : ''}</strong> issued ·
         ${sold} sold · ${unsold} unsold
@@ -4825,8 +4869,18 @@ function openSaleModal(tierIdx) {
   $('ms-date').value     = new Date().toISOString().slice(0, 10);
   $('ms-client').value   = '';
   $('ms-country').value  = '';
-  $('ms-price').value    = '';
-  $('ms-currency').value = lastUsedCurrency() || 'EUR';
+  // Pre-fill price/currency from the tier defaults. Track them on the field
+  // so the override-indicator can compare on input.
+  const defaultPrice    = (tier.price && tier.price > 0) ? tier.price : '';
+  const defaultCurrency = tier.currency || lastUsedCurrency() || 'EUR';
+  const msPrice = $('ms-price');
+  const msCurr  = $('ms-currency');
+  msPrice.value = defaultPrice;
+  msPrice.dataset.tierDefault = String(defaultPrice);
+  msPrice.dataset.tierCurrency = defaultCurrency;
+  msCurr.value  = defaultCurrency;
+  msCurr.dataset.tierDefault = defaultCurrency;
+  updateSaleOverrideHint();
   $('ms-invoice').value  = '';
   $('ms-notes').value    = '';
   $('modal-sale-errors').style.display = 'none';
@@ -4834,6 +4888,31 @@ function openSaleModal(tierIdx) {
   $('modal-sale-msg').className = 'ed-modal__msg';
   openModal('modal-sale');
   setTimeout(() => sel.focus(), 30);
+}
+
+// Highlight the price/currency fields when they diverge from the tier
+// default (Kim's discount case: visible at a glance that this is below the
+// usual price). Hint text in the modal footer shows the original default.
+function updateSaleOverrideHint() {
+  const priceEl = $('ms-price');
+  const currEl  = $('ms-currency');
+  const hint    = $('modal-sale-msg');
+  const defPrice = priceEl.dataset.tierDefault;
+  const defCurr  = priceEl.dataset.tierCurrency;
+  const curPrice = priceEl.value.trim();
+  const curCurr  = currEl.value.trim();
+  const priceOverride = defPrice !== '' && curPrice !== '' && curPrice !== defPrice;
+  const currOverride  = defCurr  !== '' && curCurr  !== '' && curCurr.toUpperCase()  !== (defCurr  || '').toUpperCase();
+  priceEl.classList.toggle('field--override', priceOverride);
+  currEl.classList.toggle('field--override',  currOverride);
+  if (priceOverride && defPrice !== '') {
+    const delta = parseFloat(curPrice) - parseFloat(defPrice);
+    const sign  = delta < 0 ? '−' : '+';
+    hint.textContent = `default: ${defPrice} ${defCurr} (${sign}${Math.abs(delta)})`;
+    hint.className = 'ed-modal__msg';
+  } else if (!priceOverride && !currOverride && hint.textContent.startsWith('default:')) {
+    hint.textContent = '';
+  }
 }
 
 // Default the currency field to the last value the artist used.
@@ -4954,6 +5033,8 @@ document.addEventListener('click', (ev) => {
   if (issueBtn) { openIssueModal(parseInt(issueBtn.dataset.issueTier, 10)); return; }
   const saleBtn = ev.target.closest('[data-sale-tier]');
   if (saleBtn) { openSaleModal(parseInt(saleBtn.dataset.saleTier, 10)); return; }
+  const editTierBtn = ev.target.closest('[data-edit-tier]');
+  if (editTierBtn) { openTierEditModal(parseInt(editTierBtn.dataset.editTier, 10)); return; }
   const removeBtn = ev.target.closest('[data-remove-print]');
   if (removeBtn) {
     const [tierIdxStr, printId] = removeBtn.dataset.removePrint.split(':');
@@ -5069,6 +5150,8 @@ $('btn-issue-save').addEventListener('click', saveIssuePrint);
 $('btn-issue-cancel').addEventListener('click', () => closeModal('modal-issue'));
 $('btn-sale-save').addEventListener('click', saveSale);
 $('btn-sale-cancel').addEventListener('click', () => closeModal('modal-sale'));
+$('ms-price').addEventListener('input', updateSaleOverrideHint);
+$('ms-currency').addEventListener('input', updateSaleOverrideHint);
 
 // ── Variations modal ────────────────────────────────────────────────────────
 //
@@ -5221,6 +5304,78 @@ async function saveVariations() {
 $('btn-detail-variations').addEventListener('click', openVariationsModal);
 $('btn-variations-save').addEventListener('click', saveVariations);
 $('btn-variations-cancel').addEventListener('click', () => closeModal('modal-variations'));
+
+// ── Edit-tier modal ─────────────────────────────────────────────────────────
+//
+// Targeted editor for the few tier-level fields Kim actually changes mid-life:
+// default price, currency, notes. Label / ceiling / dimensions / substrate /
+// spec stay on the raw-edit form because changing them is rare and risky
+// (ceiling-immutable-after-first-print, label affects file paths).
+
+let _editingTierIdx = null;
+
+function openTierEditModal(tierIdx) {
+  const ed = activeEdition;
+  if (!ed) return;
+  const tier = ed.tiers[tierIdx];
+  if (!tier) return;
+  _editingTierIdx = tierIdx;
+
+  $('modal-tier-title').textContent = `${ed.title || ed._slug} — ${tier.label}`;
+  $('mt-price').value    = (tier.price ?? '') === '' ? '' : tier.price;
+  $('mt-currency').value = tier.currency || '';
+  $('mt-notes').value    = tier.notes || '';
+  $('modal-tier-errors').style.display = 'none';
+  $('modal-tier-msg').textContent = '';
+  $('modal-tier-msg').className = 'ed-modal__msg';
+  openModal('modal-tier');
+  setTimeout(() => $('mt-price').focus(), 30);
+}
+
+async function saveTierEdit() {
+  const ed = activeEdition;
+  if (!ed || _editingTierIdx === null) return;
+
+  const payload = JSON.parse(JSON.stringify(ed));
+  delete payload._slug;
+  const tier = payload.tiers[_editingTierIdx];
+
+  const priceRaw = $('mt-price').value.trim();
+  tier.price    = priceRaw === '' ? 0 : parseFloat(priceRaw);
+  if (Number.isNaN(tier.price)) tier.price = 0;
+  tier.currency = $('mt-currency').value.trim().toUpperCase();
+  tier.notes    = $('mt-notes').value.trim();
+
+  $('modal-tier-msg').textContent = 'saving…';
+  $('modal-tier-msg').className = 'ed-modal__msg';
+
+  try {
+    const res = await fetch(`/api/editions/${encodeURIComponent(ed._slug)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 409) {
+      const body = await res.json();
+      renderModalErrors('modal-tier', body.errors || []);
+      return;
+    }
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const body = await res.json();
+    activeEdition = body.edition;
+    activeEdition._slug = ed._slug;
+    renderEditionDetail();
+    fetch('/api/editions').then(r => r.ok && r.json()).then(j => { if (j) editionsList = j; });
+    closeModal('modal-tier');
+    toast(`Updated ${tier.label}`);
+  } catch (err) {
+    $('modal-tier-msg').textContent = err.message;
+    $('modal-tier-msg').className = 'ed-modal__msg err';
+  }
+}
+
+$('btn-tier-save').addEventListener('click', saveTierEdit);
+$('btn-tier-cancel').addEventListener('click', () => closeModal('modal-tier'));
 
 // ── Editions: bulk-add images ────────────────────────────────────────────────
 //

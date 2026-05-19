@@ -115,7 +115,9 @@ def load_template():
 
 def _tier_from_template(entry):
     """Project a template entry into a fresh tier record (no `default_enabled`,
-    no prints yet)."""
+    no prints yet). `default_price` and `default_currency` from the template
+    are snapshotted onto the tier as `price`/`currency` — after this they live
+    independent of the template, so Kim can override per image."""
     return {
         'label':       entry['label'],
         'dimensions':  entry.get('dimensions', ''),
@@ -124,6 +126,8 @@ def _tier_from_template(entry):
         'spec':        entry.get('spec', ''),
         'ceiling':     entry.get('ceiling', 0),
         'ap_ceiling':  entry.get('ap_ceiling', 0),
+        'price':       entry.get('default_price', 0),
+        'currency':    entry.get('default_currency', ''),
         'tracking':    'strict',
         'status':      'active',
         'notes':       '',
@@ -299,6 +303,16 @@ def validate(slug, data, existing):
         if ap_ceiling not in (None, '') and (not isinstance(ap_ceiling, int) or ap_ceiling < 0):
             errors.append((f'{prefix}.ap_ceiling_invalid', f'ap_ceiling must be a non-negative integer or empty'))
 
+        # Default tier price + currency. Same rule as print-level: currency
+        # required only when there's a non-zero price to attach it to.
+        tier_price = tier.get('price', 0)
+        if tier_price not in (None, '', 0) and not isinstance(tier_price, (int, float)):
+            errors.append((f'{prefix}.price_invalid', f'{prefix}: tier price must be a number'))
+        if isinstance(tier_price, (int, float)) and tier_price > 0:
+            cur = tier.get('currency', '')
+            if not isinstance(cur, str) or not cur.strip():
+                errors.append((f'{prefix}.currency_missing', f'{prefix}: currency required when tier price > 0'))
+
         prints    = tier.get('prints',    []) or []
         ap_prints = tier.get('ap_prints', []) or []
 
@@ -394,6 +408,8 @@ def normalise(data, existing):
         tier.setdefault('ap_ceiling', 0)
         tier.setdefault('status', 'active')
         tier.setdefault('tracking', 'strict')
+        tier.setdefault('price', 0)
+        tier.setdefault('currency', '')
         for key in PRINT_LISTS:
             for rec in tier.get(key, []) or []:
                 pid = rec.get('id')
