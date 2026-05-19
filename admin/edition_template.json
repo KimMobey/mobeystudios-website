@@ -37,7 +37,7 @@
     },
     {
       "label": "small-hand-finished",
-      "ceiling": 10,
+      "ceiling": 25,
       "ap_ceiling": 0,
       "dimensions": "30 × 40cm",
       "substrate": "cotton rag paper, hand-finished",
@@ -48,7 +48,7 @@
     },
     {
       "label": "medium-hand-finished",
-      "ceiling": 5,
+      "ceiling": 12,
       "ap_ceiling": 0,
       "dimensions": "50 × 70cm",
       "substrate": "cotton rag paper, hand-finished",
@@ -59,7 +59,7 @@
     },
     {
       "label": "large-hand-finished",
-      "ceiling": 2,
+      "ceiling": 5,
       "ap_ceiling": 0,
       "dimensions": "75 × 100cm",
       "substrate": "cotton rag paper, hand-finished",
