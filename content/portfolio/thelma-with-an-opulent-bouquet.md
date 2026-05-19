@@ -1,7 +1,9 @@
 ---
-title: "Thelma with an Opulent Bouquet"
-media: "oil"
-substrate: "canvas"
+title: "Thelma with Rioting Blooms"
+media:
+  - "oil"
+substrate:
+  - "canvas"
 dimensions: "60 × 80cm"
 statuses: "available"
 forms:
@@ -17,3 +19,5 @@ collection: ""
 edition: ""
 image: "/images/portfolio/thelma-with-an-opulent-bouquet.webp"
 ---
+
+Previously exhibited as "Thelma with Opulent Bouquet"
