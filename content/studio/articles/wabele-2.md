@@ -1,5 +1,5 @@
 ---
-title: "Our Gods Go with Us, Part 2 - The Casting of Wabele"
+title: "Our Gods Go with Us - The Casting of Wabele"
 description: "A close-up view of the studio process, and my constant tussle with humility and hubris."
 weight: 4
 thumbnail: "/images/articles/wabele-2/wabele2-hero.webp"
