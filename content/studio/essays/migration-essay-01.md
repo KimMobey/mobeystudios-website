@@ -2,7 +2,7 @@
 title: "A Billion Stories"
 series: "migration"
 weight: 1
-thumbnail: "/images/essays/migration-essay-01/migration-02.webp"
+thumbnail: "/images/essays/migration-essay-01/escarpment-wind.webp"
 description: "Ancient Grave Goods and Modern Passports"
 ---
 
