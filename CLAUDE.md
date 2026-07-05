@@ -34,7 +34,7 @@ hugo
 hugo server -D
 ```
 
-The site is served at `http://localhost:1313/`. Build output lives in `public/` and is built with Hugo 0.160.0.
+The site is served at `http://localhost:1313/`. Build output lives in `public/` and is built with Hugo 0.162.1 (extended).
 
 ## Local development workflow
 
