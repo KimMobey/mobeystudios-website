@@ -19,6 +19,8 @@ Kim Mobey is a visual artist with thirty years of professional practice in paint
 
 **2019** — Rust en Vrede Gallery, Cape Town — *National Portrait Top 40*
 
+**2019** — "Returning the Gaze", Cape Gallery
+
 **2018** — Investec Cape Town Art Fair, Cape Town
 
 **2017** — Turbine Art Fair, Johannesburg
@@ -34,8 +36,6 @@ Kim Mobey is a visual artist with thirty years of professional practice in paint
 ## Awards and Competitions
 
 **2019** — Sanlam Portrait Award, Top 40 Shortlist
-
-**2019** — "Returning the Gaze", Cape Gallery
 
 **2017** — PPC Imaginarium Awards, Sculpture Finalist
 
