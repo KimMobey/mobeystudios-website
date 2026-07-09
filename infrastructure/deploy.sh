@@ -5,14 +5,21 @@
 #   1. Refuse if hugo is missing or older than the minimum the templates need.
 #   2. Refuse if there are uncommitted changes in deploy-relevant paths
 #      (override with FORCE_DIRTY=1).
-#   3. Build hugo. If hugo fails, the deploy is aborted — no stale upload.
-#   4. Sync ./public to S3 with --delete (orphan files removed).
-#   5. Invalidate CloudFront.
+#   3. Refuse if local main is out of sync with origin/main — deploying
+#      unpushed commits means another machine clones stale content and later
+#      overwrites live; deploying while behind reverts live to older content
+#      (override with FORCE_SYNC=1).
+#   4. Build hugo. If hugo fails, the deploy is aborted — no stale upload.
+#   5. Stamp the build with /build-info.json (commit SHA + UTC timestamp) so
+#      any machine can ask the live site which commit it was built from.
+#   6. Sync ./public to S3 with --delete (orphan files removed).
+#   7. Invalidate CloudFront.
 #
 # Usage:
 #   ./infrastructure/deploy.sh
 #   STACK_NAME=kimmobey-site ./infrastructure/deploy.sh
 #   FORCE_DIRTY=1 ./infrastructure/deploy.sh    # bypass the git-dirty check
+#   FORCE_SYNC=1 ./infrastructure/deploy.sh     # bypass the origin-sync check
 #   SKIP_BUILD=1 ./infrastructure/deploy.sh     # use existing public/ as-is
 #
 # Prerequisites:
@@ -67,7 +74,33 @@ if [[ "${FORCE_DIRTY:-0}" != "1" ]]; then
   fi
 fi
 
-# --- 3. Build hugo (clean) ---------------------------------------------------
+# --- 3. Refuse if local main is out of sync with origin/main -----------------
+# Deploying unpushed commits puts content live that GitHub doesn't have: the
+# next machine to clone gets stale content and silently overwrites live on its
+# next deploy. Deploying while behind reverts live to older content.
+if [[ "${FORCE_SYNC:-0}" != "1" ]]; then
+  echo "==> Checking sync with origin/main"
+  if ! git fetch origin main --quiet; then
+    echo "error: could not fetch origin/main to verify sync" >&2
+    echo "       check network/SSH keys, or set FORCE_SYNC=1 to override" >&2
+    exit 1
+  fi
+  AHEAD=$(git rev-list --count origin/main..HEAD)
+  BEHIND=$(git rev-list --count HEAD..origin/main)
+  if [[ "$AHEAD" -gt 0 ]]; then
+    echo "error: local branch is $AHEAD commit(s) ahead of origin/main" >&2
+    echo "       push first (git push origin main), or set FORCE_SYNC=1 to override" >&2
+    exit 1
+  fi
+  if [[ "$BEHIND" -gt 0 ]]; then
+    echo "error: local branch is $BEHIND commit(s) behind origin/main" >&2
+    echo "       deploying now would revert live to older content" >&2
+    echo "       pull first (git pull origin main), or set FORCE_SYNC=1 to override" >&2
+    exit 1
+  fi
+fi
+
+# --- 4. Build hugo (clean) ---------------------------------------------------
 if [[ "${SKIP_BUILD:-0}" != "1" ]]; then
   echo "==> Building site (hugo $INSTALLED_HUGO)"
   rm -rf "$SOURCE_DIR"
@@ -78,7 +111,18 @@ if [[ ! -d "$SOURCE_DIR" ]]; then
   exit 1
 fi
 
-# --- 4. Resolve AWS stack outputs --------------------------------------------
+# --- 5. Stamp the build ------------------------------------------------------
+# /build-info.json lets any machine ask the live site which commit it was
+# built from (preflight.sh compares it against origin/main). `dirty` records
+# whether the tree had uncommitted changes anywhere at build time.
+COMMIT_SHA=$(git rev-parse HEAD)
+TREE_DIRTY=$([[ -n "$(git status --porcelain 2>/dev/null)" ]] && echo true || echo false)
+printf '{"commit":"%s","built_at":"%s","dirty":%s}\n' \
+  "$COMMIT_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$TREE_DIRTY" \
+  > "$SOURCE_DIR/build-info.json"
+echo "==> Stamped build-info.json ($COMMIT_SHA, dirty=$TREE_DIRTY)"
+
+# --- 6. Resolve AWS stack outputs --------------------------------------------
 echo "==> Resolving stack outputs from $STACK_NAME ($REGION)"
 
 BUCKET_NAME=$(aws cloudformation list-exports \
@@ -99,7 +143,7 @@ fi
 echo "    bucket:       $BUCKET_NAME"
 echo "    distribution: ${DISTRIBUTION_ID:-<none>}"
 
-# --- 5. Sync + invalidate ----------------------------------------------------
+# --- 7. Sync + invalidate ----------------------------------------------------
 echo "==> Syncing $SOURCE_DIR/ to s3://$BUCKET_NAME/"
 # Exclude any `_src/` directory: source files (jpg/png/raw captures) live
 # alongside published .webp images for findability but must never be deployed.

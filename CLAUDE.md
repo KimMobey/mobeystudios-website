@@ -40,6 +40,10 @@ The site is served at `http://localhost:1313/`. Build output lives in `public/` 
 
 Test locally with `hugo server` before pushing. Standard git workflow applies — commit and push as you would on any other project. **Pushing to GitHub does not deploy.** After every push you want live, run `hugo && STACK_NAME=kimmobey-site ./infrastructure/deploy.sh` to sync to S3 and invalidate CloudFront. There is no auto-deploy and there will not be one.
 
+**Session-start check:** run `./infrastructure/preflight.sh` before starting work — especially on a machine not used recently. It reports whether the working tree, GitHub, and the live site agree, and re-verifies the environment claims in this file (Hugo version, AWS credentials, CloudFront serving, pricelist gate). If it flags red, resolve that first.
+
+**Deploy safety rails** (`infrastructure/deploy.sh`): refuses to deploy if deploy-relevant paths are dirty (`FORCE_DIRTY=1` to override) or if local main is ahead of/behind `origin/main` (`FORCE_SYNC=1` to override). Every deploy stamps `/build-info.json` (commit SHA + UTC timestamp + dirty flag) into the site root — this is how `preflight.sh` compares live against GitHub.
+
 ## Architecture
 
 This is a Hugo static site with **no theme** — all layouts are hand-built under `layouts/`. CSS lives in `assets/css/main.css` (processed via Hugo Pipes) and is referenced in `layouts/_default/baseof.html`.
