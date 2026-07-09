@@ -1,8 +1,6 @@
 {{ define "title" }}{{ .Title }}{{ end }}
 
-{{ define "head" }}
-<meta name="robots" content="noindex, nofollow">
-{{ end }}
+{{/* noindex comes from `noindex: true` front matter via head-meta.html */}}
 
 {{ define "main" }}
 <main class="pricelist-page">

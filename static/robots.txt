@@ -1,2 +1,4 @@
+# Allow everything. Pages that must stay out of search engines carry a
+# noindex meta tag instead of being named (and thereby advertised) here.
 User-agent: *
-Disallow: /good-things-happen/
+Disallow:

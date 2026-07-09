@@ -5,6 +5,9 @@ title = 'Kim Mobey'
 [params]
   author = 'Kim Mobey'
   description = 'Contemporary Art'
+  # Default social-share image for pages without their own `image`/`thumbnail`
+  # (homepage, contact, list pages). Swap for any preferred signature work.
+  ogImage = '/images/home/gugulethu-sq.webp'
 
 [menu]
   [[menu.main]]

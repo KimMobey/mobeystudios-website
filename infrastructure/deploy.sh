@@ -147,9 +147,13 @@ echo "    distribution: ${DISTRIBUTION_ID:-<none>}"
 echo "==> Syncing $SOURCE_DIR/ to s3://$BUCKET_NAME/"
 # Exclude any `_src/` directory: source files (jpg/png/raw captures) live
 # alongside published .webp images for findability but must never be deployed.
+# Exclude admin/: the local editing UI (static/admin/) ends up in public/ via
+# Hugo's static copy but is local-only tooling — it must not be on the live
+# site. (Its /api/ backend only exists on the local admin_server.py anyway.)
 aws s3 sync "$SOURCE_DIR/" "s3://$BUCKET_NAME/" \
   --delete \
   --exclude '*/_src/*' \
+  --exclude 'admin/*' \
   --region "$REGION"
 
 if [[ -n "$DISTRIBUTION_ID" && "$DISTRIBUTION_ID" != "None" ]]; then

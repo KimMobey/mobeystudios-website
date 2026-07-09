@@ -1,0 +1,21 @@
+{{- /* Canonical URL, robots directives, and search/social metadata.
+     Image resolution: portfolio works set `image`, studio content sets
+     `thumbnail`, everything else falls back to site params `ogImage`.
+     Pages with `noindex: true` in front matter are kept out of search
+     engines without being named in robots.txt. */ -}}
+<link rel="canonical" href="{{ .Permalink }}">
+{{- if .Params.noindex }}
+<meta name="robots" content="noindex">
+{{- end }}
+{{- $desc := or .Params.description .Site.Params.description }}
+{{- $img := or .Params.image .Params.thumbnail .Site.Params.ogImage }}
+<meta name="description" content="{{ $desc }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ .Title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+{{- with $img }}
+<meta property="og:image" content="{{ . | absURL }}">
+{{- end }}
+<meta name="twitter:card" content="{{ if $img }}summary_large_image{{ else }}summary{{ end }}">
