@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Private backup bucket for local-only repo data (editions/, _dev/) that is
+  deliberately gitignored and would otherwise exist only on one machine.
+  Deployed as its own stack so backups never depend on — or risk — the
+  live-site stack. Synced by infrastructure/backup-editions.sh.
+
+Resources:
+  BackupBucket:
+    Type: AWS::S3::Bucket
+    # Never let stack operations take the backup data with them.
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # Versioning is the safety net: backup-editions.sh syncs with --delete
+      # (a clean mirror), and old/deleted versions remain recoverable here.
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-noncurrent-versions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 180
+
+Outputs:
+  BackupBucketName:
+    Description: Name of the private backup bucket.
+    Value: !Ref BackupBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BackupBucketName'

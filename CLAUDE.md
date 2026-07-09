@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Production status (READ FIRST)
 
 - **Live production site:** this Hugo repo, served from AWS S3 + CloudFront at `kimmobey.com`. **The DNS cutover from Google Sites is DONE (2026-07):** `kimmobey.com` and `www.kimmobey.com` resolve to the CloudFront distribution (stack `kimmobey-site`, domain `dl42l828yesn9.cloudfront.net`) and serve the S3-hosted build. Google Sites no longer serves this domain. Verified: content deployed via `deploy.sh` appears live at `kimmobey.com`.
-- **Production domain:** `kimmobey.com` (apex + www). **Not** `mobey.co.za` — that is a legacy domain Kim still uses for email; it DNS-redirects to kimmobey.com but does not serve a website.
+- **Production domain:** `kimmobey.com` (apex + www). **Not** `mobey.co.za` — that is a legacy domain Kim still uses for email only. **Its web redirect is broken** (verified 2026-07-09: `http://mobey.co.za` 301s to `https://mobey.co.za`, which has no TLS endpoint and dead-ends — it does *not* reach kimmobey.com). Known issue, fix deferred; do not describe the redirect as working.
 - **Hosting target:** AWS S3 + CloudFront, provisioned by CloudFormation. **Deploys are manual** — there is no GitHub Actions workflow and there will never be one. After pushing to GitHub, run `hugo && STACK_NAME=kimmobey-site ./infrastructure/deploy.sh` from a shell with AWS CLI credentials. The script syncs `public/` to S3 and invalidates CloudFront `/*`.
   - Region: `eu-west-1` (Ireland — closest to the European buyer base)
   - Route 53 hosted zone for kimmobey.com: `Z0282701OSAPI8VKA1OT`
@@ -13,7 +13,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Private S3 bucket with Origin Access Control — never use S3 static website hosting mode
 - **Netlify is dead.** Do not reference it, do not consult `netlify.toml` for deploy behaviour, do not treat it as a fallback. It was disconnected from the repo and the file has been removed.
 - **DNS cutover (Google Sites → CloudFront on kimmobey.com) is COMPLETE** (2026-07). The apex and `www` now point at the `kimmobey-site` CloudFront distribution. Google Sites is no longer authoritative for the site.
-- **Pre-existing AWS infrastructure on kimmobey.com from a partial migration ~3 years ago.** Treat as untouchable until inventoried. **Live SES/email records (DKIM, SPF, MX) on this zone must never be touched.** Dormant CloudFront distributions exist (apex points to `d2qpmq0g3x3tv.cloudfront.net`, `dev.kimmobey.com` points to `d1hr4gcvv1txzh.cloudfront.net`). Existing ACM validation CNAMEs and `www` CNAME must also not be modified. Any new CloudFormation work must inventory these and surface conflicts before provisioning.
+- **AWS inventory (verified 2026-07-09).** **Live SES/email records (DKIM, SPF, MX) on this zone must never be touched.** Existing ACM validation CNAMEs must not be modified. Three CloudFront distributions exist, all enabled:
+  - `E34TQS4N4SASKJ` (`dl42l828yesn9.cloudfront.net`) — **the live site**, aliases `kimmobey.com` + `www.kimmobey.com`.
+  - `E37NODD9EU82A8` (`d2qpmq0g3x3tv.cloudfront.net`) — leftover from the ~3-year-old partial migration, **no aliases since the cutover re-pointed the apex**. Cleanup candidate; do not disable/delete without Kim's explicit instruction.
+  - `E34OLWMUFNSCWQ` (`d1hr4gcvv1txzh.cloudfront.net`) — alias `dev.kimmobey.com`, still resolving. Cleanup candidate; same rule.
 - **Form handling:** Formspree (external), unchanged through migration.
 - **Audience:** buyers are mostly European. Kim has lived in South Africa and Uruguay — do not infer audience from her residence.
 
@@ -43,6 +46,8 @@ Test locally with `hugo server` before pushing. Standard git workflow applies �
 **Session-start check:** run `./infrastructure/preflight.sh` before starting work — especially on a machine not used recently. It reports whether the working tree, GitHub, and the live site agree, and re-verifies the environment claims in this file (Hugo version, AWS credentials, CloudFront serving, pricelist gate). If it flags red, resolve that first.
 
 **Deploy safety rails** (`infrastructure/deploy.sh`): refuses to deploy if deploy-relevant paths are dirty (`FORCE_DIRTY=1` to override) or if local main is ahead of/behind `origin/main` (`FORCE_SYNC=1` to override). Every deploy stamps `/build-info.json` (commit SHA + UTC timestamp + dirty flag) into the site root — this is how `preflight.sh` compares live against GitHub.
+
+**Local-only data backup:** `editions/` (private sales/edition records) and `_dev/` (briefs, specs, design references) are gitignored — they exist only on the working machine until backed up. Run `./infrastructure/backup-editions.sh` after any editions change and before travel or switching machines. It mirrors both directories to the private, versioned bucket in the `kimmobey-backups` stack (`infrastructure/backups.yaml`); deleted/overwritten versions stay recoverable for 180 days. Restore: `aws s3 sync s3://<bucket>/<dir>/ <dir>/`.
 
 ## Architecture
 

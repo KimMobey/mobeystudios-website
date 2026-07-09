@@ -4,7 +4,8 @@ public/
 # Hugo lock file
 .hugo_build.lock
 
-# Dev scratch — screenshots, references, temporary files (never committed)
+# Dev scratch — screenshots, references, temporary files (never committed;
+# backed up to S3 by infrastructure/backup-editions.sh)
 _dev/
 
 # Source files for site images (RAW, GIMP, layered originals). The admin
