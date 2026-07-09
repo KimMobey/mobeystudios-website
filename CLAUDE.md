@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Production status (READ FIRST)
 
-- **Live production site:** Google Sites at `kimmobey.com`. **This Hugo repo does not yet serve any live traffic.**
+- **Live production site:** this Hugo repo, served from AWS S3 + CloudFront at `kimmobey.com`. **The DNS cutover from Google Sites is DONE (2026-07):** `kimmobey.com` and `www.kimmobey.com` resolve to the CloudFront distribution (stack `kimmobey-site`, domain `dl42l828yesn9.cloudfront.net`) and serve the S3-hosted build. Google Sites no longer serves this domain. Verified: content deployed via `deploy.sh` appears live at `kimmobey.com`.
 - **Production domain:** `kimmobey.com` (apex + www). **Not** `mobey.co.za` — that is a legacy domain Kim still uses for email; it DNS-redirects to kimmobey.com but does not serve a website.
 - **Hosting target:** AWS S3 + CloudFront, provisioned by CloudFormation. **Deploys are manual** — there is no GitHub Actions workflow and there will never be one. After pushing to GitHub, run `hugo && STACK_NAME=kimmobey-site ./infrastructure/deploy.sh` from a shell with AWS CLI credentials. The script syncs `public/` to S3 and invalidates CloudFront `/*`.
   - Region: `eu-west-1` (Ireland — closest to the European buyer base)
@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - ACM certificate provisioned in `us-east-1` (CloudFront requirement, regardless of stack region)
   - Private S3 bucket with Origin Access Control — never use S3 static website hosting mode
 - **Netlify is dead.** Do not reference it, do not consult `netlify.toml` for deploy behaviour, do not treat it as a fallback. It was disconnected from the repo and the file has been removed.
-- **DNS cutover (Google Sites → CloudFront on kimmobey.com) is the final step**, performed manually by Kim only after the CloudFront distribution and ACM certificate are validated. Until then the Google Sites setup must remain untouched.
+- **DNS cutover (Google Sites → CloudFront on kimmobey.com) is COMPLETE** (2026-07). The apex and `www` now point at the `kimmobey-site` CloudFront distribution. Google Sites is no longer authoritative for the site.
 - **Pre-existing AWS infrastructure on kimmobey.com from a partial migration ~3 years ago.** Treat as untouchable until inventoried. **Live SES/email records (DKIM, SPF, MX) on this zone must never be touched.** Dormant CloudFront distributions exist (apex points to `d2qpmq0g3x3tv.cloudfront.net`, `dev.kimmobey.com` points to `d1hr4gcvv1txzh.cloudfront.net`). Existing ACM validation CNAMEs and `www` CNAME must also not be modified. Any new CloudFormation work must inventory these and surface conflicts before provisioning.
 - **Form handling:** Formspree (external), unchanged through migration.
 - **Audience:** buyers are mostly European. Kim has lived in South Africa and Uruguay — do not infer audience from her residence.
